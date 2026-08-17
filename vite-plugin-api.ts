@@ -2,19 +2,20 @@ import type { Plugin } from 'vite'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
-const envPath = resolve(__dirname, '.env')
-const envContent = readFileSync(envPath, 'utf-8')
-for (const line of envContent.split('\n')) {
-  const trimmed = line.trim()
-  if (!trimmed || trimmed.startsWith('#')) continue
-  const eqIndex = trimmed.indexOf('=')
-  if (eqIndex === -1) continue
-  const key = trimmed.slice(0, eqIndex).trim()
-  const value = trimmed.slice(eqIndex + 1).trim()
-  if (!process.env[key]) process.env[key] = value
-}
+let envData: Record<string, string> = {}
+try {
+  const envPath = resolve(__dirname, '.env')
+  const envContent = readFileSync(envPath, 'utf-8')
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eqIndex = trimmed.indexOf('=')
+    if (eqIndex === -1) continue
+    envData[trimmed.slice(0, eqIndex).trim()] = trimmed.slice(eqIndex + 1).trim()
+  }
+} catch {}
 
-const GEMINI_API_KEY = process.env.OPENAI_API_KEY
+const GEMINI_API_KEY = envData.OPENAI_API_KEY || process.env.OPENAI_API_KEY || ''
 const GEMINI_MODEL = process.env.OPENAI_MODEL || 'gemini-3.5-flash'
 
 function getApiKey(): string {
@@ -93,20 +94,25 @@ function loadPrompt(name: string): string {
 
 let cachedPrompts: Record<string, string> | null = null
 
-function getPrompts(): Record<string, string> {
+function getPrompts(): Record<string, string> | null {
   if (cachedPrompts) return cachedPrompts
-  cachedPrompts = {
-    'analyze': loadPrompt('ANALYZE_SYSTEM_PROMPT'),
-    'job-match': loadPrompt('JOB_MATCH_SYSTEM_PROMPT'),
-    'rewrite': loadPrompt('REWRITE_SYSTEM_PROMPT'),
+  try {
+    cachedPrompts = {
+      'analyze': loadPrompt('ANALYZE_SYSTEM_PROMPT'),
+      'job-match': loadPrompt('JOB_MATCH_SYSTEM_PROMPT'),
+      'rewrite': loadPrompt('REWRITE_SYSTEM_PROMPT'),
+    }
+    return cachedPrompts
+  } catch {
+    return null
   }
-  return cachedPrompts
 }
 
 export function apiPlugin(): Plugin {
   return {
     name: 'dev-api',
     configureServer(server) {
+      if (!GEMINI_API_KEY) return
       server.middlewares.use('/api', async (req, res) => {
         if (req.method !== 'POST') {
           return jsonResponse(res, 405, { error: 'Method not allowed' })
