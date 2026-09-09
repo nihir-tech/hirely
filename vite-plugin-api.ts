@@ -16,7 +16,7 @@ try {
 } catch {}
 
 const GEMINI_API_KEY = envData.OPENAI_API_KEY || process.env.OPENAI_API_KEY || ''
-const GEMINI_MODEL = process.env.OPENAI_MODEL || 'gemini-3.5-flash'
+const GEMINI_MODEL = envData.OPENAI_MODEL || process.env.OPENAI_MODEL || 'gemini-3.5-flash-lite'
 
 function getApiKey(): string {
   if (!GEMINI_API_KEY || GEMINI_API_KEY === 'your-gemini-api-key-here') {
