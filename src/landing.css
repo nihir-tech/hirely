@@ -253,7 +253,7 @@
 .landing .lp-pane-before .lp-compare-label { color: var(--lp-red); }
 .landing .lp-pane-after .lp-compare-label { color: var(--lp-emerald); }
 .landing .lp-compare-handle { position: absolute; top: 0; bottom: 0; width: 2.5px; background: var(--lp-grad); z-index: 5; cursor: ew-resize; }
-.landing .lp-compare-handle::after { content: "⇄"; position: absolute; top: 50%; left: 50%; translate: -50% -50%; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: rgba(10,10,10,.9); border: 1px solid var(--lp-line-2); font-size: 15px; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+.landing .lp-compare-handle::after { content: "\21C4"; position: absolute; top: 50%; left: 50%; translate: -50% -50%; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: rgba(10,10,10,.9); border: 1px solid var(--lp-line-2); font-size: 15px; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
 .landing .lp-page-lines { display: grid; gap: 8px; }
 .landing .lp-page-lines .l { height: 8px; border-radius: 6px; background: rgba(255,255,255,.08); }
 .landing .lp-page-lines .l.hl { background: linear-gradient(90deg, rgba(52,211,153,.5), transparent); }
