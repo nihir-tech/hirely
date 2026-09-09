@@ -1,5 +1,5 @@
-import { chatJson } from './_lib/ai'
-import { ANALYZE_SYSTEM_PROMPT } from './_lib/prompts'
+import { chatJson } from './_lib/ai.js'
+import { ANALYZE_SYSTEM_PROMPT } from './_lib/prompts.js'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
 const MAX_TEXT = 50000
