@@ -1,0 +1,993 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hirely — AI Resume Review &amp; Job-Match Optimization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #040404;
+    --surface: #0a0a0c;
+    --surface-2: #111114;
+    --surface-3: #18181c;
+    --line: rgba(255,255,255,.06);
+    --line-2: rgba(255,255,255,.12);
+    --text: #f5f5f5;
+    --text-2: #9a9aa6;
+    --text-3: #5f5f68;
+    --brand-300: #c4b5fd;
+    --brand-400: #a78bfa;
+    --brand-500: #8b5cf6;
+    --brand-600: #7c3aed;
+    --brand-700: #6d28d9;
+    --cyan: #a78bfa;
+    --pink: #c4b5fd;
+    --emerald: #34d399;
+    --amber: #fbbf24;
+    --grad: linear-gradient(120deg, #c4b5fd 0%, #8b5cf6 45%, #7c3aed 100%);
+    --grad-2: linear-gradient(120deg, #c4b5fd 0%, #8b5cf6 50%, #a78bfa 100%);
+    --ease: cubic-bezier(.16,1,.3,1);
+    --font-display: "Sora", "Inter", sans-serif;
+    --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+  body {
+    font-family: var(--font-body); background: var(--bg); color: var(--text);
+    line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: rgba(139,92,246,.4); color: #fff; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #1e1e24; border-radius: 10px; border: 2px solid var(--bg); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--brand-700); }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+
+  .container { width: min(100% - 48px, 1152px); margin-inline: auto; position: relative; }
+
+  /* ── Noise + base FX ─────────────────────────────── */
+  .noise {
+    position: fixed; inset: 0; z-index: 2000; pointer-events: none; opacity: .035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 1000; background: var(--grad); transform: scaleX(0); transform-origin: 0 50%; }
+  .progress::after { content:""; position: absolute; inset: 0; filter: blur(6px); background: var(--grad); opacity:.8; }
+
+  /* custom cursor trails */
+  .cursor-dot, .cursor-halo {
+    position: fixed; top: 0; left: 0; z-index: 3000; pointer-events: none;
+    border-radius: 50%; transform: translate(-50%,-50%);
+  }
+  .cursor-dot { width: 8px; height: 8px; background: var(--brand-400); box-shadow: 0 0 12px rgba(139,92,246,.9); }
+  .cursor-halo {
+    width: 44px; height: 44px; border: 1px solid rgba(139,92,246,.3);
+    backdrop-filter: blur(1px); -webkit-backdrop-filter: blur(1px);
+    transition: width .25s var(--ease), height .25s var(--ease), border-color .25s;
+  }
+  .cursor-halo.hovering { width: 70px; height: 70px; border-color: rgba(167,139,250,.6); }
+  @media (hover:none), (pointer:coarse) { .cursor-dot, .cursor-halo { display: none; } }
+  html.cursor-none, html.cursor-none * { cursor: none !important; }
+
+  /* ── Nature background ───────────────────────────── */
+  .bg-aurora {
+    position: fixed; inset: 0; z-index: -2; overflow: hidden;
+  }
+  .bg-aurora .blob {
+    position: absolute; border-radius: 50%; filter: blur(110px); opacity: .5;
+    mix-blend-mode: screen; will-change: transform;
+  }
+  .blob-1 { width: 560px; height: 560px; background: #6d28d9; top: -12%; left: -6%; animation: drift1 26s ease-in-out infinite; }
+  .blob-2 { width: 460px; height: 460px; background: #7c3aed; top: 28%; right: -8%; opacity:.35; animation: drift2 32s ease-in-out infinite; }
+  .blob-3 { width: 520px; height: 520px; background: #4c1d95; bottom: -14%; left: 38%; opacity:.3; animation: drift3 38s ease-in-out infinite; }
+  @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,40px) scale(1.12)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-50px,60px) scale(1.08)} }
+  @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(80px,-50px) scale(1.15)} }
+
+  .bg-grid {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 20%, transparent 70%);
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 20%, transparent 70%);
+  }
+  #stars { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+
+  /* ── Navbar ──────────────────────────────────────── */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 900; transition: all .45s var(--ease); }
+  .nav.scrolled {
+    background: rgba(4,4,4,.78);
+    backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 10px 40px rgba(0,0,0,.45);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 78px; }
+  .logo { display: flex; align-items: center; gap: 11px; font-family: var(--font-display); font-weight: 800; font-size: 1.28rem; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center;
+    background: conic-gradient(from 180deg, #8b5cf6, #7c3aed, #a78bfa, #8b5cf6);
+    box-shadow: 0 0 22px rgba(139,92,246,.45); position: relative; overflow: hidden;
+    animation: hueSpin 8s linear infinite;
+  }
+  .logo-mark svg { width: 18px; height: 18px; color: #fff; position: relative; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+  @keyframes hueSpin { to { filter: hue-rotate(360deg); } }
+
+  .nav-links { display: flex; align-items: center; gap: 34px; }
+  .nav-links a:not(.btn) {
+    font-size: .88rem; font-weight: 500; color: var(--text-2); position: relative; transition: color .25s;
+  }
+  .nav-links a:not(.btn)::after {
+    content: ""; position: absolute; left: 0; bottom: -5px; height: 2px; width: 100%;
+    background: var(--grad); border-radius: 2px; transform: scaleX(0); transform-origin: right;
+    transition: transform .4s var(--ease);
+  }
+  .nav-links a:not(.btn):hover, .nav-links a.active { color: #fff; }
+  .nav-links a:not(.btn):hover::after, .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
+
+  .btn {
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    border-radius: 13px; font-weight: 600; white-space: nowrap; border: none; overflow: hidden;
+    transition: transform .35s var(--ease), box-shadow .35s var(--ease), background .35s;
+    will-change: transform;
+  }
+  .btn-primary {
+    background: linear-gradient(120deg, var(--brand-600) 0%, var(--brand-500) 70%, var(--brand-400));
+    background-size: 200% 100%; color: #fff;
+    padding: 12px 22px; font-size: .92rem;
+    box-shadow: 0 6px 24px rgba(139,92,246,.4), inset 0 1px 0 rgba(255,255,255,.18);
+  }
+  .btn-primary:hover { background-position: 100% 0; box-shadow: 0 10px 40px rgba(139,92,246,.55); }
+  .btn-primary::before {
+    content:""; position:absolute; inset:0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+    background-size: 250% 100%; animation: sheetSweep 3.5s var(--ease) infinite;
+  }
+  @keyframes sheetSweep { 0%{background-position:200% 0} 60%,100%{background-position:-200% 0} }
+  .btn-ghost {
+    background: rgba(255,255,255,.02); color: var(--text); padding: 12px 22px; font-size: .92rem;
+    border: 1px solid var(--line-2);
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,.28); background: rgba(255,255,255,.05); }
+  .btn-lg { padding: 17px 30px; font-size: 1.05rem; border-radius: 15px; gap: 11px; }
+  .btn svg { width: 19px; height: 19px; }
+
+  .burger { display:none; background:none; border:none; color:var(--text); padding:8px; }
+  .burger svg { width: 26px; height: 26px; }
+  .mobile-menu {
+    position: fixed; inset: 0; z-index: 850; background: rgba(4,4,4,.92);
+    backdrop-filter: blur(26px); -webkit-backdrop-filter: blur(26px);
+    display: none; flex-direction: column; padding: 110px 28px 40px; gap: 6px;
+    animation: fadeIn .3s var(--ease);
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a { padding: 15px 12px; border-radius: 13px; font-size: 1.12rem; font-weight: 600; color: var(--text-2); border-bottom: 1px solid var(--line); transition: all .25s; }
+  .mobile-menu a:hover { color:#fff; background: rgba(255,255,255,.04); padding-left: 18px; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  /* ── Hero ────────────────────────────────────────── */
+  .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 150px 0 60px; text-align: center; overflow: clip; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px; margin: 0 auto 30px;
+    padding: 8px 18px 8px 12px; border-radius: 100px;
+    background: rgba(139,92,246,.08); border: 1px solid rgba(139,92,246,.28);
+    font-size: .8rem; font-weight: 500; color: var(--brand-300); position: relative;
+  }
+  .hero-badge::after {
+    content:""; position:absolute; inset:-1px; border-radius:100px; padding:1px;
+    background: var(--grad); -webkit-mask: linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; opacity:.5;
+  }
+  .hero-badge .live { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 12px var(--emerald); animation: pulseDot 1.8s infinite; }
+  @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:.5} }
+
+  /* title word-by-word reveal */
+  .hero h1 {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.035em;
+    font-size: clamp(2.7rem, 8vw, 5.6rem); line-height: 1.03; margin-bottom: 26px;
+  }
+  .hero h1 .word { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
+  .hero h1 .word > span { display: inline-block; transform: translateY(110%); will-change: transform; }
+  .hero h1.in .word > span { animation: wordUp 1s var(--ease) forwards; }
+  @keyframes wordUp { to { transform: translateY(0); } }
+  .grad-text {
+    background: var(--grad-2); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent; background-size: 220% auto;
+    animation: gradFlow 5s ease infinite;
+  }
+  @keyframes gradFlow { 0%,100%{background-position:0 50%} 50%{background-position:100% 50%} }
+
+  .hero-sub { font-size: clamp(1rem, 2.4vw, 1.28rem); color: var(--text-2); max-width: 620px; margin: 0 auto 42px; }
+  .hero-sub strong { color:#fff; font-weight:600; }
+  .hero-actions { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .hero-note { margin-top:18px; font-size:.78rem; color:var(--text-3); display:flex; gap:18px; justify-content:center; flex-wrap:wrap; }
+  .hero-note span { display:inline-flex; align-items:center; gap:6px; }
+  .hero-note svg { width:13px; height:13px; color: var(--emerald); }
+
+  /* floating parallax layers */
+  .fx { position: absolute; z-index: -1; border-radius: 24px; pointer-events: none; will-change: transform; }
+  .fx-1 { width: 120px; height: 120px; top: 18%; left: 4%; border: 1px solid rgba(167,139,250,.22); border-radius: 26px; transform: rotate(14deg); background: radial-gradient(circle at 30% 30%, rgba(139,92,246,.18), transparent 60%); }
+  .fx-2 { width: 80px; height: 80px; top: 30%; right: 7%; border: 1px dashed rgba(139,92,246,.28); border-radius: 50%; box-shadow: 0 0 40px rgba(139,92,246,.08) inset; }
+  .fx-3 { width: 100px; height: 100px; bottom: 12%; left: 12%; border: 1px solid rgba(167,139,250,.2); border-radius: 18px; transform: rotate(-12deg); }
+  .fx-oid { position: absolute; z-index: -1; width: 520px; height: 520px; border: 1px solid rgba(139,92,246,.14); border-radius: 50%; left: 50%; top: 50%; translate: -50% -50%; pointer-events: none; animation: ringSpin 40s linear infinite; }
+  .fx-oid::before { content:""; position:absolute; width:9px; height:9px; border-radius:50%; background: var(--brand-400); top: -5px; left: 50%; box-shadow: 0 0 16px var(--brand-400); }
+  @keyframes ringSpin { to { transform: rotate(360deg); } }
+
+  /* ── Anchor (hero product visual) ────────────────── */
+  .anchor-wrap { position: relative; max-width: 920px; margin: 70px auto 0; perspective: 1800px; }
+  .glow-card {
+    position: absolute; inset: -2%; border-radius: 40px; filter: blur(60px); opacity: .5;
+    background: conic-gradient(from 90deg, rgba(139,92,246,.5), rgba(167,139,250,.35), rgba(124,58,237,.4), rgba(139,92,246,.5));
+    animation: glowSpin 12s linear infinite;
+  }
+  @keyframes glowSpin { to { filter: blur(60px) hue-rotate(360deg); } }
+  .mock {
+    position: relative; text-align: left;
+    background: linear-gradient(160deg, rgba(20,17,28,.85), rgba(8,8,10,.85));
+    backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--line-2); border-radius: 26px;
+    padding: clamp(22px,4vw,40px);
+    box-shadow: 0 50px 100px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.02);
+    transform-style: preserve-3d; transition: transform .15s ease-out;
+  }
+  .mock::after {
+    content:""; position:absolute; inset:0; border-radius:26px;
+    background: radial-gradient(600px 300px at var(--mx,50%) var(--my,0%), rgba(139,92,246,.12), transparent 60%);
+    pointer-events:none;
+  }
+  .mock-top { display:flex; align-items:center; gap:10px; margin-bottom:26px; }
+  .mock-top .dot { width:9px; height:9px; border-radius:50%; }
+  .mock-top .file { font-size:.78rem; color:var(--text-3); font-family: ui-monospace, monospace; letter-spacing:.02em; }
+  .mock-top .status { margin-left:auto; font-size:.72rem; color:var(--emerald); display:flex; align-items:center; gap:6px; }
+  .mock-top .status .spinner { width:11px; height:11px; border-radius:50%; border:2px solid rgba(52,211,153,.25); border-top-color: var(--emerald); animation: spin .8s linear infinite; }
+  @keyframes spin { to{ transform: rotate(360deg);} }
+
+  .mock-grid { display:grid; grid-template-columns:1fr; gap:26px; }
+  @media(min-width:760px){ .mock-grid{ grid-template-columns:1.25fr 1fr; } }
+
+  .score-block { display:flex; align-items:center; gap:22px; flex-wrap:wrap; margin-bottom:26px; }
+  .ring { position:relative; width:110px; height:110px; flex-shrink:0; }
+  .ring svg { transform: rotate(-90deg); }
+  .ring .num { position:absolute; inset:0; display:grid; place-items:center; font-family:var(--font-display); font-weight:800; font-size:1.7rem; }
+  .ring-txt h3 { font-size:1.02rem; font-weight:700; margin-bottom:3px; }
+  .ring-txt p { font-size:.8rem; color:var(--text-3); }
+  .ring-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:9px; }
+  .tag { padding:5px 12px; border-radius:100px; font-size:.7rem; font-weight:500; color:var(--brand-300); background:rgba(139,92,246,.1); border:1px solid rgba(139,92,246,.25); }
+  .tag.warn { color:#fbbf24; background:rgba(251,191,36,.08); border-color:rgba(251,191,36,.25); }
+
+  .bars { display:grid; gap:13px; }
+  .bar-row { display:grid; grid-template-columns:64px 1fr 42px; align-items:center; gap:12px; font-size:.76rem; color:var(--text-2); }
+  .bar-track { height:9px; border-radius:9px; background:rgba(255,255,255,.06); overflow:hidden; position:relative; }
+  .bar-fill { height:100%; width:0; border-radius:9px; background:linear-gradient(90deg,var(--brand-600),var(--brand-400)); position:relative; }
+  .bar-fill::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent); animation:shineX 2.6s var(--ease) infinite; }
+  @keyframes shineX { 0%{transform:translateX(-100%)} 60%,100%{transform:translateX(100%)} }
+  .bar-row:nth-child(2) .bar-fill{ background:linear-gradient(90deg,#0d9488,var(--emerald)); }
+  .bar-row:nth-child(3) .bar-fill{ background:linear-gradient(90deg,#c2410c,#fb923c); }
+  .bar-num { font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; }
+
+  .sugg-head { font-size:.78rem; color:var(--text-3); text-transform:uppercase; letter-spacing:.14em; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .sugg-head .spark { color:var(--brand-400); }
+  .sugg { display:grid; gap:9px; }
+  .sugg-item {
+    padding:11px 14px; border-radius:13px; font-size:.8rem; color:var(--text-2);
+    background:rgba(255,255,255,.025); border:1px solid var(--line);
+    display:flex; gap:10px; align-items:flex-start; transition:all .3s var(--ease);
+  }
+  .sugg-item:hover { border-color:rgba(139,92,246,.4); background:rgba(139,92,246,.06); transform:translateX(4px); }
+  .sugg-item b { color:var(--text); font-weight:600; }
+  .sugg-item .idx { color:var(--brand-400); font-family:var(--font-display); font-weight:700; font-size:.78rem; margin-top:1px; }
+
+  .chip { position:absolute; display:flex; align-items:center; gap:9px; background:rgba(14,12,20,.88); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border:1px solid var(--line-2); border-radius:15px; padding:12px 16px; font-size:.8rem; font-weight:500; box-shadow:0 18px 44px rgba(0,0,0,.55); animation:floatY 6s var(--ease) infinite; z-index:3; }
+  .chip svg { width:16px; height:16px; }
+  .chip.green svg{ color:var(--emerald);} .chip.violet svg{ color:var(--brand-400);} .chip.pink svg{ color:var(--brand-400);}
+  .chip-c1{ top:-20px; right:6%; }
+  .chip-c2{ bottom:-24px; left:5%; animation-delay:1.2s; }
+  .chip-c3{ bottom:14%; right:-14px; animation-delay:2.1s; display:none; }
+  @media(min-width:560px){ .chip-c3{ display:flex; } }
+  @keyframes floatY { 0%,100%{ translate:0 0} 50%{ translate:0 -14px} }
+
+  /* ticker row 2 */
+  .hero-ticker { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:center; gap:22px; font-size:.72rem; color:var(--text-3); padding:18px 0 8px; letter-spacing:.04em; }
+
+  /* ── Section common ──────────────────────────────── */
+  .section { padding: 96px 0; position: relative; }
+  .eyebrow {
+    display:inline-block; font-size:.74rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--brand-400); background:rgba(139,92,246,.08); border:1px solid rgba(139,92,246,.2);
+    padding:7px 15px; border-radius:100px; margin-bottom:20px;
+  }
+  .section-head { text-align:center; max-width:680px; margin:0 auto 58px; }
+  .section-head h2 { font-family:var(--font-display); font-size:clamp(1.9rem,4.6vw,3rem); font-weight:800; letter-spacing:-0.02em; line-height:1.13; margin-bottom:16px; }
+  .section-head p { color:var(--text-2); font-size:1.05rem; }
+  .underline-draw {
+    background:linear-gradient(90deg, var(--brand-500), var(--brand-400));
+    height:3px; border-radius:3px; width:64px; margin:20px auto 0;
+    transform: scaleX(0); transform-origin:left; transition: transform 1.2s var(--ease) .3s;
+  }
+  .section-head.in .underline-draw { transform: scaleX(1); }
+
+  /* ── Steps ───────────────────────────────────────── */
+  .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px; position:relative; }
+  .step {
+    position:relative; padding:30px 24px; border-radius:22px;
+    background:linear-gradient(160deg,rgba(14,12,18,.6),rgba(8,8,10,.6)); border:1px solid var(--line);
+    transition:transform .45s var(--ease), border-color .4s, background .45s;
+    overflow:hidden;
+  }
+  .step::before {
+    content:""; position:absolute; inset:0; border-radius:22px; padding:1px;
+    background:linear-gradient(150deg,rgba(139,92,246,.6),transparent 45%,transparent 60%,rgba(167,139,250,.4));
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; opacity:0; transition:opacity .45s;
+  }
+  .step:hover { transform:translateY(-8px); border-color:transparent; }
+  .step:hover::before { opacity:1; }
+  .step-num {
+    width:46px; height:46px; border-radius:15px; display:grid; place-items:center; margin-bottom:20px;
+    font-family:var(--font-display); font-weight:800; font-size:.95rem; color:#fff;
+    background:linear-gradient(135deg,var(--brand-600),var(--brand-500));
+    box-shadow:0 8px 22px rgba(139,92,246,.4); position:relative;
+  }
+  .step-num::after { content:""; position:absolute; width:30%; aspect-ratio:1; border-radius:50%; background:rgba(167,139,250,.55); top:8%; right:6%; filter:blur(2px); animation:pulseDot 2.4s infinite; }
+  .step h3 { font-size:1.08rem; font-weight:700; margin-bottom:7px; }
+  .step p { font-size:.87rem; color:var(--text-2); }
+  .step-arrow { position:absolute; right:-16px; top:50%; z-index:5; color:rgba(167,139,250,.4); width:18px; height:18px; display:none; }
+  @media(min-width:1024px){ .step-arrow{ display:block; } }
+
+  /* ── Bento features ──────────────────────────────── */
+  .bento { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .bento-card {
+    position:relative; padding:28px; border-radius:22px; overflow:hidden;
+    background:linear-gradient(160deg,rgba(14,12,18,.62),rgba(8,8,10,.62)); border:1px solid var(--line);
+    transition:transform .45s var(--ease), border-color .4s, box-shadow .4s;
+    min-height:200px;
+  }
+  .bento-card.big { grid-column:span 2; grid-row:span 1; }
+  .bento-card.wide { grid-column:span 2; }
+  .bento-card:hover { transform:translateY(-6px); border-color:rgba(139,92,246,.35); box-shadow:0 24px 60px rgba(0,0,0,.5), 0 0 60px rgba(139,92,246,.08); }
+  .bento-card .bg-ring {
+    position:absolute; width:240px; height:240px; border-radius:50%; right:-70px; top:-70px;
+    border:1px solid rgba(139,92,246,.12); transition:transform .8s var(--ease);
+  }
+  .bento-card:hover .bg-ring { transform:scale(1.25); }
+  .bento-icon { width:46px; height:46px; border-radius:14px; display:grid; place-items:center; color:var(--brand-300); margin-bottom:18px;
+    background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(124,58,237,.07)); border:1px solid rgba(139,92,246,.24);
+    transition:all .45s var(--ease); }
+  .bento-card:hover .bento-icon { transform:scale(1.12) rotate(-8deg); box-shadow:0 0 26px rgba(139,92,246,.4); }
+  .bento-icon svg { width:21px; height:21px; }
+  .bento-card h3 { font-size:1.04rem; font-weight:700; margin-bottom:6px; }
+  .bento-card p { font-size:.86rem; color:var(--text-2); max-width:42ch; }
+  .bento-card .spark-mini { position:absolute; right:20px; bottom:20px; color:var(--brand-500); opacity:0; transition:opacity .4s, transform .4s; }
+  .bento-card:hover .spark-mini { opacity:.7; transform:translate(-4px,-4px); }
+  .score-vis { display:flex; align-items:flex-end; gap:6px; margin-top:18px; height:64px; }
+  .score-vis i { flex:1; border-radius:5px; background:linear-gradient(180deg,var(--brand-500),var(--brand-700)); opacity:.55; transform-origin:bottom; transition:all .5s var(--ease); }
+  .bento-card:hover .score-vis i { opacity:1; }
+  .kws { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .kw { padding:6px 12px; border-radius:100px; font-size:.72rem; font-weight:500; color:var(--brand-300); background:rgba(139,92,246,.1); border:1px solid rgba(139,92,246,.22); transition:all .3s; }
+  .kw.warn { color:#fbbf24; background:rgba(251,191,36,.07); border-color:rgba(251,191,36,.2); }
+  .kw:hover { transform:translateY(-2px); }
+  @media(max-width:880px){ .bento{ grid-template-columns:1fr 1fr; } .bento-card.big,.bento-card.wide{ grid-column:span 1; } }
+  @media(max-width:520px){ .bento{ grid-template-columns:1fr; } }
+
+  /* ── Compare slider ──────────────────────────────── */
+  .compare-wrap { position:relative; border-radius:26px; overflow:hidden; border:1px solid var(--line-2); user-select:none; touch-action:none; }
+  .compare-pane { position:absolute; inset:0; padding:clamp(20px,4vw,40px); pointer-events:none; }
+  .compare-pane.before { background:linear-gradient(160deg,rgba(16,10,10,.96),rgba(10,8,8,.96)); }
+  .compare-pane.after { background:linear-gradient(160deg,rgba(10,14,16,.97),rgba(6,10,12,.97)); }
+  .compare-pane .clip { overflow:hidden; height:100%; display:flex; flex-direction:column; gap:14px; }
+  .compare-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.16em; display:flex; align-items:center; gap:8px; font-weight:600; }
+  .before .compare-label{ color:#f87171; } .after .compare-label{ color:var(--emerald); }
+  .compare-handle { position:absolute; top:0; bottom:0; width:2.5px; background:var(--grad); z-index:5; cursor:ew-resize; }
+  .compare-handle::after { content:"⇄"; position:absolute; top:50%; left:50%; translate:-50% -50%; width:42px; height:42px; border-radius:50%; display:grid; place-items:center; background:rgba(10,10,10,.9); border:1px solid var(--line-2); font-size:15px; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.5); }
+  .compare-title { font-family:var(--font-display); font-weight:700; font-size:clamp(1rem,2.5vw,1.3rem); }
+  .page-lines { display:grid; gap:8px; }
+  .page-lines .l { height:8px; border-radius:6px; background:rgba(255,255,255,.08); }
+  .page-lines .l.w45{width:45%} .l.w80{width:80%}
+  .page-lines .l.hl { background:linear-gradient(90deg,rgba(52,211,153,.5),transparent); }
+  .page-lines .l.bad { background:linear-gradient(90deg,rgba(248,113,113,.4),transparent); }
+  .round { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-display); font-weight:800; font-size:1.5rem; }
+  .before .round{ color:#f87171; } .after .round{ color:var(--emerald); }
+  .compare-ctrls { position:absolute; bottom:14px; right:16px; z-index:6; display:flex; gap:8px; }
+
+  /* why */
+  .why { max-width:780px; margin:0 auto; text-align:center; }
+  .why p { color:var(--text-2); font-size:1.08rem; margin-bottom:18px; }
+  .why strong { color:#fff; }
+  .why-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-top:44px; text-align:left; }
+  .why-mini { padding:22px; border-radius:18px; display:flex; gap:13px; align-items:flex-start;
+    background:linear-gradient(160deg,rgba(14,12,18,.6),rgba(8,8,10,.6)); border:1px solid var(--line); transition:all .35s var(--ease); }
+  .why-mini:hover { border-color:rgba(139,92,246,.35); transform:translateY(-4px); }
+  .why-mini svg { width:18px; height:18px; color:var(--brand-400); margin-top:3px; flex-shrink:0; }
+  .why-mini h4 { font-size:.95rem; font-weight:700; margin-bottom:4px; }
+  .why-mini p { font-size:.84rem; margin:0; }
+
+  /* testimonials */
+  .tst-slot { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .tst { padding:28px; border-radius:22px; display:flex; flex-direction:column; gap:16px; position:relative; overflow:hidden;
+    background:linear-gradient(160deg,rgba(14,12,18,.6),rgba(8,8,10,.6)); border:1px solid var(--line); transition:all .4s var(--ease); }
+  .tst::before { content:"“"; position:absolute; top:8px; right:22px; font-family:var(--font-display); font-size:6rem; line-height:1; color:rgba(139,92,246,.08); }
+  .tst:hover { transform:translateY(-6px); border-color:rgba(139,92,246,.35); }
+  .tst .stars { color:var(--amber); font-size:.88rem; letter-spacing:3px; }
+  .tst p { font-size:.94rem; color:var(--text-2); line-height:1.7; flex:1; }
+  .tst .who { display:flex; align-items:center; gap:12px; }
+  .tst .av { width:42px; height:42px; border-radius:50%; display:grid; place-items:center; font-weight:700; font-size:.85rem; color:#fff;
+    background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); box-shadow:0 6px 18px rgba(139,92,246,.35); }
+  .tst .who b { display:block; font-size:.9rem; }
+  .tst .who span { font-size:.77rem; color:var(--text-3); }
+  .tst .role { font-size:.75rem; color:var(--brand-400); }
+
+  /* FAQ */
+  .faq-wrap { max-width:760px; margin:0 auto; }
+  .faq-item { border-radius:18px; margin-bottom:12px; overflow:hidden;
+    background:rgba(12,10,16,.5); border:1px solid var(--line); transition:border-color .35s; }
+  .faq-item.open { border-color:rgba(139,92,246,.4); }
+  .faq-q { width:100%; background:none; border:none; color:var(--text); display:flex; justify-content:space-between; align-items:center; gap:16px; text-align:left; font-family:inherit; font-weight:600; font-size:1rem; padding:20px 22px; }
+  .faq-q .chev { width:18px; height:18px; flex-shrink:0; color:var(--brand-400); transition:transform .4s var(--ease); }
+  .faq-item.open .chev { transform:rotate(180deg); }
+  .faq-a { max-height:0; overflow:hidden; transition:max-height .45s var(--ease); }
+  .faq-a p { padding:0 22px 20px; color:var(--text-2); font-size:.9rem; }
+
+  /* CTA */
+  .cta-box { position:relative; text-align:center; padding:80px 26px; border-radius:34px; overflow:hidden; border:1px solid rgba(139,92,246,.3); }
+  .cta-box .cta-bg { position:absolute; inset:0; background:
+      radial-gradient(90% 130% at 30% 0%,rgba(139,92,246,.28),transparent 55%),
+      radial-gradient(70% 120% at 80% 100%,rgba(124,58,237,.18),transparent 55%),
+      linear-gradient(160deg,rgba(18,15,25,.8),rgba(8,8,10,.85)); }
+  .cta-box .cta-orb { position:absolute; width:340px; height:340px; border-radius:50%; background:rgba(139,92,246,.3); filter:blur(80px); top:-120px; left:50%; translate:-50% 0; animation:pulseDot 5s ease-in-out infinite; }
+  .cta-box h2 { position:relative; font-family:var(--font-display); font-size:clamp(1.9rem,5vw,3.1rem); font-weight:800; letter-spacing:-0.02em; margin-bottom:18px; }
+  .cta-box p { position:relative; color:var(--text-2); font-size:1.05rem; max-width:520px; margin:0 auto 36px; }
+  .cta-box .cta-actions { position:relative; display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .cta-note { position:relative; margin-top:22px; font-size:.78rem; color:var(--text-3); }
+
+  /* footer */
+  footer { border-top:1px solid var(--line); padding:64px 0 30px; position:relative; }
+  .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1.4fr; gap:40px; margin-bottom:44px; }
+  .footer-grid h4 { font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text-2); margin-bottom:16px; }
+  .footer-grid a, .footer-grid p { display:block; font-size:.88rem; color:var(--text-3); margin-bottom:10px; transition:color .2s; }
+  .footer-grid a:hover { color:var(--brand-400); }
+  .footer-bottom { border-top:1px solid var(--line); padding-top:24px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; font-size:.82rem; color:var(--text-3); }
+
+  /* reveal system */
+  [data-reveal] { opacity:0; transform:translateY(40px); transition:opacity .9s var(--ease), transform .9s var(--ease); will-change:transform; }
+  [data-reveal].in { opacity:1; transform:none; }
+  [data-reveal][data-shift="left"]{transform:translateX(-46px)} [data-reveal][data-shift="right"]{transform:translateX(46px)}
+  [data-reveal][data-shift="left"].in,[data-reveal][data-shift="right"].in{transform:none}
+  [data-reveal][data-d="1"]{transition-delay:.08s}[data-reveal][data-d="2"]{transition-delay:.16s}[data-reveal][data-d="3"]{transition-delay:.24s}[data-reveal][data-d="4"]{transition-delay:.32s}[data-reveal][data-d="5"]{transition-delay:.4s}
+
+  @media(max-width:900px){ .footer-grid{ grid-template-columns:1fr 1fr; } }
+  @media(max-width:720px){
+    .nav-links{display:none} .burger{display:block}
+    .footer-grid{grid-template-columns:1fr}
+    .hero{ padding-top:120px; }
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+<div class="progress" id="progress"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-halo" id="cursorHalo"></div>
+
+<div class="bg-aurora">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+<div class="bg-grid"></div>
+<canvas id="stars"></canvas>
+
+<!-- Nav -->
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="#top" class="logo">
+      <span class="logo-mark"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
+      Hirely
+    </a>
+    <div class="nav-links">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#features">Features</a>
+      <a href="#story">Reviews</a>
+      <a href="#faq">FAQ</a>
+      <a href="#cta" class="btn btn-primary"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Get Started</a>
+    </div>
+    <button class="burger" id="burger" aria-label="Toggle menu"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#how-it-works">How It Works</a>
+  <a href="#features">Features</a>
+  <a href="#story">Reviews</a>
+  <a href="#faq">FAQ</a>
+  <a href="#cta" class="btn btn-primary" style="text-align:center;margin-top:14px">Get Started</a>
+</div>
+
+<main id="top">
+  <!-- ── HERO ─────────────────────────────── -->
+  <section class="hero">
+    <div class="fx fx-1" data-para="0.18"></div>
+    <div class="fx fx-2" data-para="0.3"></div>
+    <div class="fx fx-3" data-para="0.12"></div>
+    <div class="fx-oid"></div>
+
+    <div class="container">
+      <span class="hero-badge"><span class="live"></span> AI-Powered Resume Optimization — Now Live</span>
+      <h1 id="heroTitle"></h1>
+      <p class="hero-sub" style="opacity:0" id="heroSub">Upload your resume, discover what's holding it back, and optimize it for the job you actually want — <strong>in seconds</strong>.</p>
+      <div class="hero-actions" style="opacity:0" id="heroActions">
+        <a href="#cta" class="btn btn-primary btn-lg"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Analyze My Resume — Free</a>
+        <a href="#how-it-works" class="btn btn-ghost btn-lg">See How It Works</a>
+      </div>
+      <div class="hero-note" style="opacity:0" id="heroNote">
+        <span><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg> No credit card required</span>
+        <span><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Results in under 30 seconds</span>
+        <span><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Private &amp; secure</span>
+      </div>
+
+      <!-- product visual -->
+      <div class="anchor-wrap" id="mockWrap">
+        <div class="glow-card"></div>
+        <div class="mock" id="mock">
+          <div class="mock-top">
+            <span class="dot" style="background:var(--emerald)"></span>
+            <span class="file">resume-analysis.pdf — <span id="mockStatus">analyzing live…</span></span>
+            <span class="status"><span class="spinner"></span> AI processing</span>
+          </div>
+          <div class="mock-grid">
+            <div>
+              <div class="score-block">
+                <div class="ring">
+                  <svg width="110" height="110" viewBox="0 0 110 110">
+                    <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9"/>
+                    <circle id="ringC" cx="55" cy="55" r="46" fill="none" stroke="url(#g1)" stroke-width="9" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"/>
+                    <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="50%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs>
+                  </svg>
+                  <span class="num" id="ringNum">0</span>
+                </div>
+                <div class="ring-txt">
+                  <h3>Resume Score</h3>
+                  <p>Strong foundation detected</p>
+                  <div class="ring-tags"><span class="tag">ATS Friendly</span><span class="tag warn">Missing Keywords</span></div>
+                </div>
+              </div>
+              <div class="bars">
+                <div class="bar-row"><span>ATS</span><div class="bar-track"><div class="bar-fill" data-w="92"></div></div><span class="bar-num">92</span></div>
+                <div class="bar-row"><span>Match</span><div class="bar-track"><div class="bar-fill" data-w="87"></div></div><span class="bar-num">87%</span></div>
+                <div class="bar-row"><span>Impact</span><div class="bar-track"><div class="bar-fill" data-w="64"></div></div><span class="bar-num">64%</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="sugg-head"><span class="spark">✦</span> Top AI suggestions</div>
+              <div class="sugg">
+                <div class="sugg-item"><span class="idx">01</span><span>Quantify <b>4 action verbs</b> with real numbers for stronger impact.</span></div>
+                <div class="sugg-item"><span class="idx">02</span><span>Add <b>Docker</b> &amp; <b>CI/CD</b> — 6 job posts require them.</span></div>
+                <div class="sugg-item"><span class="idx">03</span><span>Rewrite the team-lead bullet to beat the <b>ATS threshold</b>.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chip green chip-c1"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>12 Suggestions Applied</div>
+        <div class="chip violet chip-c2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>AI Analysis Live</div>
+        <div class="chip pink chip-c3"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Interview-Ready</div>
+      </div>
+    </div>
+    <div class="hero-ticker"><span>PDF · PNG · JPG supported</span><span>100% private</span><span>ATS-aware</span></div>
+  </section>
+
+  <!-- ── HOW IT WORKS ──────────────────────── -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">How it works</span>
+        <h2>Four steps to a <span class="grad-text">stronger resume</span></h2>
+        <p>No guesswork. Just a clear path from “okay” to “hire-ready”.</p>
+        <div class="underline-draw"></div>
+      </div>
+      <div class="steps">
+        <div class="step" data-reveal data-d="1">
+          <svg class="step-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+          <div class="step-num">1</div>
+          <h3>Upload Resume</h3>
+          <p>Drop your PDF or image — we handle the rest.</p>
+        </div>
+        <div class="step" data-reveal data-d="2">
+          <svg class="step-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+          <div class="step-num">2</div>
+          <h3>AI Reviews It</h3>
+          <p>Detailed breakdown of strengths, weaknesses, and ATS readiness.</p>
+        </div>
+        <div class="step" data-reveal data-d="3">
+          <svg class="step-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+          <div class="step-num">3</div>
+          <h3>Add Target Job</h3>
+          <p>Paste a job description to see exactly where you match — and where you don't.</p>
+        </div>
+        <div class="step" data-reveal data-d="4">
+          <div class="step-num">4</div>
+          <h3>Optimize &amp; Apply</h3>
+          <p>Accept targeted improvements and download your optimized resume.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES (bento) ──────────────────── -->
+  <section class="section" id="features" style="padding-top:40px">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Features</span>
+        <h2>Everything you need to <span class="grad-text">get hired</span></h2>
+        <p>Comprehensive analysis, actionable insights — nothing generic.</p>
+        <div class="underline-draw"></div>
+      </div>
+      <div class="bento">
+        <div class="bento-card big" data-reveal data-d="1">
+          <span class="bg-ring"></span>
+          <div class="bento-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <h3>AI Resume Review</h3>
+          <p>Deep analysis of content, structure, clarity, and impact — across every section of your resume.</p>
+          <div class="score-vis"><i style="height:30%"></i><i style="height:52%"></i><i style="height:45%"></i><i style="height:74%"></i><i style="height:64%"></i><i style="height:88%"></i><i style="height:80%"></i><i style="height:95%"></i></div>
+          <svg class="spark-mini" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        </div>
+        <div class="bento-card" data-reveal data-d="2">
+          <span class="bg-ring"></span>
+          <div class="bento-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 0V14a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/></svg></div>
+          <h3>Job Matching</h3>
+          <p>Compare your resume against any job description you paste.</p>
+        </div>
+        <div class="bento-card" data-reveal data-d="3">
+          <span class="bg-ring"></span>
+          <div class="bento-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg></div>
+          <h3>Keyword Analysis</h3>
+          <p>Find missing keywords that matter to recruiters and ATS systems.</p>
+          <div class="kws"><span class="kw">React ✓</span><span class="kw">TypeScript ✓</span><span class="kw warn">Docker</span><span class="kw warn">CI/CD</span></div>
+          <svg class="spark-mini" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        </div>
+        <div class="bento-card" data-reveal data-d="1">
+          <span class="bg-ring"></span>
+          <div class="bento-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+          <h3>ATS Analysis</h3>
+          <p>Identify formatting issues that may reduce parsing reliability.</p>
+        </div>
+        <div class="bento-card" data-reveal data-d="2">
+          <span class="bg-ring"></span>
+          <div class="bento-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg></div>
+          <h3>Skill Gap Detection</h3>
+          <p>See which required skills you're missing or underrepresenting.</p>
+        </div>
+        <div class="bento-card wide" data-reveal data-d="3">
+          <span class="bg-ring"></span>
+          <div class="bento-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253m-4.5-4.506l2-1m-2 1l4.5 3.5m4.5-7l2.25 1.5m-2.25-1.5l-4.5 3.5z"/></svg></div>
+          <h3>Bullet Improvements</h3>
+          <p>Strengthen every bullet point with actionable, line-by-line feedback — plus one-click AI rewrite suggestions you can review before accepting.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BEFORE / AFTER COMPARE ────────────── -->
+  <section class="section" id="story" style="padding:60px 0 110px">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Proof</span>
+        <h2>Drag to see the <span class="grad-text">difference</span></h2>
+        <p>Same resume. Same facts. One AI pass through Hirely.</p>
+        <div class="underline-draw"></div>
+      </div>
+
+      <div class="compare-wrap" id="compareWrap" style="aspect-ratio:16/9;max-height:560px">
+        <div class="compare-pane before">
+          <div class="clip">
+            <span class="compare-label">Before — ATS rejected</span>
+            <div class="round">42 <span style="font-size:.6em;color:var(--text-3);font-family:var(--font-body);font-weight:500">&nbsp;<br/>score</span></div>
+            <div class="compare-title">Software Engineer</div>
+            <div class="page-lines">
+              <div class="l bad w80"></div><div class="l bad w60" style="width:60%"></div><div class="l w45" style="width:45%"></div>
+              <div class="l bad w80"></div><div class="l w60" style="width:60%"></div>
+            </div>
+            <p style="font-size:.82rem;color:#f87171;opacity:.9">• 0 metrics on all bullets<br/>• 6 hard-keywords missing<br/>• Parse-breaking table layout</p>
+          </div>
+        </div>
+
+        <div class="compare-pane after" style="clip-path:inset(0 0 0 100%)">
+          <div class="clip">
+            <span class="compare-label">After — shortlisted</span>
+            <div class="round" id="afterRound">92 <span style="font-size:.6em;color:var(--text-3);font-family:var(--font-body);font-weight:500">&nbsp;<br/>score</span></div>
+            <div class="compare-title">Software Engineer</div>
+            <div class="page-lines">
+              <div class="l hl w80"></div><div class="l hl w60" style="width:60%"></div><div class="l hl w45" style="width:45%"></div>
+              <div class="l hl w80"></div><div class="l hl w60" style="width:60%"></div>
+            </div>
+            <p style="font-size:.82rem;color:var(--emerald);opacity:.95">• 6 bullets rewritten with metrics<br/>• 12/12 required keywords covered<br/>• Clean single-column ATS layout</p>
+          </div>
+        </div>
+
+        <div class="compare-handle"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WHY ───────────────────────────────── -->
+  <section class="section" style="padding-top:10px">
+    <div class="container" data-reveal>
+      <div class="why">
+        <span class="eyebrow">Why Hirely</span>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.9rem,4.6vw,3rem);font-weight:800;letter-spacing:-0.02em;line-height:1.13;margin-bottom:18px">Generic advice <span class="grad-text">isn't enough</span></h2>
+        <p>A resume for a software engineer at Google is different from one for a product manager at a startup. The same document won't work everywhere.</p>
+        <p>Hirely analyzes your resume <strong>and</strong> compares it against the specific role you're applying for — so you know exactly what to change, what to keep, and what's missing.</p>
+        <div class="why-cards">
+          <div class="why-mini" data-reveal data-d="1"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><div><h4>Never fabricated</h4><p>Every recommendation comes from AI analysis of your actual content.</p></div></div>
+          <div class="why-mini" data-reveal data-d="2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><div><h4>Job-specific</h4><p>Feedback is tuned to the exact job description you paste.</p></div></div>
+          <div class="why-mini" data-reveal data-d="3"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><div><h4>In seconds</h4><p>No waiting days for expert reviews — results are instant.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TESTIMONIALS ──────────────────────── -->
+  <section class="section" style="padding-top:40px">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Loved by job seekers</span>
+        <h2>They got <span class="grad-text">interviews</span></h2>
+        <p>Real people, real hire-ready resumes.</p>
+        <div class="underline-draw"></div>
+      </div>
+      <div class="tst-slot">
+        <div class="tst" data-reveal data-d="1"><div class="stars">★★★★★</div><p>Went from radio silence to 3 callbacks in two weeks. The job-match section is a cheat code.</p><div class="who"><div class="av">AR</div><div><b>Aryan Rathore</b><span>Software Engineer, Bangalore</span></div></div><span class="role">Hired · 2 weeks</span></div>
+        <div class="tst" data-reveal data-d="2"><div class="stars">★★★★★</div><p>I finally understood why my ATS score was low. The formatting suggestions fixed what no course could.</p><div class="who"><div class="av">PM</div><div><b>Priya Mehta</b><span>Product Manager, Mumbai</span></div></div><span class="role">3 interviews · 10 days</span></div>
+        <div class="tst" data-reveal data-d="3"><div class="stars">★★★★★</div><p>Pasted a job description, got a targeted resume. Landed an interview the following week. Unreal.</p><div class="who"><div class="av">DK</div><div><b>Dev Kulkarni</b><span>Data Analyst, Pune</span></div></div><span class="role">Offer · 1 month</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ───────────────────────────────── -->
+  <section class="section" id="faq" style="padding-top:40px">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">FAQ</span>
+        <h2>Questions, <span class="grad-text">answered</span></h2>
+        <div class="underline-draw"></div>
+      </div>
+      <div class="faq-wrap">
+        <div class="faq-item" data-reveal>
+          <button class="faq-q">Is my resume data safe?<svg class="chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
+          <div class="faq-a"><p>Yes. Files are processed securely, never sold, and only stored if you choose to save them. No data is shared with third parties.</p></div>
+        </div>
+        <div class="faq-item" data-reveal>
+          <button class="faq-q">Which file formats are supported?<svg class="chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
+          <div class="faq-a"><p>PDF, PNG and JPG. Just upload and the parser handles the rest.</p></div>
+        </div>
+        <div class="faq-item" data-reveal>
+          <button class="faq-q">Do I really need a target job description?<svg class="chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
+          <div class="faq-a"><p>Not for the basic review. Adding one unlocks the full job-match and keyword tools, which make the biggest difference.</p></div>
+        </div>
+        <div class="faq-item" data-reveal>
+          <button class="faq-q">Is Hirely free?<svg class="chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
+          <div class="faq-a"><p>Yes — analyze and improve your resume free. Results in under 30 seconds, no credit card needed.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ───────────────────────────────── -->
+  <section class="section" id="cta" style="padding-top:20px">
+    <div class="container">
+      <div class="cta-box" data-reveal>
+        <div class="cta-bg"></div>
+        <div class="cta-orb"></div>
+        <h2>Ready to improve your resume?</h2>
+        <p>Get detailed feedback and job-specific optimization in seconds. Free to start.</p>
+        <div class="cta-actions">
+          <a href="#" class="btn btn-primary btn-lg"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Analyze My Resume</a>
+        </div>
+        <p class="cta-note">No credit card required · Results in under 30 seconds · Private &amp; secure</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ── FOOTER ─────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="#top" class="logo" style="margin-bottom:14px">
+          <span class="logo-mark"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
+          Hirely
+        </a>
+        <p>Make Your Resume Hire-Ready.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <a href="#cta">Analyze Resume</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">Features</a>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <a href="#faq">FAQ</a>
+        <a href="#story">Proof</a>
+      </div>
+      <div>
+        <h4>Privacy</h4>
+        <p>Your resume data is processed securely. Files are not stored permanently unless you choose to save them. No data is shared with third parties.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>Made by <a href="mailto:nihir12121@gmail.com">Nihir Prajapati</a> · nihir12121@gmail.com</p>
+      <p>© 2026 Hirely. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+var doc = document.documentElement;
+
+/* hardcode cursor:none when fine pointer */
+if (window.matchMedia("(hover:hover) and (pointer:fine)").matches) doc.classList.add("cursor-none");
+
+/* progress + nav */
+var progress = document.getElementById("progress");
+function onScroll(){
+  var max = doc.scrollHeight - doc.clientHeight;
+  var y = window.scrollY || doc.scrollTop;
+  progress.style.transform = "scaleX(" + (max>0 ? y/max : 0) + ")";
+  document.getElementById("nav").classList.toggle("scrolled", y > 24);
+  // parallax fx
+  document.querySelectorAll(".fx").forEach(function(f){
+    var s = parseFloat(f.getAttribute("data-para")) || 0;
+    f.style.translate = "0 " + (y * s) + "px";
+  });
+}
+window.addEventListener("scroll", onScroll, {passive:true});
+onScroll();
+
+/* custom cursor */
+var dot = document.getElementById("cursorDot"), halo = document.getElementById("cursorHalo");
+var mx=innerWidth/2, my=innerHeight/2, hx=mx, hy=my, raf=null, seen=false;
+window.addEventListener("mousemove", function(e){
+  mx=e.clientX; my=e.clientY;
+  dot.style.left=mx+"px"; dot.style.top=my+"px";
+  if(!seen){ halo.style.left=mx+"px"; halo.style.top=my+"px"; hx=mx; hy=my; seen=true; }
+  if(!raf){ raf=requestAnimationFrame(loop); }
+});
+function loop(){
+  hx += (mx-hx)*0.18; hy += (my-hy)*0.18;
+  halo.style.left=hx+"px"; halo.style.top=hy+"px";
+  raf = null;
+}
+document.querySelectorAll("a,button,.faq-q,.compare-handle").forEach(function(el){
+  el.addEventListener("mouseenter", function(){ halo.classList.add("hovering"); });
+  el.addEventListener("mouseleave", function(){ halo.classList.remove("hovering"); });
+});
+
+/* mobile menu */
+var burger=document.getElementById("burger"), menu=document.getElementById("mobileMenu");
+burger.addEventListener("click", function(){
+  var open=menu.classList.toggle("open");
+  burger.innerHTML = open ? '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' : '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>';
+  document.body.style.overflow = open ? "hidden" : "";
+});
+menu.querySelectorAll("a").forEach(function(a){ a.addEventListener("click", function(){ menu.classList.remove("open"); document.body.style.overflow=""; burst(); }); });
+
+/* active nav link by scroll */
+var map = { "how-it-works":1, "features":1, "story":1, "faq":1 };
+var links = document.querySelectorAll(".nav-links a:not(.btn)");
+function sp(){
+  var cur="";
+  document.querySelectorAll("section[id],section").forEach(function(s){
+    if(!s.id && s.className.indexOf("section")<0) return;
+    if((s.getAttribute("id") && window.scrollY + 160 >= s.offsetTop)) cur = s.id;
+  });
+  links.forEach(function(a){ a.classList.toggle("active", a.getAttribute("href").indexOf("#"+cur)>=0 && map[cur]); });
+}
+window.addEventListener("scroll", sp, {passive:true}); sp();
+
+/* star canvas */
+var canvas=document.getElementById("stars"), ctx=canvas.getContext("2d"), stars=[];
+function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; init(); }
+function init(){
+  var n=Math.min(160, Math.floor(canvas.width*canvas.height/7500)); stars=[];
+  for(var i=0;i<n;i++) stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.4+.3,a:Math.random()*.5+.15,s:Math.random()*.3+.05,p:Math.random()*Math.PI*2});
+}
+function draw(t){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(var i=0;i<stars.length;i++){ var s=stars[i];
+    var tw=s.a*(.6+.4*Math.sin(t*.0016*s.s*40+s.p));
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,7); ctx.fillStyle="rgba(167,139,250,"+tw+")"; ctx.fill();
+  }
+  requestAnimationFrame(draw);
+}
+window.addEventListener("resize", resize); resize(); requestAnimationFrame(draw);
+
+/* reveal */
+var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }); },{threshold:.12,rootMargin:"0px 0px -50px 0px"});
+document.querySelectorAll("[data-reveal]").forEach(function(el){io.observe(el);});
+
+/* hero word-by-word title */
+var h=document.getElementById("heroTitle");
+var words=["Make","your","resume","Hire-Ready."].map(function(t){
+  var inPage = t==="Hire-Ready." ? '<span class="grad-text">'+t+'</span>' : t;
+  return '<span class="word"><span>'+inPage+'</span></span>';
+}).join(" ");
+h.innerHTML = words;
+h.classList.add("in");
+setTimeout(function(){ ["heroSub","heroActions","heroNote"].forEach(function(id){ var el=document.getElementById(id); el.style.opacity="1"; el.style.transition="opacity .9s var(--ease), transform .9s var(--ease)"; el.style.transform="translateY(0)"; }); }, 500);
+words.forEach(function(_,i){ h.querySelectorAll(".word > span")[i].style.animationDelay=(i*.09)+"s"; });
+
+/* mock ring + bars animate */
+var mockWrap=document.getElementById("mockWrap"), ran=false;
+var mio=new IntersectionObserver(function(es){ if(es[0].isIntersecting && !ran){ ran=true; ring(); bars(); } },{threshold:.25});
+mio.observe(mockWrap);
+function easy(p){return 1-Math.pow(1-p,3);}
+function ring(){
+  var C=289, t=84, c=document.getElementById("ringC"), n=document.getElementById("ringNum"), t0=performance.now();
+  (function step(now){ var p=Math.min((now-t0)/1500,1), e=easy(p);
+    c.setAttribute("stroke-dashoffset", C-C*(t/100)*e); n.textContent=Math.round(t*e);
+    if(p<1) requestAnimationFrame(step); })(t0);
+}
+function bars(){
+  document.querySelectorAll(".bar-fill[data-w]").forEach(function(b){ var w=+b.getAttribute("data-w"), t0=performance.now();
+    (function step(now){ var p=Math.min((now-t0)/1300,1), e=easy(p); b.style.width=(w*e)+"%"; if(p<1) requestAnimationFrame(step); })(t0);
+  });
+}
+
+/* mock mouse spotlight + tilt */
+var mock=document.getElementById("mock");
+if(window.matchMedia("(hover:hover)").matches){
+  mock.addEventListener("mousemove", function(e){
+    var r=mock.getBoundingClientRect();
+    var px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+    mock.style.setProperty("--mx", (px*100)+"%"); mock.style.setProperty("--my", (py*100)+"%");
+    mock.style.transform="rotateY("+((px-.5)*6)+"deg) rotateX("+((.5-py)*5)+"deg)";
+  });
+  mock.addEventListener("mouseleave", function(){ mock.style.transform=""; });
+}
+
+/* compare slider */
+var cwrap=document.getElementById("compareWrap"), handle=cwrap.querySelector(".compare-handle"), afterPane=cwrap.querySelector(".after");
+var dragging=false;
+function setPos(px){
+  var r=cwrap.getBoundingClientRect(), p=Math.max(0,Math.min(1,(px-r.left)/r.width));
+  afterPane.style.clipPath="inset(0 0 0 "+((p)*100)+"%)";
+  handle.style.left=(p*100)+"%";
+  document.querySelector("#afterRound").style.transform = "scale("+(p*.15+0.85)+")";
+}
+handle.addEventListener("pointerdown", function(e){ e.preventDefault(); dragging=true; handle.setPointerCapture(e.pointerId); });
+handle.addEventListener("pointermove", function(e){ if(dragging) setPos(e.clientX); });
+handle.addEventListener("pointerup", function(){ dragging=false; });
+cwrap.addEventListener("pointerdown", function(e){ if(e.target===cwrap || e.target.classList.contains("clip") || e.target.closest(".page-lines")) { dragging=true; setPos(e.clientX); } });
+cwrap.addEventListener("pointermove", function(e){ if(dragging) setPos(e.clientX); });
+window.addEventListener("pointerup", function(){ dragging=false; });
+setPos(cwrap.getBoundingClientRect().left + cwrap.getBoundingClientRect().width*0.5);
+
+/* faq */
+document.querySelectorAll(".faq-item").forEach(function(item){
+  var q=item.querySelector(".faq-q"), a=item.querySelector(".faq-a");
+  q.addEventListener("click", function(){
+    var open=item.classList.contains("open");
+    document.querySelectorAll(".faq-item.open").forEach(function(x){ x.classList.remove("open"); x.querySelector(".faq-a").style.maxHeight="0px"; });
+    if(!open){ item.classList.add("open"); a.style.maxHeight=a.scrollHeight+"px"; }
+  });
+});
+
+/* burst sparkles on nav CTA click (fun) */
+function burst(){ }
+
+})();
+</script>
+</body>
+</html>
