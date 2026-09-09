@@ -155,7 +155,7 @@ function Starfield() {
       window.removeEventListener('resize', resize)
     }
   }, [])
-  return <canvas ref={ref} className="lp-stars" aria-hidden="true" />
+  return <canvas ref={ref} className="lp-stars-canvas" aria-hidden="true" />
 }
 
 /* ── Compare slider ────────────────────────────────── */
@@ -164,6 +164,7 @@ function CompareSlider() {
   const wrapRef = useRef<HTMLDivElement | null>(null)
   const afterRef = useRef<HTMLDivElement | null>(null)
   const handleRef = useRef<HTMLDivElement | null>(null)
+  const afterRoundRef = useRef<HTMLDivElement | null>(null)
   const dragging = useRef(false)
 
   const setPos = useCallback((px: number) => {
@@ -173,6 +174,7 @@ function CompareSlider() {
     const p = Math.max(0, Math.min(1, (px - r.left) / r.width))
     if (afterRef.current) afterRef.current.style.clipPath = `inset(0 0 0 ${p * 100}%)`
     if (handleRef.current) handleRef.current.style.left = `${p * 100}%`
+    if (afterRoundRef.current) afterRoundRef.current.style.transform = `scale(${p * 0.15 + 0.85})`
   }, [])
 
   useEffect(() => {
@@ -214,7 +216,7 @@ function CompareSlider() {
       <div ref={afterRef} className="lp-compare-pane lp-pane-after">
         <div className="lp-pane-clip">
           <span className="lp-compare-label">After — shortlisted</span>
-          <div className="lp-round">
+          <div className="lp-round" ref={afterRoundRef}>
             92 <span style={{ fontSize: '.6em', color: 'var(--lp-text-3)', fontFamily: 'var(--lp-body)', fontWeight: 500 }}>&nbsp;<br />score</span>
           </div>
           <h3 style={{ fontFamily: 'var(--lp-display)', fontWeight: 700, fontSize: 'clamp(1rem,2.5vw,1.3rem)' }}>Software Engineer</h3>
@@ -337,6 +339,7 @@ function HeroMock() {
 
       <div className="lp-chip green lp-chip-c1" style={{ right: '-2%' }}>{I.check} 12 Suggestions Applied</div>
       <div className="lp-chip violet lp-chip-c2">{I.spark} AI Analysis Live</div>
+      <div className="lp-chip violet lp-chip-c3">{I.shield} Interview-Ready</div>
     </div>
   )
 }
@@ -364,25 +367,31 @@ function Hero() {
     }).join(' ')
   ).join(' ')
 
+  const fade = (d: string) => (ready ? `lp-fade lp-fade-d${d} in` : `lp-fade lp-fade-d${d}`)
+
   return (
     <section className="lp-hero">
-      <div className="fx fx-1" /><div className="fx fx-2" /><div className="fx fx-3" /><div className="fx-oid" />
+      <div className="fx fx-1" data-lp-para="0.18" /><div className="fx fx-2" data-lp-para="0.3" />
+      <div className="fx fx-3" data-lp-para="0.12" /><div className="fx-oid" />
       <div className="lp-container">
         <span className="lp-hero-badge"><span className="lp-live-dot" /> AI-Powered Resume Optimization — Now Live</span>
         <h1 ref={h1Ref} className={ready ? 'lp-in' : ''} dangerouslySetInnerHTML={{ __html: html }} />
-        <p className="lp-hero-sub" style={{ opacity: 1, transition: 'opacity .9s var(--lp-ease) .5s' }}>
+        <p className={`lp-hero-sub ${fade('1')}`}>
           Upload your resume, discover what's holding it back, and optimize it for the job you actually want — <strong>in seconds</strong>.
         </p>
-        <div className="lp-hero-actions">
+        <div className={`lp-hero-actions ${fade('2')}`}>
           <Link to="/upload" className="lp-btn lp-btn-primary lp-btn-lg">{I.upload} Analyze My Resume — Free</Link>
           <a href="#how-it-works" className="lp-btn lp-btn-ghost lp-btn-lg">See How It Works</a>
         </div>
-        <div className="lp-hero-note">
+        <div className={`lp-hero-note ${fade('3')}`}>
           <span>{I.shield} No credit card required</span>
           <span>{I.timer} Results in under 30 seconds</span>
           <span>{I.spark} Private &amp; secure</span>
         </div>
         <HeroMock />
+      </div>
+      <div className="lp-hero-ticker">
+        <span>PDF · PNG · JPG supported</span><span>100% private</span><span>ATS-aware</span>
       </div>
     </section>
   )
@@ -395,18 +404,61 @@ export function Landing() {
 
   useEffect(() => {
     const progress = document.getElementById('lp-progress')
+    const fx = document.querySelectorAll<HTMLElement>('.landing .fx')
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - document.documentElement.clientHeight
       const y = window.scrollY || document.documentElement.scrollTop
       if (progress) progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`
+      fx.forEach((f) => {
+        const s = parseFloat(f.getAttribute('data-lp-para') || '0') || 0
+        f.style.translate = `0 ${y * s}px`
+      })
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => {
+    const root = document.querySelector('.landing')
+    const fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches
+    if (!root || !fine) return
+    root.classList.add('lp-cursor-on')
+    const dot = document.querySelector<HTMLElement>('.lp-cursor-dot')
+    const halo = document.querySelector<HTMLElement>('.lp-cursor-halo')
+    if (!dot || !halo) return
+    let mx = window.innerWidth / 2, my = window.innerHeight / 2, hx = mx, hy = my, raf: number | null = null
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX
+      my = e.clientY
+      dot.style.left = `${mx}px`
+      dot.style.top = `${my}px`
+      if (raf == null) {
+        raf = requestAnimationFrame(function loop() {
+          hx += (mx - hx) * 0.18
+          hy += (my - hy) * 0.18
+          halo.style.left = `${hx}px`
+          halo.style.top = `${hy}px`
+          raf = null
+        })
+      }
+    }
+    const onOver = (e: MouseEvent) => {
+      const t = e.target as HTMLElement
+      halo.classList.toggle('hovering', !!t.closest('a,button,.lp-faq-q,.lp-compare-handle'))
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    document.addEventListener('mouseover', onOver, { passive: true })
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseover', onOver)
+      root.classList.remove('lp-cursor-on')
+    }
+  }, [])
+
   return (
     <div className="landing">
+      <div className="lp-cursor-layout"><div className="lp-cursor-dot" /><div className="lp-cursor-halo" /></div>
       <div className="lp-progress" id="lp-progress" />
       <div className="lp-bg-aurora">
         <div className="lp-blob lp-blob-1" /><div className="lp-blob lp-blob-2" /><div className="lp-blob lp-blob-3" />

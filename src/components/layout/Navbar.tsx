@@ -24,9 +24,16 @@ export function Navbar() {
     setMobileOpen(false)
   }, [location.pathname])
 
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileOpen])
+
   return (
     <header className={`lp-nav ${scrolled ? 'scrolled' : ''}`}>
-      <div className="lp-container lp-nav-inner" style={{ width: '100%', maxWidth: 1200, paddingInline: 24 }}>
+      <div className="lp-nav-inner">
         <Link to="/" className="lp-logo">
           <span className="lp-logo-mark">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
