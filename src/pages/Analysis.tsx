@@ -157,16 +157,14 @@ export function Analysis() {
 
   return (
     <div className="min-h-[80vh] relative pt-20">
-      {/* Background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-600/[0.03] rounded-full blur-[100px] pointer-events-none" />
-
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white truncate">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-9">
+          <div className="lp-head-left min-w-0">
+            <span className="lp-page-eyebrow">Analysis</span>
+            <h1 className="lp-page-title truncate" title={analysis.fileName}>
               {analysis.fileName}
             </h1>
-            <p className="text-sm text-neutral-500 mt-1">
+            <p className="text-sm text-neutral-400 mt-1">
               Analyzed {new Date(analysis.createdAt).toLocaleDateString()} ·{' '}
               {analysis.extracted.detectedSections.length} sections detected
             </p>

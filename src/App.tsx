@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { Ambient } from './components/layout/Ambient'
 import { Navbar } from './components/layout/Navbar'
 import { Footer } from './components/layout/Footer'
 import { Landing } from './pages/Landing'
@@ -10,9 +11,10 @@ import { NotFound } from './pages/NotFound'
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#050505]">
+    <div className="lp-app min-h-screen flex flex-col bg-[#050505]">
+      <Ambient />
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 relative z-[1]">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/upload" element={<Upload />} />

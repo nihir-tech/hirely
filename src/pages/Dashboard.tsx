@@ -56,13 +56,12 @@ export function Dashboard() {
 
   return (
     <div className="min-h-[80vh] relative pt-20">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-600/[0.03] rounded-full blur-[100px] pointer-events-none" />
-
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Dashboard</h1>
-            <p className="text-sm text-neutral-500 mt-1">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-7">
+          <div className="lp-head-left min-w-0">
+            <span className="lp-page-eyebrow">Dashboard</span>
+            <h1 className="lp-page-title">Your Resumes</h1>
+            <p className="text-sm text-neutral-400 mt-1">
               {all.length} resume analysis{all.length !== 1 && 's'}
             </p>
           </div>

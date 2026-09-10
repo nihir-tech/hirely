@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Alert } from '../components/ui/Alert'
 import { LoadingOverlay } from '../components/ui/Spinner'
+import { PageHead } from '../components/layout/PageHead'
 import { extractResumeText } from '../lib/parsers'
 import { saveAnalysis } from '../lib/storage'
 import { analyzeResume } from '../lib/ai'
@@ -81,16 +82,12 @@ export function Upload() {
 
   return (
     <div className="min-h-[80vh] relative">
-      {/* Background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-brand-600/[0.04] rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="relative mx-auto max-w-2xl px-4 sm:px-6 py-12 sm:py-16">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white">Analyze Your Resume</h1>
-          <p className="mt-3 text-lg text-neutral-400">
-            Upload your resume and get detailed AI-powered feedback.
-          </p>
-        </div>
+      <div className="relative mx-auto max-w-2xl px-4 sm:px-6 py-10 sm:py-14">
+        <PageHead
+          eyebrow="Upload"
+          title={<>Analyze Your <span className="lp-grad-text">Resume</span></>}
+          sub="Upload your resume and get detailed, AI-powered feedback on strengths, gaps, and ATS readiness."
+        />
 
         {loading ? (
           <Card className="p-6">

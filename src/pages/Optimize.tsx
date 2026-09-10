@@ -91,23 +91,17 @@ export function Optimize() {
 
   return (
     <div className="min-h-[80vh] relative pt-20">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-brand-600/[0.04] rounded-full blur-[100px] pointer-events-none" />
-
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6 py-12 sm:py-16">
-        <div className="mb-8">
-          <Link
-            to={`/analyze/${analysis.id}`}
-            className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-white transition-colors mb-4"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Analysis
-          </Link>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white">Optimize for a Job</h1>
-          <p className="mt-3 text-lg text-neutral-400">
-            Paste a job description to get a match score and targeted improvements.
-          </p>
+        <Link
+          to={`/analyze/${analysis.id}`}
+          className="lp-page-crumb mb-5 !inline-flex"
+        >
+          <span>← Back to Analysis</span>
+        </Link>
+        <div className="lp-head-left mb-9">
+          <span className="lp-page-eyebrow">Optimize</span>
+          <h1 className="lp-page-title">Optimize for a <span className="lp-grad-text">Job</span></h1>
+          <p className="lp-page-sub">Paste a job description to get a match score and targeted improvements.</p>
         </div>
 
         {loading ? (
