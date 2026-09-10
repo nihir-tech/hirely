@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "devices": {
+      ".read": true,
+      "$id": {
+        ".write": "newData.isBoolean()"
+      }
+    },
+    "presence": {
+      ".read": true,
+      "$id": {
+        ".write": "newData.isBoolean() || !newData.exists()"
+      }
+    }
+  }
+}

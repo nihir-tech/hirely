@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { APP_NAME } from '../../config'
+import { useSiteStats } from '../../hooks/useSiteStats'
 
 const LINKS = [
   { to: '/#how-it-works', label: 'How It Works' },
   { to: '/#features', label: 'Features' },
   { to: '/#faq', label: 'FAQ' },
 ]
+
+function LivePill() {
+  const stats = useSiteStats()
+  if (!stats) return null
+  return (
+    <span className="lp-live-pill" title={`${stats.totalUsers}+ people have used ${APP_NAME}`}>
+      <span className="lp-live-dot" />
+      {stats.liveUsers} online now
+    </span>
+  )
+}
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -44,6 +56,7 @@ export function Navbar() {
         </Link>
 
         <div className="lp-nav-links">
+          <LivePill />
           {LINKS.map((l) => (
             <a key={l.label} href={l.to} onClick={(e) => {
               if (onLanding) {

@@ -1,4 +1,5 @@
 import { APP_NAME } from '../../config'
+import { useSiteStats } from '../../hooks/useSiteStats'
 
 const logo = (
   <span className="lp-logo-mark">
@@ -9,6 +10,7 @@ const logo = (
 )
 
 export function Footer() {
+  const stats = useSiteStats()
   return (
     <footer className="lp-footer">
       <div className="lp-container" style={{ paddingInline: 24 }}>
@@ -16,6 +18,13 @@ export function Footer() {
           <div>
             <a href="/" className="lp-logo" style={{ marginBottom: 14 }}>{logo}{APP_NAME}</a>
             <p style={{ marginBottom: 0 }}>Make Your Resume Hire-Ready.</p>
+            {stats && (
+              <p className="lp-footer-stats" role="status">
+                <span><strong>{stats.totalUsers.toLocaleString()}</strong> total users</span>
+                <span className="lp-live-sep">·</span>
+                <span className="lp-live-pill" title="Live right now"><span className="lp-live-dot" /> <strong>{stats.liveUsers.toLocaleString()}</strong> online now</span>
+              </p>
+            )}
           </div>
           <div>
             <h4>Product</h4>
