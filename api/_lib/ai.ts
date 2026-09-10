@@ -15,7 +15,7 @@ export interface ChatOptions {
   maxTokens?: number
 }
 
-export async function chatJson({ system, user, temperature = 0.2, maxTokens = 4000 }: ChatOptions): Promise<Record<string, unknown>> {
+export async function chatJson({ system, user, temperature = 0, maxTokens = 4000 }: ChatOptions): Promise<Record<string, unknown>> {
   const apiKey = getApiKey()
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`
 

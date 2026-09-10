@@ -9,6 +9,60 @@ import type {
 
 const API_BASE = '/api'
 
+/* ── Deterministic result cache ──────────────────────
+   Same resume → same analysis. Results are cached in localStorage keyed by a
+   hash of the normalized input, so re-analyzing an identical resume returns
+   the exact same result (and skips the AI call). Bounded + versioned. */
+
+const CACHE_KEY = 'hirely:ai_cache'
+const CACHE_VERSION = 1
+const CACHE_MAX = 30
+
+function hashInput(value: string): string {
+  let h = 0x811c9dc5
+  for (let i = 0; i < value.length; i++) {
+    h ^= value.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return (h >>> 0).toString(36)
+}
+
+function loadCache(): Record<string, { data: unknown; ts: number }> {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return {}
+    const parsed = JSON.parse(raw) as Record<string, { data: unknown; ts: number }>
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+function saveCache(key: string, data: unknown) {
+  try {
+    const cache = loadCache()
+    cache[key] = { data, ts: Date.now() }
+    const entries = Object.entries(cache).sort((a, b) => b[1].ts - a[1].ts)
+    for (const [k] of entries.slice(CACHE_MAX)) delete cache[k]
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cache))
+  } catch { /* cache is best-effort */ }
+}
+
+function readCache<T>(key: string): T | undefined {
+  const entry = loadCache()[key]
+  return entry ? (entry.data as T) : undefined
+}
+
+function cached<T>(kind: string, input: Record<string, unknown>, produce: () => Promise<T>): Promise<T> {
+  const key = `${kind}:${CACHE_VERSION}:${hashInput(JSON.stringify(input))}`
+  const hit = readCache<T>(key)
+  if (hit) return Promise.resolve(hit)
+  return produce().then((res) => {
+    saveCache(key, res)
+    return res
+  })
+}
+
 class AiError extends Error {
   constructor(
     message: string,
@@ -87,19 +141,25 @@ async function callFunction<T>(
 export async function analyzeResume(
   request: AnalyzeRequest,
 ): Promise<AnalyzeResponse> {
-  return callFunction<AnalyzeResponse>('analyze-resume', request)
+  return cached<AnalyzeResponse>('an', request as unknown as Record<string, unknown>, () =>
+    callFunction<AnalyzeResponse>('analyze-resume', request),
+  )
 }
 
 export async function matchJob(
   request: JobMatchRequest,
 ): Promise<JobMatchResponse> {
-  return callFunction<JobMatchResponse>('job-match', request)
+  return cached<JobMatchResponse>('jm', request as unknown as Record<string, unknown>, () =>
+    callFunction<JobMatchResponse>('job-match', request),
+  )
 }
 
 export async function rewriteResume(
   request: RewriteRequest,
 ): Promise<RewriteResponse> {
-  return callFunction<RewriteResponse>('rewrite-resume', request, 180000)
+  return cached<RewriteResponse>('rw', request as unknown as Record<string, unknown>, () =>
+    callFunction<RewriteResponse>('rewrite-resume', request, 180000),
+  )
 }
 
 export { AiError }
