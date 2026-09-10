@@ -92,18 +92,24 @@ const RING_C = 289
 
 function Reveal({ children, delay, as: Tag = 'div', className = '', style }: { children: ReactNode; delay?: 1 | 2 | 3 | 4; as?: 'div' | 'span'; className?: string; style?: React.CSSProperties }) {
   const ref = useRef<HTMLDivElement | null>(null)
+  const [inView, setInView] = useState(false)
   useEffect(() => {
     const el = ref.current
     if (!el) return
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && (el.classList.add('lp-in'), io.unobserve(el))),
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) {
+          setInView(true)
+          io.unobserve(el)
+        }
+      }),
       { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
     )
     io.observe(el)
     return () => io.disconnect()
   }, [])
   return (
-    <Tag ref={ref as never} data-lp-reveal="" data-lp-d={delay ?? ''} style={style} className={`${className}`.trim()}>
+    <Tag ref={ref as never} data-lp-reveal="" data-lp-d={delay ?? ''} style={style} className={`${inView ? 'lp-in' : ''} ${className}`.trim()}>
       {children}
     </Tag>
   )
