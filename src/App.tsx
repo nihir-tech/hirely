@@ -4,6 +4,7 @@ import { Ambient } from './components/layout/Ambient'
 import { SiteStatsProvider } from './hooks/useSiteStats'
 import { Navbar } from './components/layout/Navbar'
 import { Footer } from './components/layout/Footer'
+import { BackToTop } from './components/layout/BackToTop'
 import { Landing } from './pages/Landing'
 import { Upload } from './pages/Upload'
 import { Analysis } from './pages/Analysis'
@@ -52,6 +53,7 @@ export default function App() {
           </Routes>
         </main>
         <Footer />
+        <BackToTop />
       </div>
     </SiteStatsProvider>
   )
