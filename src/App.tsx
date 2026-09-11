@@ -8,6 +8,7 @@ import { Upload } from './pages/Upload'
 import { Analysis } from './pages/Analysis'
 import { Optimize } from './pages/Optimize'
 import { Dashboard } from './pages/Dashboard'
+import { Privacy, Terms, DataSafety } from './pages/LegalPages'
 import { NotFound } from './pages/NotFound'
 
 export default function App() {
@@ -23,6 +24,9 @@ export default function App() {
             <Route path="/analyze/:id" element={<Analysis />} />
             <Route path="/optimize/:id" element={<Optimize />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/data-safety" element={<DataSafety />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

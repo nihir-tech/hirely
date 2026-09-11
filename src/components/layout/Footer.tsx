@@ -63,7 +63,7 @@ const COLUMNS: { title: string; links: { label: string; to: string; external?: b
     title: 'Resources',
     links: [
       { label: 'FAQ', to: '/#faq' },
-      { label: 'Why it works', to: '/#story' },
+      { label: 'Why it works', to: '/#how-it-works' },
       { label: 'Optimize for a job', to: '/upload' },
       { label: 'Contact', to: 'mailto:nihir12121@gmail.com', external: true },
     ],
@@ -71,9 +71,9 @@ const COLUMNS: { title: string; links: { label: string; to: string; external?: b
   {
     title: 'Legal',
     links: [
-      { label: 'Privacy', to: '/#features' },
-      { label: 'Terms', to: '/#how-it-works' },
-      { label: 'Data safety', to: '/#faq' },
+      { label: 'Privacy', to: '/privacy' },
+      { label: 'Terms', to: '/terms' },
+      { label: 'Data safety', to: '/data-safety' },
     ],
   },
 ]
@@ -144,9 +144,9 @@ export function Footer() {
             <span className="lp-live-sep">·</span> nihir12121@gmail.com
           </p>
           <div className="lp-footer-bottom-links">
-            <a href="/upload">Privacy</a>
+            <Link to="/privacy">Privacy</Link>
             <span className="lp-live-sep">·</span>
-            <a href="mailto:nihir12121@gmail.com">Contact</a>
+            <Link to="/terms">Terms</Link>
           </div>
         </div>
       </div>
