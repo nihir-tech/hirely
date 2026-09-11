@@ -419,6 +419,8 @@
 .lp-input { width: 100%; background: rgba(12,12,18,.6); border: 1px solid rgba(255,255,255,.08); color: var(--lp-text); font: inherit; font-size: .92rem; padding: 12px 14px; border-radius: 12px; transition: all .3s ease; }
 .lp-input::placeholder { color: rgba(255,255,255,.3); }
 .lp-input:focus { outline: none; background: rgba(18,15,25,.65); border-color: rgba(139,92,246,.45); box-shadow: 0 0 0 3px rgba(139,92,246,.12); }
+.lp-form-hint { font-size: .78rem; color: var(--lp-text-2); }
+.lp-form-hint strong { color: var(--lp-brand-300); font-weight: 600; }
 .lp-textarea { min-height: 140px; resize: vertical; line-height: 1.6; }
 .lp-select-wrap { position: relative; }
 .lp-select { appearance: none; -webkit-appearance: none; padding-right: 38px; cursor: pointer; }

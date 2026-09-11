@@ -21,6 +21,23 @@ function Field({ label, required, children }: FieldProps) {
   )
 }
 
+type Provider = 'gmail' | 'outlook' | 'yahoo' | 'app'
+
+function providerFor(raw: string): Provider {
+  const domain = raw.trim().toLowerCase().split('@')[1] || ''
+  if (domain.endsWith('gmail.com')) return 'gmail'
+  if (domain.endsWith('outlook.com') || domain.endsWith('hotmail.com') || domain.endsWith('live.com') || domain.endsWith('msn.com')) return 'outlook'
+  if (domain.endsWith('yahoo.com') || domain.endsWith('ymail.com') || domain.endsWith('rocketmail.com')) return 'yahoo'
+  return 'app'
+}
+
+const PROVIDER_LABEL: Record<Provider, string> = {
+  gmail: 'Gmail',
+  outlook: 'Outlook / Hotmail',
+  yahoo: 'Yahoo Mail',
+  app: 'your default email app',
+}
+
 export function Contact() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -28,6 +45,7 @@ export function Contact() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [sent, setSent] = useState(false)
+  const [opened, setOpened] = useState<Provider | null>(null)
   const subject = encodeURIComponent(`[Hirely] ${topic} — from ${name.trim() || '?'}`)
   const body = encodeURIComponent(
     `Name: ${name.trim()}\nEmail: ${email.trim()}\nTopic: ${topic}\n\n${message.trim()}\n\n— sent from hirelly.vercel.app`
@@ -35,6 +53,7 @@ export function Contact() {
   const gmailUrl = `https://mail.google.com/mail/?view=cm&to=nihir12121@gmail.com&su=${subject}&body=${body}`
   const outlookUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=nihir12121@gmail.com&subject=${subject}&body=${body}`
   const yahooUrl = `https://compose.mail.yahoo.com/?to=nihir12121@gmail.com&subject=${subject}&body=${body}`
+  const provider = providerFor(email)
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -43,11 +62,17 @@ export function Contact() {
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError('Please enter a valid email address.')
     if (message.trim().length < 10) return setError('Please describe your inquiry (at least 10 characters).')
 
-    const a = document.createElement('a')
-    a.href = `mailto:nihir12121@gmail.com?subject=${subject}&body=${body}`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
+    if (provider === 'gmail') window.open(gmailUrl, '_blank')
+    else if (provider === 'outlook') window.open(outlookUrl, '_blank')
+    else if (provider === 'yahoo') window.open(yahooUrl, '_blank')
+    else {
+      const a = document.createElement('a')
+      a.href = `mailto:nihir12121@gmail.com?subject=${subject}&body=${body}`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+    }
+    setOpened(provider)
     setSent(true)
   }
 
@@ -69,6 +94,13 @@ export function Contact() {
                 </Field>
                 <Field label="Email" required>
                   <input className="lp-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+                  {email.trim() ? (
+                    <span className="lp-form-hint">
+                      {provider === 'app'
+                        ? 'We\'ll open your default mail app for this address.'
+                        : <>We'll open <strong>{PROVIDER_LABEL[provider]}</strong> compose for this address.</>}
+                    </span>
+                  ) : null}
                 </Field>
               </div>
 
@@ -93,7 +125,9 @@ export function Contact() {
               {sent ? (
                 <>
                   <p className="lp-form-msg lp-form-ok">
-                    Your default email app should have opened with the message ready to go. If it didn't, or you use web mail, pick your service below:
+                    {opened === 'app'
+                      ? 'Your default mail app should have opened with everything prefilled. If it didn\'t, pick a service below:'
+                      : <>Opened <strong>{PROVIDER_LABEL[opened as Exclude<Provider, 'app'>]}</strong> with everything prefilled. If it didn\'t open or you\'d rather use another service, pick below:</>}
                   </p>
                   <div className="lp-contact-cols">
                     <a className="lp-contact-prov" href={gmailUrl} target="_blank" rel="noreferrer">
