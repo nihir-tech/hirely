@@ -241,9 +241,8 @@ const CASES: CompareCase[] = [
 
 function CompareSlider() {
   const wrapRef = useRef<HTMLDivElement | null>(null)
-  const afterRef = useRef<HTMLDivElement | null>(null)
+  const beforeRef = useRef<HTMLDivElement | null>(null)
   const handleRef = useRef<HTMLDivElement | null>(null)
-  const afterRoundRef = useRef<HTMLDivElement | null>(null)
   const dragging = useRef(false)
   const [active, setActive] = useState(CASES[0].id)
 
@@ -254,9 +253,8 @@ function CompareSlider() {
     if (!wrap) return
     const r = wrap.getBoundingClientRect()
     const p = Math.max(0, Math.min(1, (px - r.left) / r.width))
-    if (afterRef.current) afterRef.current.style.clipPath = `inset(0 0 0 ${p * 100}%)`
+    if (beforeRef.current) beforeRef.current.style.width = `${p * 100}%`
     if (handleRef.current) handleRef.current.style.left = `${p * 100}%`
-    if (afterRoundRef.current) afterRoundRef.current.style.transform = `scale(${p * 0.15 + 0.85})`
   }, [])
 
   const center = useCallback(() => {
@@ -272,11 +270,11 @@ function CompareSlider() {
 
   function renderPane(pane: ComparePane, side: 'before' | 'after') {
     return (
-      <div className={`lp-compare-pane lp-pane-${side}`}>
-        <div className="lp-pane-clip">
+      <div ref={side === 'before' ? beforeRef : undefined} className={`lp-compare-pane lp-pane-${side}`}>
+        <div className="lp-pane-inner">
           <span className="lp-compare-label">{pane.label}</span>
           <div className="lp-pane-head">
-            <div className="lp-round" ref={side === 'after' ? afterRoundRef : undefined}>
+            <div className="lp-round">
               {pane.score}
               <span className="lp-round-suffix">score</span>
             </div>
@@ -339,11 +337,14 @@ function CompareSlider() {
         tabIndex={0}
         onPointerDown={(e) => {
           dragging.current = true
+          e.currentTarget.setPointerCapture(e.pointerId)
           setPos(e.clientX)
         }}
         onPointerMove={(e) => dragging.current && setPos(e.clientX)}
-        onPointerUp={() => (dragging.current = false)}
-        onPointerLeave={() => (dragging.current = false)}
+        onPointerUp={(e) => {
+          dragging.current = false
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId)
+        }}
         onKeyDown={(e) => {
           const wrap = wrapRef.current
           if (!wrap) return
