@@ -117,12 +117,137 @@ function Reveal({ children, delay, as: Tag = 'div', className = '', style }: { c
 
 /* ── Compare slider ────────────────────────────────── */
 
+/* ── Compare: before / after slider ─────────────────── */
+
+interface CompareItem { kw: string; ok: boolean; text: string }
+interface CompareSkill { name: string; ok: boolean }
+interface ComparePane {
+  label: string
+  score: number
+  sub: string
+  items: CompareItem[]
+  skills: CompareSkill[]
+  chips: string[]
+}
+interface CompareCase { id: string; tab: string; role: string; before: ComparePane; after: ComparePane }
+
+const CASES: CompareCase[] = [
+  {
+    id: 'se',
+    tab: 'Software Engineer',
+    role: 'Senior @ Series-C · 5 yrs',
+    before: {
+      label: 'Before — ATS rejected',
+      score: 42,
+      sub: 'Senior @ Series-C · 5 yrs',
+      items: [
+        { kw: 'API', ok: false, text: 'Responsible for improving API performance' },
+        { kw: 'React', ok: true, text: 'Built some dashboards with React' },
+        { kw: 'CI/CD', ok: false, text: 'Helped ship features to production' },
+      ],
+      skills: [
+        { name: 'React ✓', ok: true }, { name: 'TypeScript ✓', ok: true },
+        { name: 'Docker', ok: false }, { name: 'CI/CD', ok: false }, { name: 'Kubernetes', ok: false },
+      ],
+      chips: ['0 metrics on bullets', '6 keywords missing', 'Table layout breaks parsing'],
+    },
+    after: {
+      label: 'After — shortlisted',
+      score: 92,
+      sub: 'Senior @ Series-C · 5 yrs',
+      items: [
+        { kw: 'API', ok: true, text: 'Cut p95 latency 38% (820→510 ms) by optimizing query paths' },
+        { kw: 'React', ok: true, text: 'Owned 3 React dashboards used by 12k daily users' },
+        { kw: 'CI/CD', ok: true, text: 'Automated deploys — releases fell from 4 hrs to 11 min' },
+      ],
+      skills: [
+        { name: 'React ✓', ok: true }, { name: 'TypeScript ✓', ok: true },
+        { name: 'Docker ✓', ok: true }, { name: 'CI/CD ✓', ok: true }, { name: 'Kubernetes ✓', ok: true },
+      ],
+      chips: ['Every bullet has a metric', '12/12 keywords covered', 'Clean single-column ATS layout'],
+    },
+  },
+  {
+    id: 'pm',
+    tab: 'Product Manager',
+    role: 'PM @ Fintech · 4 yrs',
+    before: {
+      label: 'Before — ATS rejected',
+      score: 55,
+      sub: 'PM @ Fintech · 4 yrs',
+      items: [
+        { kw: 'Roadmap', ok: false, text: 'Worked on product features' },
+        { kw: 'Metrics', ok: false, text: 'Monitored feature performance' },
+        { kw: 'Launch', ok: false, text: 'Helped launch onboarding' },
+      ],
+      skills: [
+        { name: 'SQL ✓', ok: true }, { name: 'Figma ✓', ok: true }, { name: 'Jira ✓', ok: true },
+        { name: 'Roadmaps', ok: false }, { name: 'A/B testing', ok: false },
+      ],
+      chips: ['No quantified impact', 'Vague verbs only', 'No product lifecycle'],
+    },
+    after: {
+      label: 'After — shortlisted',
+      score: 89,
+      sub: 'PM @ Fintech · 4 yrs',
+      items: [
+        { kw: 'Roadmap', ok: true, text: 'Drove 2025 Q3 roadmap — shipped 14 features on time' },
+        { kw: 'Metrics', ok: true, text: 'Raised activation 22% with data-driven onboarding changes' },
+        { kw: 'Launch', ok: true, text: 'Launched 3 products 0→1 with 4 cross-functional teams' },
+      ],
+      skills: [
+        { name: 'SQL ✓', ok: true }, { name: 'Figma ✓', ok: true }, { name: 'Jira ✓', ok: true },
+        { name: 'Roadmaps ✓', ok: true }, { name: 'A/B testing ✓', ok: true },
+      ],
+      chips: ['Impact in every bullet', '10/10 keywords covered', 'Crisp value-first phrasing'],
+    },
+  },
+  {
+    id: 'da',
+    tab: 'Data Analyst',
+    role: 'Data @ e-commerce · 3 yrs',
+    before: {
+      label: 'Before — ATS rejected',
+      score: 38,
+      sub: 'Data @ e-commerce · 3 yrs',
+      items: [
+        { kw: 'SQL', ok: false, text: 'Used SQL to pull data for reports' },
+        { kw: 'Dashboards', ok: true, text: 'Made dashboards for the team' },
+        { kw: 'A/B test', ok: false, text: 'Ran some experiments' },
+      ],
+      skills: [
+        { name: 'Excel ✓', ok: true }, { name: 'SQL ✓', ok: true },
+        { name: 'Python', ok: false }, { name: 'Tableau', ok: false }, { name: 'Statistics', ok: false },
+      ],
+      chips: ['Tasks, not outcomes', '4 skills missing', 'No stakeholder results'],
+    },
+    after: {
+      label: 'After — shortlisted',
+      score: 84,
+      sub: 'Data @ e-commerce · 3 yrs',
+      items: [
+        { kw: 'SQL', ok: true, text: 'Wrote complex SQL — cut monthly reporting time 60%' },
+        { kw: 'Dashboards', ok: true, text: 'Built 8 Tableau dashboards used by exec decision-makers' },
+        { kw: 'A/B test', ok: true, text: 'Designed A/B tests driving 19% checkout conversion lift' },
+      ],
+      skills: [
+        { name: 'Excel ✓', ok: true }, { name: 'SQL ✓', ok: true }, { name: 'Python ✓', ok: true },
+        { name: 'Tableau ✓', ok: true }, { name: 'Statistics ✓', ok: true },
+      ],
+      chips: ['Outcome-led bullets', '8/8 keywords covered', 'Story connects to revenue'],
+    },
+  },
+]
+
 function CompareSlider() {
   const wrapRef = useRef<HTMLDivElement | null>(null)
   const afterRef = useRef<HTMLDivElement | null>(null)
   const handleRef = useRef<HTMLDivElement | null>(null)
   const afterRoundRef = useRef<HTMLDivElement | null>(null)
   const dragging = useRef(false)
+  const [active, setActive] = useState(CASES[0].id)
+
+  const cs = CASES.find((c) => c.id === active) || CASES[0]
 
   const setPos = useCallback((px: number) => {
     const wrap = wrapRef.current
@@ -134,60 +259,113 @@ function CompareSlider() {
     if (afterRoundRef.current) afterRoundRef.current.style.transform = `scale(${p * 0.15 + 0.85})`
   }, [])
 
-  useEffect(() => {
+  const center = useCallback(() => {
     const wrap = wrapRef.current
     if (!wrap) return
     const r = wrap.getBoundingClientRect()
     setPos(r.left + r.width * 0.5)
   }, [setPos])
 
+  useEffect(() => {
+    center()
+  }, [active, center])
+
+  function renderPane(pane: ComparePane, side: 'before' | 'after') {
+    return (
+      <div className={`lp-compare-pane lp-pane-${side}`}>
+        <div className="lp-pane-clip">
+          <span className="lp-compare-label">{pane.label}</span>
+          <div className="lp-pane-head">
+            <div className="lp-round" ref={side === 'after' ? afterRoundRef : undefined}>
+              {pane.score}
+              <span className="lp-round-suffix">score</span>
+            </div>
+            <div className="lp-pane-title">
+              <h3>{cs.role}</h3>
+              <span>{pane.sub}</span>
+            </div>
+          </div>
+          <div className="lp-pane-section">Experience</div>
+          <ul className="lp-pane-items">
+            {pane.items.map((it, i) => (
+              <li key={i}>
+                <span className={`lp-kw ${it.ok ? 'ok' : 'bad'}`}>{it.kw}</span>
+                <span className="lp-it-text">{it.text}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="lp-pane-section">Skills</div>
+          <div className="lp-pane-skills">
+            {pane.skills.map((s, i) => (
+              <span key={i} className={`lp-skill ${s.ok ? 'ok' : 'bad'}`}>{s.name}</span>
+            ))}
+          </div>
+          <div className="lp-pane-foot">
+            {pane.chips.map((c, i) => (
+              <span key={i} className="lp-chip">{c}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const matchedSkills = cs.after.skills.filter((s) => s.ok).length
+  const totalSkills = cs.after.skills.length
+  const delta = cs.after.score - cs.before.score
+
   return (
-    <div
-      ref={wrapRef}
-      className="lp-compare-wrap"
-      onPointerDown={(e) => {
-        dragging.current = true
-        setPos(e.clientX)
-      }}
-      onPointerMove={(e) => dragging.current && setPos(e.clientX)}
-      onPointerUp={() => (dragging.current = false)}
-      onPointerLeave={() => (dragging.current = false)}
-    >
-      <div className="lp-compare-pane lp-pane-before">
-        <div className="lp-pane-clip">
-          <span className="lp-compare-label">Before — ATS rejected</span>
-          <div className="lp-round">
-            42 <span style={{ fontSize: '.6em', color: 'var(--lp-text-3)', fontFamily: 'var(--lp-body)', fontWeight: 500 }}>&nbsp;<br />score</span>
-          </div>
-          <h3 style={{ fontFamily: 'var(--lp-display)', fontWeight: 700, fontSize: 'clamp(1rem,2.5vw,1.3rem)' }}>Software Engineer</h3>
-          <div className="lp-page-lines">
-            <div className="l bad" style={{ width: '80%' }} /><div className="l bad" style={{ width: '60%' }} /><div className="l" style={{ width: '45%' }} />
-            <div className="l bad" style={{ width: '80%' }} /><div className="l" style={{ width: '60%' }} />
-          </div>
-          <p style={{ fontSize: '.82rem', color: '#f87171', opacity: 0.9 }}>
-            • 0 metrics on all bullets<br />• 6 hard-keywords missing<br />• Parse-breaking table layout
-          </p>
-        </div>
+    <div className="lp-compare-block">
+      <div className="lp-compare-tabs" role="tablist">
+        {CASES.map((c) => (
+          <button
+            key={c.id}
+            role="tab"
+            aria-selected={c.id === active}
+            className={c.id === active ? 'on' : ''}
+            onClick={() => setActive(c.id)}
+          >
+            {c.tab}
+          </button>
+        ))}
       </div>
 
-      <div ref={afterRef} className="lp-compare-pane lp-pane-after">
-        <div className="lp-pane-clip">
-          <span className="lp-compare-label">After — shortlisted</span>
-          <div className="lp-round" ref={afterRoundRef}>
-            92 <span style={{ fontSize: '.6em', color: 'var(--lp-text-3)', fontFamily: 'var(--lp-body)', fontWeight: 500 }}>&nbsp;<br />score</span>
-          </div>
-          <h3 style={{ fontFamily: 'var(--lp-display)', fontWeight: 700, fontSize: 'clamp(1rem,2.5vw,1.3rem)' }}>Software Engineer</h3>
-          <div className="lp-page-lines">
-            <div className="l hl" style={{ width: '80%' }} /><div className="l hl" style={{ width: '60%' }} /><div className="l hl" style={{ width: '45%' }} />
-            <div className="l hl" style={{ width: '80%' }} /><div className="l hl" style={{ width: '60%' }} />
-          </div>
-          <p style={{ fontSize: '.82rem', color: 'var(--lp-emerald)', opacity: 0.95 }}>
-            • 6 bullets rewritten with metrics<br />• 12/12 required keywords covered<br />• Clean single-column ATS layout
-          </p>
-        </div>
+      <div
+        ref={wrapRef}
+        className="lp-compare-wrap"
+        role="slider"
+        aria-label="Compare resume before and after"
+        aria-valuenow={50}
+        tabIndex={0}
+        onPointerDown={(e) => {
+          dragging.current = true
+          setPos(e.clientX)
+        }}
+        onPointerMove={(e) => dragging.current && setPos(e.clientX)}
+        onPointerUp={() => (dragging.current = false)}
+        onPointerLeave={() => (dragging.current = false)}
+        onKeyDown={(e) => {
+          const wrap = wrapRef.current
+          if (!wrap) return
+          const r = wrap.getBoundingClientRect()
+          const step = r.width * 0.06
+          if (e.key === 'ArrowLeft') { e.preventDefault(); setPos(r.left + r.width / 2 - step) }
+          if (e.key === 'ArrowRight') { e.preventDefault(); setPos(r.left + r.width / 2 + step) }
+        }}
+      >
+        {renderPane(cs.before, 'before')}
+        {renderPane(cs.after, 'after')}
+        <div ref={handleRef} className="lp-compare-handle" />
       </div>
 
-      <div ref={handleRef} className="lp-compare-handle" />
+      <p className="lp-compare-hint">Drag the handle — or use ← → keys</p>
+
+      <div className="lp-compare-stats">
+        <div><b>{cs.before.score} → {cs.after.score}</b><span>ATS score</span></div>
+        <div><b>+{delta}</b><span>points gained</span></div>
+        <div><b>{matchedSkills}/{totalSkills}</b><span>keywords matched</span></div>
+        <div><b>ATS-safe ✓</b><span>single-column layout</span></div>
+      </div>
     </div>
   )
 }
@@ -443,7 +621,7 @@ export function Landing() {
           <Reveal className="lp-section-head">
             <span className="lp-eyebrow">Proof</span>
             <h2>Drag to see the <span className="lp-grad-text">difference</span></h2>
-            <p>Same resume. Same facts. One AI pass through Hirely.</p>
+            <p>Same resume. Same facts. One AI pass through Hirely — across three roles.</p>
             <div className="lp-underline" />
           </Reveal>
           <Reveal style={{ display: 'block' }}>
