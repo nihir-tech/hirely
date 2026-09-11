@@ -105,7 +105,7 @@ export function Footer() {
                 {col.links.map((l) => (
                   <li key={l.label}>
                     {l.external ? (
-                      <a href={l.to} target="_blank" rel="noreferrer">{l.label}</a>
+                      <a href={l.to} target={l.to.startsWith('http') ? '_blank' : undefined} rel="noreferrer">{l.label}</a>
                     ) : (
                       <Link to={l.to}>{l.label}</Link>
                     )}
