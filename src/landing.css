@@ -205,7 +205,7 @@
 @keyframes lp-floatY { 0%,100% { translate: 0 0; } 50% { translate: 0 -14px; } }
 
 /* ── Sections ────────────────────────────── */
-.landing .lp-section { padding: 96px 0; position: relative; }
+.landing .lp-section { padding: 96px 0; position: relative; scroll-margin-top: 90px; }
 .landing .lp-eyebrow {
   display: inline-block; font-size: .74rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
   color: var(--lp-brand-400); background: rgba(139,92,246,.08); border: 1px solid rgba(139,92,246,.2);
