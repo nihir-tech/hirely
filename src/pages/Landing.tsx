@@ -241,7 +241,7 @@ const CASES: CompareCase[] = [
 
 function CompareSlider() {
   const wrapRef = useRef<HTMLDivElement | null>(null)
-  const beforeRef = useRef<HTMLDivElement | null>(null)
+  const afterRef = useRef<HTMLDivElement | null>(null)
   const handleRef = useRef<HTMLDivElement | null>(null)
   const dragging = useRef(false)
   const [active, setActive] = useState(CASES[0].id)
@@ -253,7 +253,7 @@ function CompareSlider() {
     if (!wrap) return
     const r = wrap.getBoundingClientRect()
     const p = Math.max(0, Math.min(1, (px - r.left) / r.width))
-    if (beforeRef.current) beforeRef.current.style.width = `${p * 100}%`
+    if (afterRef.current) afterRef.current.style.clipPath = `inset(0 calc(${100 - p * 100}%) 0 0)`
     if (handleRef.current) handleRef.current.style.left = `${p * 100}%`
   }, [])
 
@@ -270,7 +270,7 @@ function CompareSlider() {
 
   function renderPane(pane: ComparePane, side: 'before' | 'after') {
     return (
-      <div ref={side === 'before' ? beforeRef : undefined} className={`lp-compare-pane lp-pane-${side}`}>
+      <div ref={side === 'after' ? afterRef : undefined} className={`lp-compare-pane lp-pane-${side}`}>
         <div className="lp-pane-inner">
           <span className="lp-compare-label">{pane.label}</span>
           <div className="lp-pane-head">
