@@ -28,7 +28,13 @@ export function Contact() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [sent, setSent] = useState(false)
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=nihir12121@gmail.com&su=${encodeURIComponent(`[Hirely] ${topic} — from ${name.trim() || '?'}`)}&body=${encodeURIComponent(`Name: ${name.trim()}\nEmail: ${email.trim()}\nTopic: ${topic}\n\n${message.trim()}\n\n— sent from hirelly.vercel.app`)}`
+  const subject = encodeURIComponent(`[Hirely] ${topic} — from ${name.trim() || '?'}`)
+  const body = encodeURIComponent(
+    `Name: ${name.trim()}\nEmail: ${email.trim()}\nTopic: ${topic}\n\n${message.trim()}\n\n— sent from hirelly.vercel.app`
+  )
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=nihir12121@gmail.com&su=${subject}&body=${body}`
+  const outlookUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=nihir12121@gmail.com&subject=${subject}&body=${body}`
+  const yahooUrl = `https://compose.mail.yahoo.com/?to=nihir12121@gmail.com&subject=${subject}&body=${body}`
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -37,10 +43,6 @@ export function Contact() {
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError('Please enter a valid email address.')
     if (message.trim().length < 10) return setError('Please describe your inquiry (at least 10 characters).')
 
-    const subject = encodeURIComponent(`[Hirely] ${topic} — from ${name.trim()}`)
-    const body = encodeURIComponent(
-      `Name: ${name.trim()}\nEmail: ${email.trim()}\nTopic: ${topic}\n\n${message.trim()}\n\n— sent from hirelly.vercel.app`
-    )
     const a = document.createElement('a')
     a.href = `mailto:nihir12121@gmail.com?subject=${subject}&body=${body}`
     document.body.appendChild(a)
@@ -91,14 +93,19 @@ export function Contact() {
               {sent ? (
                 <>
                   <p className="lp-form-msg lp-form-ok">
-                    Your email app should have opened with the message ready to go. If it didn't, open it directly in Gmail below.
+                    Your default email app should have opened with the message ready to go. If it didn't, or you use web mail, pick your service below:
                   </p>
-                  <a className="lp-contact-btn lp-contact-btn-ghost" href={gmailUrl} target="_blank" rel="noreferrer">
-                    Open in Gmail
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </a>
+                  <div className="lp-contact-cols">
+                    <a className="lp-contact-prov" href={gmailUrl} target="_blank" rel="noreferrer">
+                      <span className="lp-prov-g">G</span> Gmail
+                    </a>
+                    <a className="lp-contact-prov" href={outlookUrl} target="_blank" rel="noreferrer">
+                      <span className="lp-prov-o">@</span> Outlook / Hotmail
+                    </a>
+                    <a className="lp-contact-prov" href={yahooUrl} target="_blank" rel="noreferrer">
+                      <span className="lp-prov-y">Y!</span> Yahoo
+                    </a>
+                  </div>
                 </>
               ) : null}
 
