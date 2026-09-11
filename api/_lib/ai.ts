@@ -1,11 +1,11 @@
-const GEMINI_API_KEY = process.env.OPENAI_API_KEY
-const GEMINI_MODEL = process.env.OPENAI_MODEL || 'gemini-3.5-flash-lite'
+const AI_API_KEY = process.env.OPENAI_API_KEY
+const AI_MODEL = process.env.OPENAI_MODEL || 'gemini-3.5-flash-lite'
 
 function getApiKey(): string {
-  if (!GEMINI_API_KEY) {
+  if (!AI_API_KEY) {
     throw new Error('AI is not configured. Set OPENAI_API_KEY in Vercel environment variables.')
   }
-  return GEMINI_API_KEY
+  return AI_API_KEY
 }
 
 export interface ChatOptions {
@@ -17,7 +17,7 @@ export interface ChatOptions {
 
 export async function chatJson({ system, user, temperature = 0, maxTokens = 4000 }: ChatOptions): Promise<Record<string, unknown>> {
   const apiKey = getApiKey()
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${AI_MODEL}:generateContent?key=${apiKey}`
 
   let lastError: Error | null = null
 
@@ -41,13 +41,13 @@ export async function chatJson({ system, user, temperature = 0, maxTokens = 4000
 
     if (response.status === 503 || response.status === 429) {
       const errText = await response.text()
-      lastError = new Error(`Gemini API (${response.status}): ${errText}`)
+      lastError = new Error(`AI API (${response.status}): ${errText}`)
       continue
     }
 
     if (!response.ok) {
       const errText = await response.text()
-      throw new Error(`Gemini API error (${response.status}): ${errText}`)
+      throw new Error(`AI API error (${response.status}): ${errText}`)
     }
 
     const result = await response.json()

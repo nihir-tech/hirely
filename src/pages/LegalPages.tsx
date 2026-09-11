@@ -39,15 +39,14 @@ export function Privacy() {
     >
       <Section title="What we process">
         <P>
-          When you upload a resume, its text is read in your browser and sent to an AI model
-          (Google Gemini) for a single analysis request. We do not store your resume file or its
-          contents on our servers.
+          When you upload a resume, its text is read in your browser and sent to an AI model for a
+          single analysis request. We do not store your resume file or its contents on our servers.
         </P>
       </Section>
       <Section title="Where your data lives">
         <ul className="space-y-2">
           <Li><strong>Resume & analysis results:</strong> saved only in your browser's local storage, and only if you choose to save them. You can delete them anytime from the dashboard.</Li>
-          <Li><strong>AI request:</strong> sent to Google Gemini for the length of one request to generate analysis. Not persisted by Hirely.</Li>
+          <Li><strong>AI request:</strong> sent to a trusted AI provider for the length of one request to generate analysis. Not persisted by Hirely.</Li>
           <Li><strong>Anonymous counters:</strong> a random, non-identifying device id is stored in your browser to count total and online users. It contains no personal information.</Li>
         </ul>
       </Section>
@@ -60,9 +59,9 @@ export function Privacy() {
       </Section>
       <Section title="Model providers">
         <P>
-          AI analysis is processed by Google Gemini. Google's API processes the text solely to
-          generate the response and does not retain it for training. Their privacy terms apply to
-          that request.
+          AI analysis is processed by a trusted third-party model provider. The provider processes
+          the text solely to generate the response and does not retain it for training. Their
+          privacy terms apply to that request.
         </P>
       </Section>
       <Section title="Your choices">
@@ -158,8 +157,8 @@ export function DataSafety() {
       </Section>
       <Section title="Encryption & transfers">
         <P>
-          All traffic uses HTTPS. AI analysis is transferred to Google Gemini which applies its
-          own security and retention policies to that one-time request.
+          All traffic uses HTTPS. AI analysis is transferred to a trusted model provider which
+          applies its own security and retention policies to that one-time request.
         </P>
       </Section>
       <Section title="Contact">

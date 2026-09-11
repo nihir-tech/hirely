@@ -28,6 +28,7 @@ export function Contact() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [sent, setSent] = useState(false)
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=nihir12121@gmail.com&su=${encodeURIComponent(`[Hirely] ${topic} — from ${name.trim() || '?'}`)}&body=${encodeURIComponent(`Name: ${name.trim()}\nEmail: ${email.trim()}\nTopic: ${topic}\n\n${message.trim()}\n\n— sent from hirelly.vercel.app`)}`
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -40,7 +41,11 @@ export function Contact() {
     const body = encodeURIComponent(
       `Name: ${name.trim()}\nEmail: ${email.trim()}\nTopic: ${topic}\n\n${message.trim()}\n\n— sent from hirelly.vercel.app`
     )
-    window.location.href = `mailto:nihir12121@gmail.com?subject=${subject}&body=${body}`
+    const a = document.createElement('a')
+    a.href = `mailto:nihir12121@gmail.com?subject=${subject}&body=${body}`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
     setSent(true)
   }
 
@@ -84,9 +89,17 @@ export function Contact() {
 
               {error ? <p className="lp-form-msg lp-form-err">{error}</p> : null}
               {sent ? (
-                <p className="lp-form-msg lp-form-ok">
-                  Your email app should have opened with the message ready to go. Hit send there and I'll get back to you.
-                </p>
+                <>
+                  <p className="lp-form-msg lp-form-ok">
+                    Your email app should have opened with the message ready to go. If it didn't, open it directly in Gmail below.
+                  </p>
+                  <a className="lp-contact-btn lp-contact-btn-ghost" href={gmailUrl} target="_blank" rel="noreferrer">
+                    Open in Gmail
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </a>
+                </>
               ) : null}
 
               <button type="submit" className="lp-contact-btn">
@@ -121,17 +134,6 @@ export function Contact() {
                 <div>
                   <strong>Response time</strong>
                   <span>Usually within 24–48 hours</span>
-                </div>
-              </li>
-              <li>
-                <span className="lp-contact-icon">
-                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.72.5.1.68-.22.68-.49v-1.7c-2.78.62-3.37-1.37-3.37-1.37-.45-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.85.09-.66.35-1.12.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.76 1.05A9.4 9.4 0 0112 6.35c.85 0 1.7.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.21 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.93-2.35 4.8-4.58 5.05.36.32.68.95.68 1.92v2.85c0 .27.18.6.69.49A10.26 10.26 0 0022 12.25C22 6.58 17.52 2 12 2z" />
-                  </svg>
-                </span>
-                <div>
-                  <strong>Source code</strong>
-                  <a href="https://github.com/nihir-tech/hirely" target="_blank" rel="noreferrer">github.com/nihir-tech/hirely</a>
                 </div>
               </li>
             </ul>

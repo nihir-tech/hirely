@@ -430,6 +430,8 @@
 .lp-contact-btn { position: relative; display: inline-flex; align-items: center; gap: 9px; padding: 14px 26px; border: none; border-radius: 13px; font-family: var(--lp-display); font-size: .95rem; font-weight: 700; color: #fff; cursor: pointer; background: linear-gradient(120deg, #7c3aed 0%, #8b5cf6 70%, #a78bfa); background-size: 200% 100%; box-shadow: 0 6px 24px rgba(139,92,246,.35), inset 0 1px 0 rgba(255,255,255,.18); transition: all .35s var(--lp-ease); }
 .lp-contact-btn:hover { background-position: 100% 0; box-shadow: 0 10px 34px rgba(139,92,246,.5); transform: translateY(-2px); }
 .lp-contact-btn svg { width: 16px; height: 16px; }
+.lp-contact-btn-ghost { background: rgba(255,255,255,.03); box-shadow: none; border: 1px solid var(--lp-line-2); text-decoration: none; font-size: .88rem; }
+.lp-contact-btn-ghost:hover { background: rgba(139,92,246,.12); box-shadow: 0 0 20px rgba(139,92,246,.2); transform: translateY(-2px); background-position: initial; }
 .lp-contact-side { height: fit-content; }
 .lp-contact-side-h { font-family: var(--lp-display); font-size: 1.05rem; font-weight: 700; color: var(--lp-text); margin: 0 0 16px; }
 .lp-contact-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
