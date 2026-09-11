@@ -10,6 +10,7 @@ import { Analysis } from './pages/Analysis'
 import { Optimize } from './pages/Optimize'
 import { Dashboard } from './pages/Dashboard'
 import { Privacy, Terms, DataSafety } from './pages/LegalPages'
+import { Contact } from './pages/Contact'
 import { NotFound } from './pages/NotFound'
 
 function ScrollManager() {
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/data-safety" element={<DataSafety />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

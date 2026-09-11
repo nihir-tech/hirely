@@ -49,7 +49,7 @@ const SOCIALS = [
   },
 ]
 
-const COLUMNS: { title: string; links: { label: string; to: string; external?: boolean }[] }[] = [
+const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
   {
     title: 'Product',
     links: [
@@ -65,7 +65,7 @@ const COLUMNS: { title: string; links: { label: string; to: string; external?: b
       { label: 'FAQ', to: '/#faq' },
       { label: 'Why it works', to: '/#how-it-works' },
       { label: 'Optimize for a job', to: '/upload' },
-      { label: 'Contact', to: 'mailto:nihir12121@gmail.com', external: true },
+      { label: 'Contact', to: '/contact' },
     ],
   },
   {
@@ -104,11 +104,7 @@ export function Footer() {
               <ul>
                 {col.links.map((l) => (
                   <li key={l.label}>
-                    {l.external ? (
-                      <a href={l.to} target={l.to.startsWith('http') ? '_blank' : undefined} rel="noreferrer">{l.label}</a>
-                    ) : (
-                      <Link to={l.to}>{l.label}</Link>
-                    )}
+                    <Link to={l.to}>{l.label}</Link>
                   </li>
                 ))}
               </ul>

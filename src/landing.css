@@ -410,6 +410,42 @@
 .lp-legal-link { color: var(--lp-brand-400); text-decoration: none; transition: color .2s; }
 .lp-legal-link:hover { color: #fff; }
 
+/* ── Contact page ─────────────────────────── */
+.lp-contact-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 20px; align-items: start; }
+.lp-contact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.lp-field { display: flex; flex-direction: column; gap: 7px; }
+.lp-label { font-family: var(--lp-display); font-size: .78rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--lp-text-2); }
+.lp-req { color: var(--lp-brand-400); font-style: normal; }
+.lp-input { width: 100%; background: rgba(12,12,18,.6); border: 1px solid rgba(255,255,255,.08); color: var(--lp-text); font: inherit; font-size: .92rem; padding: 12px 14px; border-radius: 12px; transition: all .3s ease; }
+.lp-input::placeholder { color: rgba(255,255,255,.3); }
+.lp-input:focus { outline: none; background: rgba(18,15,25,.65); border-color: rgba(139,92,246,.45); box-shadow: 0 0 0 3px rgba(139,92,246,.12); }
+.lp-textarea { min-height: 140px; resize: vertical; line-height: 1.6; }
+.lp-select-wrap { position: relative; }
+.lp-select { appearance: none; -webkit-appearance: none; padding-right: 38px; cursor: pointer; }
+.lp-select option { background: #0c0c12; color: var(--lp-text); }
+.lp-select-chev { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--lp-text-2); pointer-events: none; }
+.lp-form-msg { font-size: .86rem; margin: 0; line-height: 1.5; }
+.lp-form-err { color: #fda4af; }
+.lp-form-ok { color: #86efac; }
+.lp-contact-btn { position: relative; display: inline-flex; align-items: center; gap: 9px; padding: 14px 26px; border: none; border-radius: 13px; font-family: var(--lp-display); font-size: .95rem; font-weight: 700; color: #fff; cursor: pointer; background: linear-gradient(120deg, #7c3aed 0%, #8b5cf6 70%, #a78bfa); background-size: 200% 100%; box-shadow: 0 6px 24px rgba(139,92,246,.35), inset 0 1px 0 rgba(255,255,255,.18); transition: all .35s var(--lp-ease); }
+.lp-contact-btn:hover { background-position: 100% 0; box-shadow: 0 10px 34px rgba(139,92,246,.5); transform: translateY(-2px); }
+.lp-contact-btn svg { width: 16px; height: 16px; }
+.lp-contact-side { height: fit-content; }
+.lp-contact-side-h { font-family: var(--lp-display); font-size: 1.05rem; font-weight: 700; color: var(--lp-text); margin: 0 0 16px; }
+.lp-contact-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+.lp-contact-list li { display: flex; align-items: flex-start; gap: 12px; }
+.lp-contact-icon { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.25); color: var(--lp-brand-300); }
+.lp-contact-icon svg { width: 18px; height: 18px; }
+.lp-contact-list div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lp-contact-list strong { font-family: var(--lp-display); font-size: .82rem; color: var(--lp-text); }
+.lp-contact-list span:not(.lp-contact-icon) { font-size: .84rem; color: var(--lp-text-2); }
+.lp-contact-list a { font-size: .84rem; color: var(--lp-brand-300); text-decoration: none; word-break: break-word; transition: color .2s; }
+.lp-contact-list a:hover { color: #fff; }
+@media (max-width: 860px) {
+  .lp-contact-grid { grid-template-columns: 1fr; }
+  .lp-contact-row { grid-template-columns: 1fr; }
+}
+
 /* ── Global Navbar ───────────────────────── */
 .lp-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 900; transition: all .45s cubic-bezier(.16,1,.3,1); }
 .lp-nav.scrolled { background: rgba(4,4,4,.78); backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%); border-bottom: 1px solid rgba(255,255,255,.06); box-shadow: 0 10px 40px rgba(0,0,0,.45); }
