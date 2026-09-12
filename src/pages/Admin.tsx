@@ -108,6 +108,16 @@ export function Admin() {
             </div>
 
             <div className="space-y-3">
+              {denied && (
+                <div className="glass-card p-4 rounded-xl border border-amber-500/25">
+                  <p className="text-xs text-amber-300 font-medium mb-1">Read failed — check database rules</p>
+                  <p className="text-xs text-neutral-400 break-words">{denied}</p>
+                  <p className="text-xs text-neutral-500 mt-2">
+                    Firebase Realtime Database → Rules mein <code className="text-amber-200">firebase.rules.json</code> ka content
+                    paste karke Publish karo (submissions node ko owner emails read kar sakein).
+                  </p>
+                </div>
+              )}
               {subs.map((s) => (
                 <div key={s.key} className="glass-card p-4 sm:p-5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

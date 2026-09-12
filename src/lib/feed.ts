@@ -32,5 +32,8 @@ export function publishSubmission(record: AnalysisResult, user: User): Promise<b
     createdAt: new Date().toISOString(),
   })
     .then(() => true)
-    .catch(() => false)
+    .catch((err) => {
+      console.warn('Failed to publish submission:', err?.message ?? err)
+      return false
+    })
 }
