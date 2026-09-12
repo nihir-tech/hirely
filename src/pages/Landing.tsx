@@ -74,7 +74,7 @@ const TESTIMONIALS = [
 ]
 
 const FAQS = [
-  { q: 'Is my resume data safe?', a: 'Yes. Files are processed securely, never sold, and only stored if you choose to save them. No data is shared with third parties.' },
+  { q: 'Is my resume data safe?', a: 'Analysis happens locally and your results are saved in your browser. We do not sell or share your data with third parties. For signed-in users, the operator may retain files for service-quality purposes.' },
   { q: 'Which file formats are supported?', a: 'PDF, PNG and JPG. Just upload and the parser handles the rest.' },
   { q: 'Do I really need a target job description?', a: 'Not for the basic review. Adding one unlocks the full job-match and keyword tools, which make the biggest difference.' },
   { q: 'Is Hirely free?', a: 'Yes — analyze and improve your resume free. Results in under 30 seconds, no credit card needed.' },

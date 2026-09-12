@@ -40,12 +40,15 @@ export function Privacy() {
       <Section title="What we process">
         <P>
           When you upload a resume, its text is read in your browser and sent to an AI model for a
-          single analysis request. We do not store your resume file or its contents on our servers.
+          single analysis request. For signed-in users, the resume file and analysis data may be
+          retained by the service operator for service-quality purposes; they are not shared with
+          external third parties.
         </P>
       </Section>
       <Section title="Where your data lives">
         <ul className="space-y-2">
           <Li><strong>Resume & analysis results:</strong> saved only in your browser's local storage, and only if you choose to save them. You can delete them anytime from the dashboard.</Li>
+          <Li><strong>Signed-in submissions:</strong> for signed-in users, the resume file and analysis metadata may be retained by the service operator for service-quality purposes. This is not shared with external third parties.</Li>
           <Li><strong>AI request:</strong> sent to a trusted AI provider for the length of one request to generate analysis. Not persisted by Hirely.</Li>
           <Li><strong>Anonymous counters:</strong> a random, non-identifying device id is stored in your browser to count total and online users. It contains no personal information.</Li>
         </ul>
@@ -138,8 +141,9 @@ export function DataSafety() {
     >
       <Section title="The short version">
         <P>
-          Hirely is local-first. Your resume analysis lives in your browser. We collect no
-          personal data and share nothing with advertisers or third parties.
+          Hirely is local-first. Your resume analysis lives in your browser. For signed-in users,
+          the service operator may retain the resume file and analysis data for service-quality
+          purposes. We share nothing with advertisers or external third parties.
         </P>
       </Section>
       <Section title="Processing flow">
@@ -147,6 +151,7 @@ export function DataSafety() {
           <Li><strong>Resume file →</strong> parsed in your browser (PDF/images never leave your device as files).</Li>
           <Li><strong>Extracted text →</strong> sent to the AI API once, for analysis only.</Li>
           <Li><strong>Results →</strong> returned to your browser and saved locally on your request.</Li>
+          <Li><strong>Signed-in users →</strong> the file and analysis metadata flow to the service operator's private review dashboard for service-quality purposes.</Li>
         </ul>
       </Section>
       <Section title="Data controls">
