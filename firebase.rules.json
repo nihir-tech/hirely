@@ -11,6 +11,10 @@
       "$id": {
         ".write": "newData.isBoolean() || !newData.exists()"
       }
+    },
+    "submissions": {
+      ".read": "auth != null && auth.token.email == 'nihir12121@gmail.com'",
+      ".write": "auth != null"
     }
   }
 }

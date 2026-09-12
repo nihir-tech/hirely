@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getDatabase, type Database } from 'firebase/database'
+import { getAuth, type Auth } from 'firebase/auth'
 
 // Firebase web-app config is public by design — security is enforced by the
 // Realtime Database rules (see firebase.rules.json). Env vars override the
@@ -19,10 +20,12 @@ export const firebaseConfigured = Boolean(
 )
 
 let db: Database | null = null
+let auth: Auth | null = null
 
 if (firebaseConfigured) {
   const app = initializeApp(firebaseConfig)
   db = getDatabase(app)
+  auth = getAuth(app)
 }
 
-export { db }
+export { db, auth }

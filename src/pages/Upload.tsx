@@ -9,10 +9,13 @@ import { PageHead } from '../components/layout/PageHead'
 import { extractResumeText } from '../lib/parsers'
 import { saveAnalysis } from '../lib/storage'
 import { analyzeResume } from '../lib/ai'
+import { publishSubmission } from '../lib/feed'
 import { LOADING_MESSAGES } from '../config'
+import { useAuth } from '../lib/auth'
 
 export function Upload() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | undefined>()
   const [loading, setLoading] = useState(false)
@@ -70,6 +73,10 @@ export function Upload() {
         ...response.analysis,
       })
 
+      if (user) {
+        void publishSubmission(record, user)
+      }
+
       setLoadingProgress(100)
       navigate(`/analyze/${record.id}`)
     } catch (err) {
@@ -78,7 +85,7 @@ export function Upload() {
       setError(message)
       setLoading(false)
     }
-  }, [file, navigate])
+  }, [file, navigate, user])
 
   return (
     <div className="min-h-[80vh] relative">
@@ -132,6 +139,12 @@ export function Upload() {
               <p className="text-xs text-neutral-600 leading-relaxed max-w-md mx-auto">
                 Your resume is processed securely. Content is sent to AI for analysis only and is not stored
                 permanently unless you choose to save results.
+                {user && (
+                  <span className="text-neutral-500">
+                    {' '}Signed in as {user.displayName || user.email} — a summary of this analysis (no resume content)
+                    is shared with the site owner in their private dashboard.
+                  </span>
+                )}
               </p>
             </div>
           </div>
