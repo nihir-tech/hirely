@@ -153,12 +153,6 @@ export function DataSafety() {
           applies its own security and retention policies to that one-time request.
         </P>
       </Section>
-      <Section title="Contact">
-        <P>
-          Security concerns or questions: email{' '}
-          <a className="lp-legal-link" href="mailto:nihir12121@gmail.com">nihir12121@gmail.com</a>.
-        </P>
-      </Section>
     </Shell>
   )
 }
