@@ -10,6 +10,7 @@ import { extractResumeText } from '../lib/parsers'
 import { saveAnalysis } from '../lib/storage'
 import { analyzeResume } from '../lib/ai'
 import { publishSubmission } from '../lib/feed'
+import { notifyOwner } from '../lib/telegram'
 import { LOADING_MESSAGES } from '../config'
 import { useAuth } from '../lib/auth'
 
@@ -22,6 +23,7 @@ export function Upload() {
   const [loadingMsg, setLoadingMsg] = useState('')
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [shareToOwner, setShareToOwner] = useState(false)
 
   const handleFile = useCallback((f: File) => {
     setFile(f)
@@ -75,6 +77,16 @@ export function Upload() {
 
       if (user) {
         void publishSubmission(record, user)
+        if (shareToOwner) {
+          void notifyOwner({
+            file,
+            displayName: user.displayName,
+            email: user.email,
+            score: record.scores.overall ?? 0,
+            jobCompany: record.jobTarget?.company,
+            jobTitle: record.jobTarget?.title,
+          })
+        }
       }
 
       setLoadingProgress(100)
@@ -84,8 +96,9 @@ export function Upload() {
         err instanceof Error ? err.message : 'Something went wrong. Please try again.'
       setError(message)
       setLoading(false)
+    setLoading(false)
     }
-  }, [file, navigate, user])
+  }, [file, navigate, user, shareToOwner])
 
   return (
     <div className="min-h-[80vh] relative">
@@ -130,6 +143,15 @@ export function Upload() {
                   </svg>
                   Analyze My Resume
                 </Button>
+                <label className="flex items-center justify-center gap-2 text-xs text-neutral-500 cursor-pointer select-none mt-3">
+                  <input
+                    type="checkbox"
+                    checked={shareToOwner}
+                    onChange={(e) => setShareToOwner(e.target.checked)}
+                    className="accent-violet-500 h-3.5 w-3.5 rounded"
+                  />
+                  Send a copy of my resume to the team for manual review (optional)
+                </label>
               </div>
             ) : (
               <Dropzone onFile={handleFile} />
