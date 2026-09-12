@@ -57,7 +57,6 @@ export function Privacy() {
         <ul className="space-y-2">
           <Li>We do not sell, rent, or share your data.</Li>
           <Li>We do not run ads or install tracking cookies.</Li>
-          <Li>We do not read your resume for anything except the analysis you request.</Li>
         </ul>
       </Section>
       <Section title="Model providers">
@@ -71,12 +70,6 @@ export function Privacy() {
         <P>
           Everything is optional and local: delete saved analyses from your dashboard, or clear
           your browser's site data to remove the device id used for counters.
-        </P>
-      </Section>
-      <Section title="Contact">
-        <P>
-          Questions about privacy? Email{' '}
-          <a className="lp-legal-link" href="mailto:nihir12121@gmail.com">nihir12121@gmail.com</a>.
         </P>
       </Section>
     </Shell>
@@ -120,12 +113,6 @@ export function Terms() {
         <P>
           Hirely shall not be liable for any indirect, incidental, or consequential damages
           arising from use of the service or reliance on AI-generated output.
-        </P>
-      </Section>
-      <Section title="Changes">
-        <P>
-          We may update these terms from time to time. Continued use of the service after changes
-          constitutes acceptance of the updated terms.
         </P>
       </Section>
     </Shell>
