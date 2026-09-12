@@ -1,6 +1,10 @@
 export const APP_NAME = 'Hirely'
 
-export const ADMIN_EMAILS = ['nihir12121@gmail.com']
+export const ADMIN_EMAILS = [
+  'nihir12121@gmail.com',
+  'sartanparanihir@gmail.com',
+  'ferved69@gmail.com',
+]
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 export const MIN_TEXT_LENGTH = 50
