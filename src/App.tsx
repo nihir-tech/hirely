@@ -14,6 +14,7 @@ import { Privacy, Terms, DataSafety } from './pages/LegalPages'
 import { Contact } from './pages/Contact'
 import { Admin } from './pages/Admin'
 import { NotFound } from './pages/NotFound'
+import { ProtectedRoute } from './components/layout/ProtectedRoute'
 
 function ScrollManager() {
   const location = useLocation()
@@ -42,15 +43,43 @@ export default function App() {
         <main className="flex-1 relative z-[1]">
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/upload" element={<Upload />} />
-            <Route path="/analyze/:id" element={<Analysis />} />
-            <Route path="/optimize/:id" element={<Optimize />} />
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/data-safety" element={<DataSafety />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<Admin />} />
+            <Route
+              path="/upload"
+              element={
+                <ProtectedRoute>
+                  <Upload />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analyze/:id"
+              element={
+                <ProtectedRoute>
+                  <Analysis />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/optimize/:id"
+              element={
+                <ProtectedRoute>
+                  <Optimize />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
