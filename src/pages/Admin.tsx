@@ -15,10 +15,32 @@ export interface OnlineUser {
   at?: number
 }
 
+export interface VisitEntry {
+  key: string
+  deviceId?: string
+  email?: string
+  displayName?: string
+  kind: 'visit' | 'login' | 'analyze'
+  at?: number
+}
+
+const VISIT_LABEL: Record<VisitEntry['kind'], string> = {
+  visit: 'Visit',
+  login: 'Login',
+  analyze: 'Analysis',
+}
+
+const VISIT_BADGE: Record<VisitEntry['kind'], string> = {
+  visit: 'bg-white/5 text-neutral-400 border-white/10',
+  login: 'bg-violet-500/15 text-violet-300 border-violet-400/25',
+  analyze: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/25',
+}
+
 export function Admin() {
   const { user, loading: authLoading, isOwner, signIn } = useAuth()
   const [subs, setSubs] = useState<Submission[]>([])
   const [onlines, setOnlines] = useState<OnlineUser[]>([])
+  const [visits, setVisits] = useState<VisitEntry[]>([])
   const [denied, setDenied] = useState<string | null>(null)
 
   useEffect(() => {
@@ -55,6 +77,26 @@ export function Admin() {
         const list = Object.entries(val).map(([key, data]) => ({ key, ...data }))
         list.sort((a, b) => (b.at ?? 0) - (a.at ?? 0))
         setOnlines(list)
+      },
+      (err) => setDenied(err.message),
+    )
+    return unsub
+  }, [])
+
+  useEffect(() => {
+    if (!db || !firebaseConfigured) return
+    const visRef = ref(db, 'visits')
+    const unsub = onValue(
+      visRef,
+      (snap) => {
+        const val = snap.val() as Record<string, Omit<VisitEntry, 'key'>> | null
+        if (!val) {
+          setVisits([])
+          return
+        }
+        const list = Object.entries(val).map(([key, data]) => ({ key, ...data }))
+        list.sort((a, b) => (b.at ?? 0) - (a.at ?? 0))
+        setVisits(list.slice(0, 60))
       },
       (err) => setDenied(err.message),
     )
@@ -156,6 +198,41 @@ export function Admin() {
                       {o.at != null && (
                         <span className="text-[11px] text-neutral-500 shrink-0">
                           {new Date(o.at).toLocaleTimeString()}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="glass-card p-5 rounded-xl mb-5">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <h2 className="text-sm font-semibold text-white">Recent activity</h2>
+                <span className="text-[11px] text-neutral-500">{visits.length} most recent</span>
+              </div>
+              {visits.length === 0 ? (
+                <p className="text-xs text-neutral-500">No activity recorded yet.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {visits.map((v) => (
+                    <li key={v.key} className="flex items-center justify-between gap-3 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className={`shrink-0 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${VISIT_BADGE[v.kind]}`}>
+                          {VISIT_LABEL[v.kind]}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-sm text-neutral-200 truncate">
+                            {v.displayName || (v.email ? v.email.split('@')[0] : 'Guest')}
+                          </p>
+                          <p className="text-xs text-neutral-500 truncate">
+                            {v.email || (v.deviceId ? `device ${v.deviceId.slice(0, 8)}…` : 'Anonymous')}
+                          </p>
+                        </div>
+                      </div>
+                      {v.at != null && (
+                        <span className="text-[11px] text-neutral-500 shrink-0">
+                          {new Date(v.at).toLocaleString()}
                         </span>
                       )}
                     </li>

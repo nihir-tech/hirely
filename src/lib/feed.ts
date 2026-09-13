@@ -1,6 +1,7 @@
 import { push, ref } from 'firebase/database'
 import type { User } from 'firebase/auth'
 import { db, firebaseConfigured } from './firebase'
+import { logVisit } from './visits'
 import type { AnalysisResult } from '../types'
 
 export interface Submission {
@@ -31,7 +32,13 @@ export function publishSubmission(record: AnalysisResult, user: User): Promise<b
     sections: record.extracted?.detectedSections?.length ?? 0,
     createdAt: new Date().toISOString(),
   })
-    .then(() => true)
+    .then(() => {
+      logVisit('analyze', {
+        email: user.email ?? '',
+        displayName: user.displayName ?? '',
+      })
+      return true
+    })
     .catch((err) => {
       console.warn('Failed to publish submission:', err?.message ?? err)
       return false

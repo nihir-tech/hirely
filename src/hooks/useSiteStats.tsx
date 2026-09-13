@@ -1,9 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { ref, onValue, set, onDisconnect, type Unsubscribe, type DataSnapshot } from 'firebase/database'
 import { db, firebaseConfigured } from '../lib/firebase'
 import { useAuth } from '../lib/auth'
-
-const DEVICE_KEY = 'hirely:device_id'
+import { getDeviceId } from '../lib/device'
+import { logVisit } from '../lib/visits'
 
 export interface SiteStats {
   totalUsers: number
@@ -15,27 +15,29 @@ function childCount(snap: DataSnapshot): number {
   return val ? Object.keys(val).length : 0
 }
 
-function getDeviceId(): string | null {
-  try {
-    let id = localStorage.getItem(DEVICE_KEY)
-    if (!id) {
-      id =
-        typeof crypto !== 'undefined' && 'randomUUID' in crypto
-          ? crypto.randomUUID()
-          : `d-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
-      localStorage.setItem(DEVICE_KEY, id)
-    }
-    return id
-  } catch {
-    return null
-  }
-}
-
 const StatsContext = createContext<SiteStats | null>(null)
 
 export function SiteStatsProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const [stats, setStats] = useState<SiteStats | null>(null)
+  const prevEmail = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!db || !firebaseConfigured) return
+    logVisit('visit', {
+      email: user?.email ?? undefined,
+      displayName: user?.displayName ?? undefined,
+    })
+  }, [])
+
+  useEffect(() => {
+    const prev = prevEmail.current
+    prevEmail.current = user?.email ?? null
+    if (!db || !firebaseConfigured) return
+    if (user?.email && prev !== user.email) {
+      logVisit('login', { email: user.email, displayName: user.displayName ?? '' })
+    }
+  }, [user?.email])
 
   useEffect(() => {
     if (!db || !firebaseConfigured) return
