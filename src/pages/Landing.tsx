@@ -351,21 +351,13 @@ function CompareSlider() {
           dragging.current = false
           if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId)
         }}
-        onKeyDown={(e) => {
-          const wrap = wrapRef.current
-          if (!wrap) return
-          const r = wrap.getBoundingClientRect()
-          const step = r.width * 0.06
-          if (e.key === 'ArrowLeft') { e.preventDefault(); setPos(r.left + r.width / 2 - step) }
-          if (e.key === 'ArrowRight') { e.preventDefault(); setPos(r.left + r.width / 2 + step) }
-        }}
       >
         {renderPane(cs.before, 'before')}
         {renderPane(cs.after, 'after')}
         <div ref={handleRef} className="lp-compare-handle" />
       </div>
 
-      <p className="lp-compare-hint">Drag the handle — or use ← → keys</p>
+      <p className="lp-compare-hint">Drag the handle</p>
 
       <div className="lp-compare-stats">
         <div><b>{cs.before.score} → {cs.after.score}</b><span>ATS score</span></div>
