@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { ref, onValue, set, onDisconnect, type Unsubscribe, type DataSnapshot } from 'firebase/database'
 import { db, firebaseConfigured } from '../lib/firebase'
+import { useAuth } from '../lib/auth'
 
 const DEVICE_KEY = 'hirely:device_id'
 
@@ -33,9 +34,44 @@ function getDeviceId(): string | null {
 const StatsContext = createContext<SiteStats | null>(null)
 
 export function SiteStatsProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
   const [stats, setStats] = useState<SiteStats | null>(null)
 
   useEffect(() => {
+    if (!db || !firebaseConfigured) return
+    const deviceId = getDeviceId()
+    if (!deviceId) return
+
+    const sessionRef = ref(db, `sessions/${deviceId}`)
+    if (!user?.email) {
+      void set(sessionRef, null).catch(() => {})
+      return
+    }
+
+    void set(sessionRef, {
+      email: user.email,
+      displayName: user.displayName ?? '',
+      at: Date.now(),
+    })
+      .then(() => {
+        onDisconnect(sessionRef).remove()
+      })
+      .catch(() => {})
+
+    const onPageHide = () => {
+      onDisconnect(sessionRef).cancel()
+      void set(sessionRef, null)
+    }
+    window.addEventListener('pagehide', onPageHide)
+
+    return () => {
+      window.removeEventListener('pagehide', onPageHide)
+      onDisconnect(sessionRef).cancel()
+      void set(sessionRef, null)
+    }
+  }, [user?.email, user?.displayName])
+
+    useEffect(() => {
     if (!db || !firebaseConfigured) return
     const deviceId = getDeviceId()
     if (!deviceId) return

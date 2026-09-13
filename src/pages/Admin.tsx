@@ -9,9 +9,16 @@ import { ScoreRing } from '../components/ui/ScoreRing'
 import { Spinner } from '../components/ui/Spinner'
 import { GoogleIcon } from '../components/ui/GoogleIcon'
 
+export interface OnlineUser {
+  email: string
+  displayName?: string
+  at?: number
+}
+
 export function Admin() {
   const { user, loading: authLoading, isOwner, signIn } = useAuth()
   const [subs, setSubs] = useState<Submission[]>([])
+  const [onlines, setOnlines] = useState<OnlineUser[]>([])
   const [denied, setDenied] = useState<string | null>(null)
 
   useEffect(() => {
@@ -28,6 +35,26 @@ export function Admin() {
         const list = Object.entries(val).map(([key, data]) => ({ key, ...data }))
         list.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
         setSubs(list)
+      },
+      (err) => setDenied(err.message),
+    )
+    return unsub
+  }, [])
+
+  useEffect(() => {
+    if (!db || !firebaseConfigured) return
+    const sesRef = ref(db, 'sessions')
+    const unsub = onValue(
+      sesRef,
+      (snap) => {
+        const val = snap.val() as Record<string, Omit<OnlineUser, 'key'>> | null
+        if (!val) {
+          setOnlines([])
+          return
+        }
+        const list = Object.entries(val).map(([key, data]) => ({ key, ...data }))
+        list.sort((a, b) => (b.at ?? 0) - (a.at ?? 0))
+        setOnlines(list)
       },
       (err) => setDenied(err.message),
     )
@@ -104,6 +131,39 @@ export function Admin() {
                     <p className="text-lg font-bold text-brand-400">{stats.avg}</p>
                   </div>
                 </div>
+              )}
+            </div>
+
+            <div className="glass-card p-5 rounded-xl mb-5">
+              <div className="flex items-center justify-between gap-4 mb-2">
+                <h2 className="text-sm font-semibold text-white">Online now — signed-in users</h2>
+                <span className="lp-live-pill" title="Live right now">
+                  <span className="lp-live-dot" /> {onlines.length}
+                </span>
+              </div>
+              <p className="text-xs text-neutral-500 mb-4">
+                Signed-in users jinki tab abhi khuli hai. Tab band hote hi list se hat jayenge.
+              </p>
+              {onlines.length === 0 ? (
+                <p className="text-xs text-neutral-500">
+                  No signed-in users online right now.
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {onlines.map((o) => (
+                    <li key={o.email} className="flex items-center justify-between gap-3 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2">
+                      <div className="min-w-0">
+                        <p className="text-sm text-neutral-200 truncate">{o.displayName || 'Hirely user'}</p>
+                        <p className="text-xs text-neutral-500 truncate">{o.email}</p>
+                      </div>
+                      {o.at != null && (
+                        <span className="text-[11px] text-neutral-500 shrink-0">
+                          {new Date(o.at).toLocaleTimeString()}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
 

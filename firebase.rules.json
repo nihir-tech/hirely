@@ -15,6 +15,12 @@
     "submissions": {
       ".read": "auth != null && (auth.token.email == 'nihir12121@gmail.com' || auth.token.email == 'sartanparanihir@gmail.com' || auth.token.email == 'ferved69@gmail.com')",
       ".write": "auth != null"
+    },
+    "sessions": {
+      ".read": "auth != null && (auth.token.email == 'nihir12121@gmail.com' || auth.token.email == 'sartanparanihir@gmail.com' || auth.token.email == 'ferved69@gmail.com')",
+      "$id": {
+        ".write": "!newData.exists() || (auth != null && newData.child('email').val() == auth.token.email && newData.hasChild('at') && newData.child('at').isNumber())"
+      }
     }
   }
 }
