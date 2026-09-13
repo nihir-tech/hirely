@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { APP_NAME } from '../../config'
-import { useSiteStats } from '../../hooks/useSiteStats'
 import { LogoMark } from './LogoMark'
 
 const logo = (
@@ -48,37 +47,21 @@ const SOCIALS = [
   },
 ]
 
-const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
-  {
-    title: 'Product',
-    links: [
-      { label: 'Analyze Resume', to: '/upload' },
-      { label: 'Dashboard', to: '/dashboard' },
-      { label: 'How It Works', to: '/#how-it-works' },
-      { label: 'Features', to: '/#features' },
-    ],
-  },
-  {
-    title: 'Resources',
-    links: [
-      { label: 'FAQ', to: '/#faq' },
-      { label: 'Why it works', to: '/#how-it-works' },
-      { label: 'Optimize for a job', to: '/upload' },
-      { label: 'Contact', to: '/contact' },
-    ],
-  },
-  {
-    title: 'Legal',
-    links: [
-      { label: 'Privacy', to: '/privacy' },
-      { label: 'Terms', to: '/terms' },
-      { label: 'Data safety', to: '/data-safety' },
-    ],
-  },
+const PRODUCT_LINKS = [
+  { label: 'Analyze Resume', to: '/upload' },
+  { label: 'Dashboard', to: '/dashboard' },
+  { label: 'How It Works', to: '/#how-it-works' },
+  { label: 'Features', to: '/#features' },
+]
+
+const RESOURCE_LINKS = [
+  { label: 'FAQ', to: '/#faq' },
+  { label: 'Why it works', to: '/#how-it-works' },
+  { label: 'Optimize for a job', to: '/upload' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 export function Footer() {
-  const stats = useSiteStats()
   return (
     <footer className="lp-footer">
       <div className="lp-container lp-footer-inner" style={{ paddingInline: 24 }}>
@@ -97,52 +80,47 @@ export function Footer() {
             </div>
           </div>
 
-          {COLUMNS.map((col) => (
-            <div className="lp-footer-col" key={col.title}>
-              <h4>{col.title}</h4>
-              <ul>
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    <Link to={l.to}>{l.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="lp-footer-col" key="product">
+            <h4>Product</h4>
+            <ul>
+              {PRODUCT_LINKS.map((l) => (
+                <li key={l.label}>
+                  <Link to={l.to}>{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <div className="lp-footer-cta">
-            <div className="lp-footer-cta-glow" />
-            <h4>Ready to get hired?</h4>
-            <p>Free AI analysis in seconds. No signup needed.</p>
-            <Link to="/upload" className="lp-footer-cta-btn">
-              Get Started
+          <div className="lp-footer-col" key="resources">
+            <h4>Resources</h4>
+            <ul>
+              {RESOURCE_LINKS.map((l) => (
+                <li key={l.label}>
+                  <Link to={l.to}>{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+            <Link to="/upload" className="lp-footer-sec-btn">
+              Analyze My Resume
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5-5 5M6 12h12" />
               </svg>
             </Link>
-            {stats && (
-              <div className="lp-footer-stats" role="status">
-                <span><strong>{stats.totalUsers.toLocaleString()}</strong> total users</span>
-                <span className="lp-live-sep">·</span>
-                <span className="lp-live-pill" title="Live right now">
-                  <span className="lp-live-dot" /> <strong>{stats.liveUsers.toLocaleString()}</strong> online now
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
         <div className="lp-footer-bottom">
-          <p>© {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
-          <p className="lp-footer-made">
-            Made by <a href="mailto:nihir12121@gmail.com">Nihir Prajapati</a>
-            <span className="lp-live-sep">·</span> nihir12121@gmail.com
-          </p>
+          <p className="lp-footer-copy">© {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
           <div className="lp-footer-bottom-links">
             <Link to="/privacy">Privacy</Link>
             <span className="lp-live-sep">·</span>
             <Link to="/terms">Terms</Link>
+            <span className="lp-live-sep">·</span>
+            <Link to="/data-safety">Data safety</Link>
           </div>
+          <p className="lp-footer-made">
+            Made by <a href="mailto:nihir12121@gmail.com">Nihir Prajapati</a>
+          </p>
         </div>
       </div>
     </footer>
