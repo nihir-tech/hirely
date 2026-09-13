@@ -294,7 +294,7 @@
 .landing .lp-pane-before .lp-compare-label { color: var(--lp-red); }
 .landing .lp-pane-after .lp-compare-label { color: var(--lp-emerald); }
 .landing .lp-pane-head { display: flex; align-items: center; gap: clamp(12px,2vw,20px); }
-.landing .lp-round { display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; font-family: var(--lp-display); font-weight: 800; font-size: clamp(1.5rem,4vw,2.2rem); min-width: clamp(54px,8vw,84px); }
+.landing .lp-round { display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; font-family: var(--lp-display); font-weight: 800; font-size: clamp(1.2rem,3.2vw,1.75rem); min-width: clamp(44px,6.5vw,70px); }
 .landing .lp-round-suffix { font-family: var(--lp-body); font-weight: 500; font-size: .55em; text-transform: uppercase; letter-spacing: .14em; color: var(--lp-text-3); margin-top: 4px; }
 .landing .lp-pane-before .lp-round { color: var(--lp-red); }
 .landing .lp-pane-after .lp-round { color: var(--lp-emerald); }
@@ -302,7 +302,7 @@
 .landing .lp-pane-title span { font-size: clamp(.68rem,1.4vw,.82rem); color: var(--lp-text-3); }
 .landing .lp-pane-section { font-size: .62rem; text-transform: uppercase; letter-spacing: .18em; font-weight: 700; color: var(--lp-text-3); padding-top: clamp(2px,.4vh,4px); }
 .landing .lp-pane-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: clamp(6px,1vh,9px); }
-.landing .lp-pane-items li { display: flex; align-items: flex-start; gap: 8px; font-size: clamp(.68rem,1.4vw,.86rem); color: var(--lp-text-2); line-height: 1.45; }
+.landing .lp-pane-items li { display: flex; align-items: flex-start; gap: 8px; font-size: clamp(.72rem,1.5vw,.92rem); color: var(--lp-text-2); line-height: 1.5; }
 .landing .lp-kw { flex: none; font-size: .58rem; font-weight: 700; letter-spacing: .04em; padding: 3px 7px; border-radius: 6px; margin-top: 1px; }
 .landing .lp-kw.ok { color: var(--lp-emerald); background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.35); }
 .landing .lp-kw.bad { color: #fda4af; background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); }

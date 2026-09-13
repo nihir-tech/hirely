@@ -144,6 +144,7 @@ const CASES: CompareCase[] = [
         { kw: 'API', ok: false, text: 'Responsible for improving API performance' },
         { kw: 'React', ok: true, text: 'Built some dashboards with React' },
         { kw: 'CI/CD', ok: false, text: 'Helped ship features to production' },
+        { kw: 'Auth', ok: false, text: 'Worked on login flows occasionally' },
       ],
       skills: [
         { name: 'React ✓', ok: true }, { name: 'TypeScript ✓', ok: true },
@@ -159,6 +160,7 @@ const CASES: CompareCase[] = [
         { kw: 'API', ok: true, text: 'Cut p95 latency 38% (820→510 ms) by optimizing query paths' },
         { kw: 'React', ok: true, text: 'Owned 3 React dashboards used by 12k daily users' },
         { kw: 'CI/CD', ok: true, text: 'Automated deploys — releases fell from 4 hrs to 11 min' },
+        { kw: 'Auth', ok: true, text: 'Rolled out SSO — cut login support tickets 55%' },
       ],
       skills: [
         { name: 'React ✓', ok: true }, { name: 'TypeScript ✓', ok: true },
@@ -179,6 +181,7 @@ const CASES: CompareCase[] = [
         { kw: 'Roadmap', ok: false, text: 'Worked on product features' },
         { kw: 'Metrics', ok: false, text: 'Monitored feature performance' },
         { kw: 'Launch', ok: false, text: 'Helped launch onboarding' },
+        { kw: 'Stakeholders', ok: false, text: 'Talked to stakeholders for requirements' },
       ],
       skills: [
         { name: 'SQL ✓', ok: true }, { name: 'Figma ✓', ok: true }, { name: 'Jira ✓', ok: true },
@@ -194,6 +197,7 @@ const CASES: CompareCase[] = [
         { kw: 'Roadmap', ok: true, text: 'Drove 2025 Q3 roadmap — shipped 14 features on time' },
         { kw: 'Metrics', ok: true, text: 'Raised activation 22% with data-driven onboarding changes' },
         { kw: 'Launch', ok: true, text: 'Launched 3 products 0→1 with 4 cross-functional teams' },
+        { kw: 'Stakeholders', ok: true, text: 'Ran weekly syncs — cut requirement churn 40%' },
       ],
       skills: [
         { name: 'SQL ✓', ok: true }, { name: 'Figma ✓', ok: true }, { name: 'Jira ✓', ok: true },
@@ -214,6 +218,7 @@ const CASES: CompareCase[] = [
         { kw: 'SQL', ok: false, text: 'Used SQL to pull data for reports' },
         { kw: 'Dashboards', ok: true, text: 'Made dashboards for the team' },
         { kw: 'A/B test', ok: false, text: 'Ran some experiments' },
+        { kw: 'Pipeline', ok: false, text: 'Kept weekly Excel reports updated' },
       ],
       skills: [
         { name: 'Excel ✓', ok: true }, { name: 'SQL ✓', ok: true },
@@ -229,6 +234,7 @@ const CASES: CompareCase[] = [
         { kw: 'SQL', ok: true, text: 'Wrote complex SQL — cut monthly reporting time 60%' },
         { kw: 'Dashboards', ok: true, text: 'Built 8 Tableau dashboards used by exec decision-makers' },
         { kw: 'A/B test', ok: true, text: 'Designed A/B tests driving 19% checkout conversion lift' },
+        { kw: 'Pipeline', ok: true, text: 'Automated data pipeline — saved 15 hrs/week of manual work' },
       ],
       skills: [
         { name: 'Excel ✓', ok: true }, { name: 'SQL ✓', ok: true }, { name: 'Python ✓', ok: true },
