@@ -141,9 +141,6 @@ export function Admin() {
                   <span className="lp-live-dot" /> {onlines.length}
                 </span>
               </div>
-              <p className="text-xs text-neutral-500 mb-4">
-                Signed-in users jinki tab abhi khuli hai. Tab band hote hi list se hat jayenge.
-              </p>
               {onlines.length === 0 ? (
                 <p className="text-xs text-neutral-500">
                   No signed-in users online right now.
