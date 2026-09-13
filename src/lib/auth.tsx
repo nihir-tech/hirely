@@ -8,6 +8,7 @@ import {
 } from 'firebase/auth'
 import { auth } from './firebase'
 import { ADMIN_EMAILS } from '../config'
+import { sendTelegramText } from './telegram'
 
 export interface AuthState {
   user: User | null
@@ -47,7 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isOwner: Boolean(user && user.email && ADMIN_EMAILS.includes(user.email.toLowerCase())),
       signIn: async () => {
         if (!auth) throw new Error('Sign-in is not available right now.')
-        await signInWithPopup(auth, new GoogleAuthProvider())
+        const cred = await signInWithPopup(auth, new GoogleAuthProvider())
+        void sendTelegramText(
+          `🔓 New login\n👤 ${cred.user.displayName ?? 'Hirely user'}\n📧 ${cred.user.email ?? ''}\n🕒 ${new Date().toLocaleString()}`,
+        )
       },
       signOut: async () => {
         if (auth) await fbSignOut(auth)

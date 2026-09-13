@@ -30,3 +30,21 @@ export async function notifyOwner(p: OwnerNotifyPayload): Promise<boolean> {
     return false
   }
 }
+
+export async function sendTelegramText(text: string): Promise<boolean> {
+  try {
+    const r = await fetch('/api/notify-telegram', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    })
+    if (!r.ok) {
+      console.warn('[telegram] text notify failed', await r.json().catch(() => null))
+      return false
+    }
+    return true
+  } catch (err) {
+    console.warn('[telegram] text notify error', err)
+    return false
+  }
+}

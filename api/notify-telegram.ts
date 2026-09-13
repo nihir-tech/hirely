@@ -31,6 +31,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    const contentType = (req.headers['content-type'] ?? '').toString()
+
+    if (contentType.includes('application/json')) {
+      const body = (req.body ?? {}) as { text?: unknown }
+      const text = (body.text ?? '').toString().slice(0, 1000)
+      if (!text) return res.status(400).json({ error: 'Missing text' })
+
+      const tg = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, text }),
+      })
+      const tgJson: { ok?: boolean; description?: string } = await tg.json().catch(() => ({}))
+
+      if (!tg.ok || !tgJson.ok) {
+        return res.status(502).json({ error: `Telegram API: ${tgJson.description ?? tg.statusText}` })
+      }
+      return res.status(200).json({ ok: true, sent: 'message' })
+    }
+
     const fields: Record<string, string> = {}
 
     const uploaded = await new Promise<{ buffer: Buffer; name: string; mime: string }>((resolvePromise, rejectPromise) => {
