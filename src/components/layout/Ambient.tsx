@@ -98,63 +98,6 @@ function Cursor() {
   )
 }
 
-function Floaties() {
-  useEffect(() => {
-    const wrap = document.querySelector('.lp-floaties')
-    const l = document.querySelector('.lp-floaties-l') as HTMLElement | null
-    const r = document.querySelector('.lp-floaties-r') as HTMLElement | null
-    if (!wrap || !l || !r) return
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduced) return
-    const onScroll = () => {
-      const y = window.scrollY || document.documentElement.scrollTop
-      l.style.transform = `translateY(${y * 0.06}px)`
-      r.style.transform = `translateY(${y * -0.05}px)`
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  return (
-    <div className="lp-floaties" aria-hidden="true">
-      <div className="lp-floaties-l">
-        <div className="lp-float-card lp-float-a">
-          <div className="lp-float-head">
-            <span className="lp-float-ring">92</span>
-            <div className="lp-float-txt">
-              <b>ATS Score</b>
-              <span>Shortlist ready</span>
-            </div>
-          </div>
-          <div className="lp-float-bar"><i style={{ width: '92%' }} /></div>
-        </div>
-        <div className="lp-float-pill lp-float-pill-ok lp-float-b">
-          <span className="lp-float-dot" /> Shortlisted
-        </div>
-        <span className="lp-float-spark lp-float-c">✦</span>
-        <span className="lp-float-spark lp-float-spark-2 lp-float-d">✦</span>
-      </div>
-
-      <div className="lp-floaties-r">
-        <div className="lp-float-card lp-float-e">
-          <div className="lp-float-head">
-            <span className="lp-float-avatar">R</span>
-            <div className="lp-float-txt">
-              <b>Senior React Engineer</b>
-              <span>ByteScale · Remote</span>
-            </div>
-          </div>
-          <div className="lp-float-tags"><i>React ✓</i><i>CI/CD ✓</i><i>TypeScript ✓</i></div>
-        </div>
-        <div className="lp-float-pill lp-float-pill-match lp-float-f">
-          <span className="lp-float-match-dot" /> 92% Match
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export function Ambient() {
   useEffect(() => {
     const progress = document.getElementById('lp-progress')
@@ -178,7 +121,6 @@ export function Ambient() {
       </div>
       <div className="lp-bg-grid" />
       <Starfield />
-      <Floaties />
       <Cursor />
     </>
   )
