@@ -311,7 +311,7 @@
 .landing .lp-skill.ok { color: var(--lp-emerald); background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.28); }
 .landing .lp-skill.bad { color: var(--lp-text-2); background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.12); text-decoration: line-through; text-decoration-color: rgba(248,113,113,.6); }
 .landing .lp-pane-foot { margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px; }
-.landing .lp-pane-before .lp-pane-foot { display: none; }
+.landing .lp-pane-before .lp-pane-foot { margin-top: clamp(10px,1.6vh,14px); }
 .landing .lp-chip { font-size: .58rem; color: var(--lp-text-3); background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); padding: 3px 8px; border-radius: 6px; }
 .landing .lp-pane-after .lp-chip { color: rgba(52,211,153,.85); background: rgba(52,211,153,.06); border-color: rgba(52,211,153,.2); }
 .landing .lp-compare-handle { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--lp-grad); z-index: 5; cursor: ew-resize; box-shadow: 0 0 18px rgba(139,92,246,.7), 6px 0 24px rgba(0,0,0,.4); }
