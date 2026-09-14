@@ -247,8 +247,8 @@ export function Admin() {
                   <p className="text-xs text-amber-300 font-medium mb-1">Read failed — check database rules</p>
                   <p className="text-xs text-neutral-400 break-words">{denied}</p>
                   <p className="text-xs text-neutral-500 mt-2">
-                    Firebase Realtime Database → Rules mein <code className="text-amber-200">firebase.rules.json</code> ka content
-                    paste karke Publish karo (submissions node ko owner emails read kar sakein).
+                    Firebase Realtime Database → Rules: paste the contents of <code className="text-amber-200">firebase.rules.json</code>
+                    and click Publish (owner emails need read access to the relevant nodes).
                   </p>
                 </div>
               )}
