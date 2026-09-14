@@ -99,7 +99,7 @@ export function Navbar() {
   }, [mobileOpen])
 
   return (
-    <header className={`lp-nav ${scrolled ? 'scrolled' : ''}`}>
+    <header className={`lp-nav ${scrolled || mobileOpen ? 'scrolled' : ''}`}>
       <div className="lp-nav-inner">
         <Link to="/" className="lp-logo">
           <span className="lp-logo-mark">
@@ -138,6 +138,9 @@ export function Navbar() {
       </div>
 
       <div className={`lp-mobile-menu ${mobileOpen ? 'open' : ''}`}>
+        <div className="lp-mobile-live">
+          <LivePill />
+        </div>
         {LINKS.map((l) => (
           <a key={l.label} href={l.to} onClick={() => setMobileOpen(false)}>{l.label}</a>
         ))}
