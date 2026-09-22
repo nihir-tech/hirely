@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { ref, onValue, set, onDisconnect, type Unsubscribe, type DataSnapshot } from 'firebase/database'
+import { ref, onValue, set, remove, onDisconnect, type Unsubscribe, type DataSnapshot } from 'firebase/database'
 import { db, firebaseConfigured } from '../lib/firebase'
 import { useAuth } from '../lib/auth'
 import { getDeviceId } from '../lib/device'
@@ -10,9 +10,17 @@ export interface SiteStats {
   liveUsers: number
 }
 
+export const PRESENCE_STALE_MS = 90_000
+export const PRESENCE_HEARTBEAT_MS = 30_000
+
 function childCount(snap: DataSnapshot): number {
   const val = snap.val() as Record<string, unknown> | null
   return val ? Object.keys(val).length : 0
+}
+
+function isStalePresence(value: unknown, now: number): boolean {
+  const at = typeof value === 'object' && value !== null ? (value as { at?: unknown }).at : undefined
+  return typeof at !== 'number' || now - at > PRESENCE_STALE_MS
 }
 
 const StatsContext = createContext<SiteStats | null>(null)
@@ -50,15 +58,20 @@ export function SiteStatsProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    void set(sessionRef, {
-      email: user.email,
-      displayName: user.displayName ?? '',
-      at: Date.now(),
-    })
-      .then(() => {
-        onDisconnect(sessionRef).remove()
+    const beatSession = () => {
+      void set(sessionRef, {
+        email: user.email,
+        displayName: user.displayName ?? '',
+        at: Date.now(),
       })
-      .catch(() => {})
+        .then(() => {
+          onDisconnect(sessionRef).remove()
+        })
+        .catch(() => {})
+    }
+    beatSession()
+
+    const sessionHeartbeat = window.setInterval(beatSession, PRESENCE_HEARTBEAT_MS)
 
     const onPageHide = () => {
       onDisconnect(sessionRef).cancel()
@@ -67,33 +80,63 @@ export function SiteStatsProvider({ children }: { children: ReactNode }) {
     window.addEventListener('pagehide', onPageHide)
 
     return () => {
+      window.clearInterval(sessionHeartbeat)
       window.removeEventListener('pagehide', onPageHide)
       onDisconnect(sessionRef).cancel()
       void set(sessionRef, null)
     }
   }, [user?.email, user?.displayName])
 
-    useEffect(() => {
+  useEffect(() => {
     if (!db || !firebaseConfigured) return
+    const database = db
     const deviceId = getDeviceId()
     if (!deviceId) return
 
-    const deviceRef = ref(db, `devices/${deviceId}`)
-    const presenceRef = ref(db, `presence/${deviceId}`)
-    const totalRef = ref(db, 'devices')
-    const liveRef = ref(db, 'presence')
+    const deviceRef = ref(database, `devices/${deviceId}`)
+    const presenceRef = ref(database, `presence/${deviceId}`)
+    const totalRef = ref(database, 'devices')
+    const liveRef = ref(database, 'presence')
+
+    let liveData: Record<string, unknown> | null = null
+
+    const applyLiveCount = () => {
+      if (!liveData) return
+      const now = Date.now()
+      let count = 0
+      for (const key of Object.keys(liveData)) {
+        if (isStalePresence(liveData[key], now)) {
+          void remove(ref(database, `presence/${key}`)).catch(() => {})
+        } else {
+          count++
+        }
+      }
+      setStats((s) => ({ totalUsers: s?.totalUsers ?? 0, liveUsers: count }))
+    }
 
     void set(deviceRef, true)
-    void set(presenceRef, true).then(() => {
-      onDisconnect(presenceRef).remove()
-    })
+
+    const beatPresence = () => {
+      void set(presenceRef, { at: Date.now() })
+        .then(() => {
+          onDisconnect(presenceRef).remove()
+        })
+        .catch(() => {})
+    }
+    beatPresence()
 
     const totalUnsub: Unsubscribe = onValue(totalRef, (snap) => {
       setStats((s) => ({ totalUsers: childCount(snap), liveUsers: s?.liveUsers ?? 0 }))
     })
     const liveUnsub: Unsubscribe = onValue(liveRef, (snap) => {
-      setStats((s) => ({ totalUsers: s?.totalUsers ?? 0, liveUsers: childCount(snap) }))
+      liveData = (snap.val() as Record<string, unknown> | null) ?? {}
+      applyLiveCount()
     })
+
+    const presenceHeartbeat = window.setInterval(() => {
+      beatPresence()
+      applyLiveCount()
+    }, PRESENCE_HEARTBEAT_MS)
 
     const onPageHide = () => {
       onDisconnect(presenceRef).cancel()
@@ -102,9 +145,12 @@ export function SiteStatsProvider({ children }: { children: ReactNode }) {
     window.addEventListener('pagehide', onPageHide)
 
     return () => {
+      window.clearInterval(presenceHeartbeat)
       totalUnsub()
       liveUnsub()
       window.removeEventListener('pagehide', onPageHide)
+      onDisconnect(presenceRef).cancel()
+      void set(presenceRef, null)
     }
   }, [])
 

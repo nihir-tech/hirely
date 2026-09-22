@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { onValue, ref, remove } from 'firebase/database'
 import { db, firebaseConfigured } from '../lib/firebase'
 import { useAuth } from '../lib/auth'
+import { PRESENCE_STALE_MS } from '../hooks/useSiteStats'
 import type { Submission } from '../lib/feed'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
@@ -65,7 +66,8 @@ export function Admin() {
 
   useEffect(() => {
     if (!db || !firebaseConfigured) return
-    const sesRef = ref(db, 'sessions')
+    const database = db
+    const sesRef = ref(database, 'sessions')
     const unsub = onValue(
       sesRef,
       (snap) => {
@@ -75,8 +77,15 @@ export function Admin() {
           return
         }
         const list = Object.entries(val).map(([key, data]) => ({ key, ...data }))
-        list.sort((a, b) => (b.at ?? 0) - (a.at ?? 0))
-        setOnlines(list)
+        const now = Date.now()
+        const live = list.filter((o) => (o.at ?? 0) > now - PRESENCE_STALE_MS)
+        live.sort((a, b) => (b.at ?? 0) - (a.at ?? 0))
+        for (const o of list) {
+          if ((o.at ?? 0) <= now - PRESENCE_STALE_MS) {
+            void remove(ref(database, `sessions/${o.key}`)).catch(() => {})
+          }
+        }
+        setOnlines(live)
       },
       (err) => setDenied(err.message),
     )

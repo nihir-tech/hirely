@@ -9,7 +9,7 @@
     "presence": {
       ".read": true,
       "$id": {
-        ".write": "newData.isBoolean() || !newData.exists()"
+        ".write": "!newData.exists() || newData.isBoolean() || (newData.isMap() && newData.hasChildren(['at']) && newData.child('at').isNumber())"
       }
     },
     "submissions": {
