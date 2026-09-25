@@ -34,10 +34,10 @@ const icons: Record<Variant, ReactNode> = {
 }
 
 const styles: Record<Variant, string> = {
-  info: 'bg-sky-500/5 border-sky-500/20 text-sky-200',
-  success: 'bg-emerald-500/5 border-emerald-500/20 text-emerald-200',
-  warning: 'bg-amber-500/5 border-amber-500/20 text-amber-200',
-  error: 'bg-red-500/5 border-red-500/20 text-red-200',
+  info: 'bg-sky-500/5 border-sky-500/20 text-sky-700 dark:text-sky-200',
+  success: 'bg-emerald-500/5 border-emerald-500/20 text-emerald-700 dark:text-emerald-200',
+  warning: 'bg-amber-500/5 border-amber-500/20 text-amber-700 dark:text-amber-200',
+  error: 'bg-red-500/5 border-red-500/20 text-red-700 dark:text-red-200',
 }
 
 export function Alert({

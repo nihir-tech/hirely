@@ -16,10 +16,10 @@ export function EmptyState({ icon, title, description, action, className = '' }:
   return (
     <div className={`flex flex-col items-center justify-center py-12 px-4 text-center ${className}`}>
       {icon && (
-        <div className="mb-4 p-4 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400">{icon}</div>
+        <div className="mb-4 p-4 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-700 dark:text-brand-400">{icon}</div>
       )}
-      <h3 className="text-lg font-medium text-white mb-1">{title}</h3>
-      <p className="text-sm text-neutral-400 max-w-sm mb-6">{description}</p>
+      <h3 className="text-lg font-medium text-fg-strong mb-1">{title}</h3>
+      <p className="text-sm text-fg-muted max-w-sm mb-6">{description}</p>
       {action && (
         <Button onClick={action.onClick} size="md">
           {action.label}

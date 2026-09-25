@@ -40,12 +40,12 @@ function PriorityBadge({ priority }: { priority: number }) {
   const label = priority === 1 ? '1st' : priority === 2 ? '2nd' : priority === 3 ? '3rd' : `#${priority}`
   const style =
     priority === 1
-      ? 'from-amber-400/30 to-yellow-600/30 text-amber-300 border-amber-400/30 shadow-[0_0_20px_rgba(251,191,36,0.15)]'
+      ? 'from-amber-400/30 to-yellow-600/30 text-amber-600 dark:text-amber-300 border-amber-400/30 shadow-[0_0_20px_rgba(251,191,36,0.15)]'
       : priority === 2
-        ? 'from-slate-300/20 to-slate-500/20 text-slate-300 border-slate-400/30'
+        ? 'from-slate-300/20 to-slate-500/20 text-fg-muted border-line'
         : priority === 3
-          ? 'from-orange-700/25 to-amber-900/25 text-orange-300 border-orange-500/30'
-          : 'from-neutral-800/40 to-neutral-700/30 text-neutral-300 border-white/10'
+          ? 'from-orange-700/25 to-amber-900/25 text-orange-600 dark:text-orange-300 border-orange-500/30'
+          : 'from-slate-400/25 to-slate-600/25 text-fg-strong dark:from-neutral-800/40 dark:to-neutral-700/30 border-line'
   return (
     <span className={`shrink-0 inline-flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br border font-bold ${style}`}>
       {label}
@@ -60,27 +60,27 @@ function CandidateCard({ rank }: { rank: CandidateRank }) {
         <PriorityBadge priority={rank.priority} />
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1">
-            <h3 className="text-base font-semibold text-white truncate">{rank.name || rank.fileName || 'Candidate'}</h3>
+            <h3 className="text-base font-semibold text-fg-strong truncate">{rank.name || rank.fileName || 'Candidate'}</h3>
             {rank.yearsExperience && (
-              <span className="text-xs text-neutral-400">{rank.yearsExperience}</span>
+              <span className="text-xs text-fg-muted">{rank.yearsExperience}</span>
             )}
           </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-neutral-500 mb-2">
+          <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-fg-muted mb-2">
             {rank.email && <span className="truncate">{rank.email}</span>}
             {rank.phone && <span>{rank.phone}</span>}
             {rank.location && <span>{rank.location}</span>}
             {rank.linkedin && <span className="truncate">{rank.linkedin}</span>}
           </div>
-          {rank.headline && <p className="text-sm text-neutral-300 mb-2">{rank.headline}</p>}
-          <p className="text-sm text-neutral-400 mb-3">{rank.matchSummary}</p>
+          {rank.headline && <p className="text-sm text-fg-strong mb-2">{rank.headline}</p>}
+          <p className="text-sm text-fg-muted mb-3">{rank.matchSummary}</p>
 
           <div className="grid gap-3 sm:grid-cols-2">
             {rank.strengths.length > 0 && (
               <div className="rounded-xl bg-emerald-500/[0.06] border border-emerald-500/15 p-3">
-                <p className="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold mb-1.5">Strengths</p>
+                <p className="text-[10px] uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-semibold mb-1.5">Strengths</p>
                 <ul className="space-y-1">
                   {rank.strengths.map((s) => (
-                    <li key={s} className="text-xs text-emerald-200/80 flex gap-1.5">
+                    <li key={s} className="text-xs text-emerald-600/90 dark:text-emerald-200/80 flex gap-1.5">
                       <span aria-hidden="true" className="text-emerald-400 shrink-0">✓</span>
                       <span>{s}</span>
                     </li>
@@ -90,10 +90,10 @@ function CandidateCard({ rank }: { rank: CandidateRank }) {
             )}
             {rank.gaps.length > 0 && (
               <div className="rounded-xl bg-amber-500/[0.06] border border-amber-500/15 p-3">
-                <p className="text-[10px] uppercase tracking-widest text-amber-400 font-semibold mb-1.5">Gaps</p>
+                <p className="text-[10px] uppercase tracking-widest text-amber-600 dark:text-amber-400 font-semibold mb-1.5">Gaps</p>
                 <ul className="space-y-1">
                   {rank.gaps.map((g) => (
-                    <li key={g} className="text-xs text-amber-200/80 flex gap-1.5">
+                    <li key={g} className="text-xs text-amber-600/90 dark:text-amber-200/80 flex gap-1.5">
                       <span aria-hidden="true" className="text-amber-400 shrink-0">–</span>
                       <span>{g}</span>
                     </li>
@@ -105,18 +105,18 @@ function CandidateCard({ rank }: { rank: CandidateRank }) {
 
           {rank.notableProjects.length > 0 && (
             <div className="mt-3">
-              <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-semibold mb-1">Notable</p>
+              <p className="text-[10px] uppercase tracking-widest text-fg-muted font-semibold mb-1">Notable</p>
               <ul className="space-y-1">
                 {rank.notableProjects.map((p) => (
-                  <li key={p} className="text-xs text-neutral-400">{p}</li>
+                  <li key={p} className="text-xs text-fg-muted">{p}</li>
                 ))}
               </ul>
             </div>
           )}
         </div>
         <div className="shrink-0 flex flex-col items-center gap-1">
-          <span className="text-xl font-bold text-white">{rank.score}</span>
-          <span className="text-[10px] uppercase tracking-widest text-neutral-500">match</span>
+          <span className="text-xl font-bold text-fg-strong">{rank.score}</span>
+          <span className="text-[10px] uppercase tracking-widest text-fg-muted">match</span>
         </div>
       </div>
     </Card>
@@ -374,7 +374,7 @@ export function Company() {
               </svg>
             </div>
             <h1 className="lp-page-title text-xl mb-1">Company Access</h1>
-            <p className="text-sm text-neutral-400 mb-6">
+            <p className="text-sm text-fg-muted mb-6">
               This area is for company users. Sign in with the authorized Google account to
               upload candidate resumes and generate a shortlist.
             </p>
@@ -393,8 +393,8 @@ export function Company() {
         ) : !isCompany ? (
           <Card className="p-8 max-w-md mx-auto text-center">
             <h1 className="lp-page-title text-xl mb-1">Access Restricted</h1>
-            <p className="text-sm text-neutral-400">
-              Signed in as <span className="text-white">{user.email}</span> — this tool is only
+            <p className="text-sm text-fg-muted">
+              Signed in as <span className="text-fg-strong">{user.email}</span> — this tool is only
               available to the authorized company account.
             </p>
           </Card>
@@ -416,11 +416,11 @@ export function Company() {
                   <div className="space-y-6">
                     <Card className="p-5 sm:p-6">
                       <div className="flex items-center justify-between gap-3 mb-4">
-                        <h2 className="text-sm font-semibold text-white">
+                        <h2 className="text-sm font-semibold text-fg-strong">
                           {draftJobId ? 'Edit job & re-rank' : 'New position'}
                         </h2>
                         {draftJobId && (
-                          <button onClick={startNewJob} className="text-xs text-neutral-500 hover:text-white transition-colors">
+                          <button onClick={startNewJob} className="text-xs text-fg-muted hover:text-fg-strong transition-colors">
                             + New position
                           </button>
                         )}
@@ -428,7 +428,7 @@ export function Company() {
 
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div>
-                          <label className="block text-xs font-medium text-neutral-400 mb-1.5" htmlFor="cmp-position">
+                          <label className="block text-xs font-medium text-fg-muted mb-1.5" htmlFor="cmp-position">
                             Position title
                           </label>
                           <input
@@ -437,11 +437,11 @@ export function Company() {
                             value={positionTitle}
                             onChange={(e) => setPositionTitle(e.target.value)}
                             placeholder="e.g. Senior Frontend Engineer"
-                            className="w-full rounded-xl bg-white/[0.03] border border-white/10 px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30 transition-all"
+                            className="w-full rounded-xl bg-fill border border-line px-3.5 py-2.5 text-sm text-fg-strong placeholder-fg-faint outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30 transition-all"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-neutral-400 mb-1.5" htmlFor="cmp-company">
+                          <label className="block text-xs font-medium text-fg-muted mb-1.5" htmlFor="cmp-company">
                             Company
                           </label>
                           <input
@@ -450,13 +450,13 @@ export function Company() {
                             value={companyName}
                             onChange={(e) => setCompanyName(e.target.value)}
                             placeholder="e.g. Acme Inc."
-                            className="w-full rounded-xl bg-white/[0.03] border border-white/10 px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30 transition-all"
+                            className="w-full rounded-xl bg-fill border border-line px-3.5 py-2.5 text-sm text-fg-strong placeholder-fg-faint outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30 transition-all"
                           />
                         </div>
                       </div>
 
                       <div className="mt-4">
-                        <label className="block text-xs font-medium text-neutral-400 mb-1.5" htmlFor="cmp-jd">
+                        <label className="block text-xs font-medium text-fg-muted mb-1.5" htmlFor="cmp-jd">
                           Job description
                         </label>
                         <textarea
@@ -465,22 +465,22 @@ export function Company() {
                           onChange={(e) => setJobDescription(e.target.value)}
                           placeholder="Paste the full job posting here — the shortlist is ranked against this."
                           rows={5}
-                          className="w-full rounded-xl bg-white/[0.03] border border-white/10 px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30 transition-all resize-y"
+                          className="w-full rounded-xl bg-fill border border-line px-3.5 py-2.5 text-sm text-fg-strong placeholder-fg-faint outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30 transition-all resize-y"
                         />
-                        <p className="mt-1 text-[11px] text-neutral-600">
+                        <p className="mt-1 text-[11px] text-fg-faint">
                           Rest of the batch re-ranks against this description.
                         </p>
                       </div>
                     </Card>
 
                     <Card className="p-5 sm:p-6">
-                      <h2 className="text-sm font-semibold text-white mb-4">Candidate resumes</h2>
+                      <h2 className="text-sm font-semibold text-fg-strong mb-4">Candidate resumes</h2>
 
                       <div
                         onDrop={onDrop}
                         onDragOver={onDragOver}
                         onClick={() => inputRef.current?.click()}
-                        className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/[0.08] bg-white/[0.02] p-8 text-center cursor-pointer transition-all duration-300 hover:border-brand-500/40 hover:bg-brand-500/[0.03]"
+                        className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-line bg-fill p-8 text-center cursor-pointer transition-all duration-300 hover:border-brand-500/40 hover:bg-brand-500/[0.03]"
                       >
                         <input
                           ref={inputRef}
@@ -491,34 +491,34 @@ export function Company() {
                           className="sr-only"
                           aria-label="Upload candidate resumes"
                         />
-                        <div className="mb-3 p-3 rounded-2xl bg-neutral-800/40 text-neutral-400">
+                        <div className="mb-3 p-3 rounded-2xl bg-chip text-fg-muted">
                           <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
                           </svg>
                         </div>
-                        <p className="text-sm font-medium text-white mb-1">Drop every resume you received here</p>
-                        <p className="text-xs text-neutral-500 mb-3">or <span className="text-brand-400">browse files</span> — add multiple at once (up to {MAX_BATCH})</p>
-                        <p className="text-xs text-neutral-600">PDF, PNG, JPG, or WebP — each up to 10 MB</p>
+                        <p className="text-sm font-medium text-fg-strong mb-1">Drop every resume you received here</p>
+                        <p className="text-xs text-fg-muted mb-3">or <span className="text-brand-600 dark:text-brand-400">browse files</span> — add multiple at once (up to {MAX_BATCH})</p>
+                        <p className="text-xs text-fg-faint">PDF, PNG, JPG, or WebP — each up to 10 MB</p>
                       </div>
 
                       {files.length > 0 && (
                         <ul className="mt-4 space-y-2">
                           {files.map((f) => (
-                            <li key={f.id} className="flex items-center justify-between gap-3 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2">
+                            <li key={f.id} className="flex items-center justify-between gap-3 bg-fill border border-line rounded-lg px-3 py-2">
                               <div className="flex items-center gap-3 min-w-0">
                                 <span className="shrink-0 w-9 h-9 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-                                  <svg className="h-4 w-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <svg className="h-4 w-4 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                   </svg>
                                 </span>
                                 <div className="min-w-0">
-                                  <p className="text-sm text-neutral-200 truncate">{f.file.name}</p>
-                                  <p className="text-xs text-neutral-500">{formatFileSize(f.file.size)}</p>
+                                  <p className="text-sm text-fg-strong truncate">{f.file.name}</p>
+                                  <p className="text-xs text-fg-muted">{formatFileSize(f.file.size)}</p>
                                 </div>
                               </div>
                               <button
                                 onClick={() => removeFile(f.id)}
-                                className="p-1.5 rounded-lg text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                className="p-1.5 rounded-lg text-fg-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
                                 aria-label={`Remove ${f.file.name}`}
                               >
                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -538,7 +538,7 @@ export function Company() {
                     )}
                     {skipped.length > 0 && !busy && (
                       <Alert variant="warning" title="Skipped files">
-                        <span className="text-neutral-300">
+                        <span className="text-fg-strong">
                           {skipped.length} file(s) could not be read and were skipped: {skipped.join(', ')}
                           {' '}The shortlist was generated from the readable resumes.
                         </span>
@@ -561,7 +561,7 @@ export function Company() {
                       </svg>
                       Compare & Rank Candidates
                     </Button>
-                    <p className="text-center text-xs text-neutral-600 -mt-2">
+                    <p className="text-center text-xs text-fg-faint -mt-2">
                       {files.length > 0
                         ? `${files.length} resume(s) · ${jobDescription.trim().length >= 50 ? 'job ready' : 'paste the job description to start'}`
                         : 'Add resumes and the job description to get started'}
@@ -570,9 +570,9 @@ export function Company() {
 
                   <div className="space-y-4">
                     <Card className="p-5">
-                      <h2 className="text-sm font-semibold text-white mb-3">Saved shortlists</h2>
+                      <h2 className="text-sm font-semibold text-fg-strong mb-3">Saved shortlists</h2>
                       {savedJobs.length === 0 ? (
-                        <p className="text-xs text-neutral-500">No shortlists yet. Run your first comparison to save it here.</p>
+                        <p className="text-xs text-fg-muted">No shortlists yet. Run your first comparison to save it here.</p>
                       ) : (
                         <ul className="space-y-2">
                           {savedJobs.map((job) => {
@@ -587,17 +587,17 @@ export function Company() {
                                   className={`group w-full text-left rounded-xl border p-3 transition-all cursor-pointer ${
                                     draftJobId === job.id
                                       ? 'border-brand-500/40 bg-brand-500/[0.06]'
-                                      : 'border-white/5 bg-white/[0.02] hover:border-brand-500/25 hover:bg-brand-500/[0.03]'
+                                      : 'border-line bg-fill hover:border-brand-500/25 hover:bg-brand-500/[0.03]'
                                   }`}
                                 >
                                   <div className="flex items-center justify-between gap-2 mb-1">
-                                    <p className="text-sm font-medium text-white truncate">
+                                    <p className="text-sm font-medium text-fg-strong truncate">
                                       {job.positionTitle || 'Position'}
                                       {job.company ? ` · ${job.company}` : ''}
                                     </p>
                                     <button
                                       onClick={(e) => handleDeleteJob(job.id, e)}
-                                      className="p-1 rounded-md text-neutral-600 opacity-0 group-hover:opacity-100 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0"
+                                      className="p-1 rounded-md text-fg-faint opacity-0 group-hover:opacity-100 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0"
                                       aria-label="Delete shortlist"
                                     >
                                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -606,11 +606,11 @@ export function Company() {
                                     </button>
                                   </div>
                                   {top && (
-                                    <p className="text-xs text-neutral-500 truncate">
+                                    <p className="text-xs text-fg-muted truncate">
                                       Top: {top.name || top.fileName || 'Candidate'} · {top.score}%
                                     </p>
                                   )}
-                                  <p className="text-[11px] text-neutral-600 mt-1">
+                                  <p className="text-[11px] text-fg-faint mt-1">
                                     {job.ranking.length} candidate(s) · {new Date(job.updatedAt).toLocaleDateString()}
                                   </p>
                                 </div>
@@ -628,8 +628,8 @@ export function Company() {
                     <div className="glass-card p-4 sm:p-5 mb-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                         <div>
-                          <h2 className="text-base font-semibold text-white">Eligible candidates — priority order</h2>
-                          <p className="text-xs text-neutral-500 mt-0.5">
+                          <h2 className="text-base font-semibold text-fg-strong">Eligible candidates — priority order</h2>
+                          <p className="text-xs text-fg-muted mt-0.5">
                             Priority 1 is the strongest fit for this job description.
                           </p>
                         </div>
@@ -638,7 +638,7 @@ export function Company() {
                         </Button>
                       </div>
                       {activeSummary && (
-                        <pre className="text-xs text-neutral-400 whitespace-pre-wrap font-mono bg-black/20 border border-white/5 rounded-lg p-3 hidden sm:block">
+                        <pre className="text-xs text-fg-muted whitespace-pre-wrap font-mono bg-black/20 border border-line rounded-lg p-3 hidden sm:block">
                           {activeSummary}
                         </pre>
                       )}

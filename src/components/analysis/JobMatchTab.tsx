@@ -17,10 +17,10 @@ function SkillRow({ item }: { item: SkillMatch }) {
     <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-subtle transition-colors">
       <Badge variant={s.variant}>{s.icon} {s.label}</Badge>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white">{item.skill}</p>
-        <p className="text-sm text-neutral-400 mt-0.5">{item.explanation}</p>
+        <p className="text-sm font-medium text-fg-strong">{item.skill}</p>
+        <p className="text-sm text-fg-muted mt-0.5">{item.explanation}</p>
         {item.evidence && (
-          <p className="text-xs text-neutral-600 mt-1 italic">&ldquo;{item.evidence}&rdquo;</p>
+          <p className="text-xs text-fg-faint mt-1 italic">&ldquo;{item.evidence}&rdquo;</p>
         )}
       </div>
     </div>
@@ -58,11 +58,11 @@ export function JobMatchTab({ analysis }: { analysis: AnalysisResult }) {
       <div className="flex items-center gap-6">
         <ScoreRing value={jobMatch.score} size={100} strokeWidth={7} label="Job Match" />
         <div className="text-sm max-w-md">
-          <p className="font-medium text-white mb-1">
+          <p className="font-medium text-fg-strong mb-1">
             {analysis.jobTarget?.title || 'Target Role'}
-            {analysis.jobTarget?.company && <span className="font-normal text-neutral-500"> at {analysis.jobTarget.company}</span>}
+            {analysis.jobTarget?.company && <span className="font-normal text-fg-muted"> at {analysis.jobTarget.company}</span>}
           </p>
-          <p className="leading-relaxed text-neutral-400">
+          <p className="leading-relaxed text-fg-muted">
             {matched.length} skills matched, {missing.length} missing, {weak.length} with weak evidence.
           </p>
         </div>
@@ -80,7 +80,7 @@ export function JobMatchTab({ analysis }: { analysis: AnalysisResult }) {
       {missing.length > 0 && (
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-red-400 mb-3">Missing Skills</h3>
-          <p className="text-sm text-neutral-500 mb-3">
+          <p className="text-sm text-fg-muted mb-3">
             These skills appear to be absent from your resume. Consider whether you have experience
             you haven&apos;t represented.
           </p>
@@ -93,7 +93,7 @@ export function JobMatchTab({ analysis }: { analysis: AnalysisResult }) {
       {weak.length > 0 && (
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-amber-400 mb-3">Weak Evidence</h3>
-          <p className="text-sm text-neutral-500 mb-3">
+          <p className="text-sm text-fg-muted mb-3">
             You may have these skills but haven&apos;t clearly demonstrated them on your resume.
           </p>
           <div className="space-y-1">
@@ -104,12 +104,12 @@ export function JobMatchTab({ analysis }: { analysis: AnalysisResult }) {
 
       {jobMatch.atsConcerns.length > 0 && (
         <Card className="p-6">
-          <h3 className="text-lg font-semibold text-white mb-3">Job-Specific ATS Concerns</h3>
+          <h3 className="text-lg font-semibold text-fg-strong mb-3">Job-Specific ATS Concerns</h3>
           <div className="space-y-3">
             {jobMatch.atsConcerns.map((c, i) => (
-              <div key={i} className="p-3 rounded-xl bg-surface-subtle border border-white/5">
-                <p className="text-sm font-medium text-white">{c.issue}</p>
-                <p className="text-sm text-neutral-400 mt-1">{c.recommendation}</p>
+              <div key={i} className="p-3 rounded-xl bg-surface-subtle border border-line">
+                <p className="text-sm font-medium text-fg-strong">{c.issue}</p>
+                <p className="text-sm text-fg-muted mt-1">{c.recommendation}</p>
               </div>
             ))}
           </div>
@@ -118,11 +118,11 @@ export function JobMatchTab({ analysis }: { analysis: AnalysisResult }) {
 
       {jobMatch.notes.length > 0 && (
         <Card className="p-6">
-          <h3 className="text-lg font-semibold text-white mb-3">Additional Notes</h3>
+          <h3 className="text-lg font-semibold text-fg-strong mb-3">Additional Notes</h3>
           <ul className="space-y-2">
             {jobMatch.notes.map((n, i) => (
-              <li key={i} className="text-sm text-neutral-400 flex gap-2">
-                <span className="text-neutral-600">•</span>
+              <li key={i} className="text-sm text-fg-muted flex gap-2">
+                <span className="text-fg-faint">•</span>
                 {n}
               </li>
             ))}

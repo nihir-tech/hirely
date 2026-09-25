@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
@@ -31,10 +33,86 @@
   --color-neutral-700: #45454a;
   --color-neutral-800: #26262a;
   --color-neutral-900: #121218;
+}
 
-  --color-glass: rgba(255, 255, 255, 0.015);
-  --color-glass-border: rgba(255, 255, 255, 0.05);
-  --color-glass-hover: rgba(255, 255, 255, 0.03);
+/* ── Theme tokens ────────────────────────────
+   Light theme by default; `.dark` flips to the
+   original dark design. Semantic utilities (bg-canvas,
+   text-fg-*, border-line, ...) resolve against these. */
+
+:root {
+  color-scheme: light;
+
+  --canvas: #f6f6f9;
+  --canvas-subtle: #efeff4;
+  --fg-strong: #15151b;
+  --fg: #2a2a31;
+  --fg-muted: #56565f;
+  --fg-faint: #8d8d97;
+  --line: rgba(18, 18, 28, 0.08);
+  --line-strong: rgba(18, 18, 28, 0.15);
+  --fill: rgba(18, 18, 28, 0.035);
+  --fill-strong: rgba(18, 18, 28, 0.06);
+  --chip: rgba(18, 18, 28, 0.05);
+
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-strong: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(18, 18, 28, 0.09);
+  --glass-border-hover: rgba(139, 92, 246, 0.35);
+  --glass-hover: rgba(255, 255, 255, 0.85);
+  --nav-bg: rgba(246, 246, 249, 0.8);
+  --nav-bg-solid: rgba(246, 246, 249, 0.96);
+
+  --shimmer-from: rgba(18, 18, 28, 0.02);
+  --shimmer-mid: rgba(18, 18, 28, 0.05);
+  --code-bg: rgba(18, 18, 28, 0.04);
+  --cursor-dot: #1a1a1f;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --canvas: #050505;
+  --canvas-subtle: #0a0a0c;
+  --fg-strong: #f5f5f7;
+  --fg: #e5e5e7;
+  --fg-muted: #9a9aa6;
+  --fg-faint: #5f5f68;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --fill: rgba(255, 255, 255, 0.02);
+  --fill-strong: rgba(255, 255, 255, 0.05);
+  --chip: rgba(255, 255, 255, 0.055);
+
+  --glass-bg: rgba(12, 12, 18, 0.65);
+  --glass-bg-strong: rgba(18, 15, 25, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(139, 92, 246, 0.28);
+  --glass-hover: rgba(18, 15, 25, 0.7);
+  --nav-bg: rgba(5, 5, 5, 0.85);
+  --nav-bg-solid: rgba(5, 5, 5, 0.95);
+
+  --shimmer-from: rgba(18, 18, 24, 0.015);
+  --shimmer-mid: rgba(18, 18, 24, 0.03);
+  --code-bg: rgba(0, 0, 0, 0.2);
+  --cursor-dot: #ffffff;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-canvas-subtle: var(--canvas-subtle);
+  --color-fg-strong: var(--fg-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fill: var(--fill);
+  --color-fill-strong: var(--fill-strong);
+  --color-chip: var(--chip);
+  --color-glass: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
+  --color-glass-hover: var(--glass-hover);
 }
 
 /* ── Keyframes ─────────────────────────────────── */
@@ -92,7 +170,7 @@
 /* ── Utility Classes ───────────────────────────── */
 
 .animate-shimmer {
-  background: linear-gradient(90deg, rgba(18,18,24,0.015) 25%, rgba(18,18,24,0.03) 50%, rgba(18,18,24,0.015) 75%);
+  background: linear-gradient(90deg, var(--shimmer-from) 25%, var(--shimmer-mid) 50%, var(--shimmer-from) 75%);
   background-size: 200% 100%;
   animation: shimmer 2s ease-in-out infinite;
 }
@@ -125,49 +203,49 @@
   animation: slide-up 0.7s ease-out forwards;
 }
 
-/* ── Dark Glass System ─────────────────────────── */
+/* ── Glass System ─────────────────────────── */
 
 .glass {
-  background: rgba(12, 12, 18, 0.65);
+  background: var(--glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
 }
 
 .glass-strong {
-  background: rgba(18, 15, 25, 0.70);
+  background: var(--glass-bg-strong);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(139, 92, 246, 0.05);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(139, 92, 246, 0.05);
 }
 
 .glass-card {
-  background: rgba(12, 12, 18, 0.60);
+  background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   transition: all 0.3s ease;
 }
 
 .glass-card:hover {
-  background: rgba(18, 15, 25, 0.65);
-  border-color: rgba(139, 92, 246, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 60px rgba(139, 92, 246, 0.06), 0 0 0 1px rgba(139, 92, 246, 0.08);
+  background: var(--glass-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 0 60px rgba(139, 92, 246, 0.06), 0 0 0 1px rgba(139, 92, 246, 0.08);
   transform: translateY(-2px);
 }
 
 .glass-nav {
-  background: rgba(5, 5, 5, 0.85);
+  background: var(--nav-bg, var(--glass-bg));
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--line);
 }
 
 .glass-nav-scrolled {
-  background: rgba(5, 5, 5, 0.95);
-  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background: var(--nav-bg-solid, var(--glass-bg-strong));
+  border-bottom-color: var(--line-strong);
 }
 
 .glass-button {
@@ -186,34 +264,34 @@
 }
 
 .glass-input {
-  background: rgba(12, 12, 18, 0.60);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--line);
   transition: all 0.3s ease;
 }
 
 .glass-input:focus {
-  background: rgba(18, 15, 25, 0.65);
+  background: var(--glass-hover);
   border-color: rgba(139, 92, 246, 0.4);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
   outline: none;
 }
 
-/* ── Dark Surface Backgrounds ──────────────────── */
+/* ── Surface Backgrounds ──────────────────── */
 
 .bg-surface {
-  background: rgba(12, 12, 18, 0.60);
+  background: var(--glass-bg);
 }
 
 .bg-surface-subtle {
-  background: rgba(12, 12, 18, 0.40);
+  background: var(--fill);
 }
 
 .bg-elevated {
-  background: rgba(18, 15, 25, 0.70);
+  background: var(--glass-bg-strong);
 }
 
 .bg-input {
-  background: rgba(12, 12, 18, 0.55);
+  background: var(--glass-bg);
 }
 
 /* ── Glow Effects ──────────────────────────────── */
@@ -233,8 +311,8 @@
   background-clip: text;
 }
 
-.text-gradient-bright {
-  background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 50%, #c4b5fd 100%);
+.text-gradient-dark {
+  background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 50%, #6d28d9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -260,8 +338,8 @@
 
   body {
     font-family: var(--font-sans);
-    background: #050505;
-    color: #e5e5e7;
+    background: var(--canvas);
+    color: var(--fg);
   }
 
   :focus-visible {
@@ -272,7 +350,7 @@
 
   ::selection {
     background: rgba(139, 92, 246, 0.3);
-    color: white;
+    color: #fff;
   }
 }
 

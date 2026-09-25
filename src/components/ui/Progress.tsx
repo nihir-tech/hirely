@@ -22,12 +22,12 @@ export function Progress({
   return (
     <div className={`space-y-1 ${className}`}>
       {label && (
-        <div className="flex justify-between text-xs text-neutral-500">
+        <div className="flex justify-between text-xs text-fg-muted">
           <span>{label}</span>
           <span>{Math.round(pct)}%</span>
         </div>
       )}
-      <div className={`${heights[size]} rounded-full bg-neutral-800/30 overflow-hidden`}>
+      <div className={`${heights[size]} rounded-full bg-chip overflow-hidden`}>
         <div
           className="h-full rounded-full transition-all duration-700 ease-out"
           style={{ width: `${pct}%`, backgroundColor: color, boxShadow: `0 0 8px ${color}40` }}

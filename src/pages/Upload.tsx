@@ -145,11 +145,11 @@ export function Upload() {
             )}
 
             <div className="text-center">
-              <p className="text-xs text-neutral-600 leading-relaxed max-w-md mx-auto">
+              <p className="text-xs text-fg-faint leading-relaxed max-w-md mx-auto">
                 Your resume is processed securely. Content is sent to AI for analysis only and is not stored
                 permanently unless you choose to save results.
                 {user && (
-                  <span className="text-neutral-500">
+                  <span className="text-fg-muted">
                     {' '}Signed in as {user.displayName || user.email} — analysis data may be retained by
                     the owner as part of service operation (see Data Safety).
                   </span>

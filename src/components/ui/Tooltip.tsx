@@ -17,7 +17,7 @@ export function Tooltip({ content, children, className = '', position = 'top' }:
         className={`absolute ${pos} pointer-events-none opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 z-50`}
         role="tooltip"
       >
-        <div className="glass-strong text-white text-xs font-medium px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap">
+        <div className="glass-strong text-fg-strong text-xs font-medium px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap">
           {content}
         </div>
       </div>

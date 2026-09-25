@@ -49,7 +49,7 @@ export function ChangesTab({ analysis, onUpdate, onEdit }: Props) {
         <Badge variant="success">{accepted} accepted</Badge>
         <Badge variant="error">{rejected} rejected</Badge>
         <Badge>{pending} pending</Badge>
-        <span className="text-sm text-neutral-500 ml-auto">
+        <span className="text-sm text-fg-muted ml-auto">
           {accepted}/{changes.length} changes accepted
         </span>
       </div>
@@ -66,7 +66,7 @@ export function ChangesTab({ analysis, onUpdate, onEdit }: Props) {
               ? 'border-emerald-500/20 bg-emerald-500/[0.02]'
               : change.accepted === false
                 ? 'border-red-500/20 bg-red-500/[0.02]'
-                : 'border-white/5'
+                : 'border-line'
 
           return (
             <Card key={change.id} className={`p-5 !rounded-2xl ${borderClass}`}>
@@ -106,21 +106,21 @@ export function ChangesTab({ analysis, onUpdate, onEdit }: Props) {
 
               {change.current && (
                 <div className="mb-2">
-                  <p className="text-xs font-medium text-neutral-500 mb-1">Current</p>
-                  <p className="text-sm text-neutral-400 p-3 rounded-xl bg-surface-subtle border border-white/[0.05] italic">
+                  <p className="text-xs font-medium text-fg-muted mb-1">Current</p>
+                  <p className="text-sm text-fg-muted p-3 rounded-xl bg-surface-subtle border border-line italic">
                     {change.current}
                   </p>
                 </div>
               )}
 
               <div className="mb-2">
-                <p className="text-xs font-medium text-neutral-500 mb-1">Suggested</p>
-                <p className="text-sm text-neutral-200 p-3 rounded-xl bg-brand-500/5 border border-brand-500/10">
+                <p className="text-xs font-medium text-fg-muted mb-1">Suggested</p>
+                <p className="text-sm text-fg-strong p-3 rounded-xl bg-brand-500/5 border border-brand-500/10">
                   {change.suggested}
                 </p>
               </div>
 
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-fg-muted">
                 <strong>Reason:</strong> {change.reason}
               </p>
             </Card>
@@ -143,7 +143,7 @@ export function ChangesTab({ analysis, onUpdate, onEdit }: Props) {
         <textarea
           value={editText}
           onChange={(e) => setEditText(e.target.value)}
-          className="w-full h-40 p-4 text-sm text-white bg-surface border border-white/[0.08] rounded-xl resize-y focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent"
+          className="w-full h-40 p-4 text-sm text-fg-strong bg-surface border border-line rounded-xl resize-y focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent"
         />
       </Modal>
     </div>

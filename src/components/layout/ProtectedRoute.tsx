@@ -29,7 +29,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
             </div>
             <span className="lp-page-eyebrow">Private</span>
             <h1 className="lp-page-title text-xl mb-1.5">Sign in to continue</h1>
-            <p className="text-sm text-neutral-400 mb-6">
+            <p className="text-sm text-fg-muted mb-6">
               Resume analysis is available to signed-in users. Log in with your Google account to
               upload and get your report.
             </p>

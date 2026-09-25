@@ -122,48 +122,48 @@ export function Optimize() {
 
             <Card className="p-6 space-y-4">
               {analysis.jobTarget?.jobDescription && (
-                <div className="flex items-center justify-between p-3 rounded-xl bg-surface-subtle border border-white/[0.05]">
-                  <span className="text-sm text-neutral-400">Current job target: <span className="text-white">{analysis.jobTarget.title || 'Untitled'}</span>{analysis.jobTarget.company ? ` at ${analysis.jobTarget.company}` : ''}</span>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-surface-subtle border border-line">
+                  <span className="text-sm text-fg-muted">Current job target: <span className="text-fg-strong">{analysis.jobTarget.title || 'Untitled'}</span>{analysis.jobTarget.company ? ` at ${analysis.jobTarget.company}` : ''}</span>
                   <Button variant="danger" size="sm" onClick={handleClearJobTarget}>Remove</Button>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Job Title <span className="text-neutral-600">(optional)</span>
+                <label className="block text-sm font-medium text-fg-strong mb-2">
+                  Job Title <span className="text-fg-faint">(optional)</span>
                 </label>
                 <input
                   type="text"
                   value={jobTitle}
                   onChange={(e) => setJobTitle(e.target.value)}
                   placeholder="e.g. Senior Software Engineer"
-                  className="w-full px-4 py-3 rounded-xl bg-surface border border-white/[0.08] text-white placeholder-neutral-600 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-surface border border-line text-fg-strong placeholder-fg-faint text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Company <span className="text-neutral-600">(optional)</span>
+                <label className="block text-sm font-medium text-fg-strong mb-2">
+                  Company <span className="text-fg-faint">(optional)</span>
                 </label>
                 <input
                   type="text"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="e.g. Google, Stripe, Coinbase"
-                  className="w-full px-4 py-3 rounded-xl bg-surface border border-white/[0.08] text-white placeholder-neutral-600 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-surface border border-line text-fg-strong placeholder-fg-faint text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Job Description <span className="text-brand-400">*</span>
+                <label className="block text-sm font-medium text-fg-strong mb-2">
+                  Job Description <span className="text-brand-600 dark:text-brand-400">*</span>
                 </label>
                 <textarea
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   rows={10}
                   placeholder="Paste the full job description here..."
-                  className="w-full px-4 py-3 rounded-xl bg-surface border border-white/[0.08] text-white placeholder-neutral-600 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent resize-y transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-surface border border-line text-fg-strong placeholder-fg-faint text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent resize-y transition-all"
                 />
               </div>
             </Card>
@@ -182,7 +182,7 @@ export function Optimize() {
 
             {analysis.jobTarget?.jobDescription && (
               <div className="text-center">
-                <p className="text-xs text-neutral-600">
+                <p className="text-xs text-fg-faint">
                   This will update the existing job match results.
                 </p>
               </div>

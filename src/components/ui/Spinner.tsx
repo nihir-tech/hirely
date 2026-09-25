@@ -21,7 +21,7 @@ export function Spinner({ size = 'md', className = '', label }: Props) {
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
         />
       </svg>
-      {label && <span className="text-sm text-neutral-400">{label}</span>}
+      {label && <span className="text-sm text-fg-muted">{label}</span>}
       <span className="sr-only">Loading...</span>
     </div>
   )
@@ -48,10 +48,10 @@ export function LoadingOverlay({ messages, currentMessage, progress }: LoadingPr
       </div>
 
       <div className="text-center">
-        <p className="text-lg font-medium text-white">{msg}</p>
+        <p className="text-lg font-medium text-fg-strong">{msg}</p>
         {typeof progress === 'number' && (
           <div className="mt-4 w-64 mx-auto">
-            <div className="h-1.5 rounded-full bg-neutral-800/30 overflow-hidden">
+            <div className="h-1.5 rounded-full bg-chip overflow-hidden">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-brand-600 to-brand-400 transition-all duration-700 ease-out"
                 style={{
@@ -60,7 +60,7 @@ export function LoadingOverlay({ messages, currentMessage, progress }: LoadingPr
                 }}
               />
             </div>
-            <p className="mt-2 text-xs text-neutral-500">{Math.round(progress)}% complete</p>
+            <p className="mt-2 text-xs text-fg-muted">{Math.round(progress)}% complete</p>
           </div>
         )}
       </div>
@@ -71,10 +71,10 @@ export function LoadingOverlay({ messages, currentMessage, progress }: LoadingPr
             key={m}
             className={`text-xs px-3 py-1 rounded-full transition-all duration-300 ${
               m === msg
-                ? 'bg-brand-500/20 text-brand-300 font-medium border border-brand-500/20'
+                ? 'bg-brand-500/20 text-brand-700 dark:text-brand-300 font-medium border border-brand-500/20'
                 : messages.indexOf(m) < messages.indexOf(msg)
-                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                  : 'bg-neutral-800/30 text-neutral-500 border border-white/5'
+                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+                  : 'bg-chip text-fg-muted border border-line'
             }`}
           >
             {messages.indexOf(m) < messages.indexOf(msg) ? '✓ ' : ''}

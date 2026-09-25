@@ -15,7 +15,7 @@ interface Props {
 
 export function Accordion({ items, className = '' }: Props) {
   return (
-    <div className={`divide-y divide-white/5 rounded-2xl border border-white/5 overflow-hidden ${className}`}>
+    <div className={`divide-y divide-line rounded-2xl border border-line overflow-hidden ${className}`}>
       {items.map((item) => (
         <AccordionItem key={item.id} item={item} />
       ))}
@@ -30,12 +30,12 @@ function AccordionItem({ item }: { item: Item }) {
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-neutral-300 hover:bg-neutral-800/20 transition-colors"
+        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-fg-strong hover:bg-chip transition-colors"
         aria-expanded={open}
       >
         <span className="pr-4">{item.title}</span>
         <svg
-          className={`h-4 w-4 shrink-0 text-neutral-500 transition-transform duration-200 ${
+          className={`h-4 w-4 shrink-0 text-fg-muted transition-transform duration-200 ${
             open ? 'rotate-180' : ''
           }`}
           viewBox="0 0 20 20"
@@ -48,7 +48,7 @@ function AccordionItem({ item }: { item: Item }) {
           />
         </svg>
       </button>
-      {open && <div className="px-4 pb-4 text-sm text-neutral-400">{item.children}</div>}
+      {open && <div className="px-4 pb-4 text-sm text-fg-muted">{item.children}</div>}
     </div>
   )
 }
@@ -63,15 +63,15 @@ export function SingleAccordion({ title, children, defaultOpen = false }: Single
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <div className="rounded-2xl border border-white/5 overflow-hidden">
+    <div className="rounded-2xl border border-line overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-neutral-300 hover:bg-neutral-800/20 transition-colors"
+        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-fg-strong hover:bg-chip transition-colors"
         aria-expanded={open}
       >
         <span className="pr-4">{title}</span>
         <svg
-          className={`h-4 w-4 shrink-0 text-neutral-500 transition-transform duration-200 ${
+          className={`h-4 w-4 shrink-0 text-fg-muted transition-transform duration-200 ${
             open ? 'rotate-180' : ''
           }`}
           viewBox="0 0 20 20"
@@ -84,7 +84,7 @@ export function SingleAccordion({ title, children, defaultOpen = false }: Single
           />
         </svg>
       </button>
-      {open && <div className="px-4 pb-4 text-sm text-neutral-400">{children}</div>}
+      {open && <div className="px-4 pb-4 text-sm text-fg-muted">{children}</div>}
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { APP_NAME } from '../../config'
 import { useSiteStats } from '../../hooks/useSiteStats'
 import { useAuth } from '../../lib/auth'
 import { LogoMark } from './LogoMark'
+import { ThemeToggle } from './ThemeToggle'
 
 const LINKS = [
   { to: '/#how-it-works', label: 'How It Works' },
@@ -117,6 +118,7 @@ export function Navbar() {
 
           <div className="lp-nav-links">
             <LivePill />
+            <ThemeToggle />
             {LINKS.map((l) => (
               <a key={l.label} href={l.to} onClick={(e) => {
                 if (onLanding) {
@@ -148,6 +150,9 @@ export function Navbar() {
       <div className={`lp-mobile-menu ${mobileOpen ? 'open' : ''}`}>
         <div className="lp-mobile-live">
           <LivePill />
+        </div>
+        <div className="lp-mobile-theme">
+          <ThemeToggle />
         </div>
         {LINKS.map((l) => (
           <a key={l.label} href={l.to} onClick={() => setMobileOpen(false)}>{l.label}</a>

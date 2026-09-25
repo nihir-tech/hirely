@@ -10,7 +10,7 @@ interface Props {
 
 export function Tabs({ items, active, onChange, badges }: Props) {
   return (
-    <div className="border-b border-white/5">
+    <div className="border-b border-line">
       <nav className="flex overflow-x-auto -mb-px gap-0.5" aria-label="Tabs">
         {items.map((item) => {
           const isActive = item.id === active
@@ -23,8 +23,8 @@ export function Tabs({ items, active, onChange, badges }: Props) {
                 border-b-2 transition-all duration-200
                 ${
                   isActive
-                    ? 'border-brand-500 text-brand-400'
-                    : 'border-transparent text-neutral-500 hover:text-neutral-300 hover:border-white/10'
+                    ? 'border-brand-500 text-brand-700 dark:text-brand-400'
+                    : 'border-transparent text-fg-muted hover:text-fg-strong hover:border-line'
                 }
               `}
               aria-current={isActive ? 'page' : undefined}

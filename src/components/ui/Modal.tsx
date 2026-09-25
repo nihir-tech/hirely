@@ -50,11 +50,11 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }: P
         style={{ boxShadow: '0 0 60px rgba(139, 92, 246, 0.08), 0 25px 50px rgba(0,0,0,0.5)' }}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-            <h2 className="text-lg font-semibold text-white">{title}</h2>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-line">
+            <h2 className="text-lg font-semibold text-fg-strong">{title}</h2>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800/30 transition-colors"
+              className="p-1.5 rounded-lg text-fg-muted hover:text-fg-strong hover:bg-chip transition-colors"
               aria-label="Close"
             >
               <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -65,7 +65,7 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }: P
         )}
         <div className="overflow-y-auto px-6 py-4 flex-1">{children}</div>
         {footer && (
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/5">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-line">
             {footer}
           </div>
         )}

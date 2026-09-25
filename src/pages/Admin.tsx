@@ -32,9 +32,9 @@ const VISIT_LABEL: Record<VisitEntry['kind'], string> = {
 }
 
 const VISIT_BADGE: Record<VisitEntry['kind'], string> = {
-  visit: 'bg-white/5 text-neutral-400 border-white/10',
-  login: 'bg-violet-500/15 text-violet-300 border-violet-400/25',
-  analyze: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/25',
+  visit: 'bg-fill text-fg-muted border-line',
+  login: 'bg-violet-500/15 text-violet-700 dark:text-violet-300 border-violet-400/25',
+  analyze: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-400/25',
 }
 
 export function Admin() {
@@ -138,7 +138,7 @@ export function Admin() {
               </svg>
             </div>
             <h1 className="lp-page-title text-xl mb-1">Owner Access</h1>
-            <p className="text-sm text-neutral-400 mb-6">
+            <p className="text-sm text-fg-muted mb-6">
               This area is private. Sign in with the authorized Google account to continue.
             </p>
             <Button onClick={async () => {
@@ -156,8 +156,8 @@ export function Admin() {
         ) : !isOwner ? (
           <Card className="p-8 max-w-md mx-auto text-center">
             <h1 className="lp-page-title text-xl mb-1">Access Restricted</h1>
-            <p className="text-sm text-neutral-400">
-              Signed in as <span className="text-white">{user.email}</span> — this area is only
+            <p className="text-sm text-fg-muted">
+              Signed in as <span className="text-fg-strong">{user.email}</span> — this area is only
               available to the site owner.
             </p>
           </Card>
@@ -167,19 +167,19 @@ export function Admin() {
               <div className="lp-head-left min-w-0">
                 <span className="lp-page-eyebrow">Owner</span>
                 <h1 className="lp-page-title">Submissions</h1>
-                <p className="text-sm text-neutral-400 mt-1">
+                <p className="text-sm text-fg-muted mt-1">
                   Live feed of analyzed resumes from signed-in users
                 </p>
               </div>
               {stats && (
                 <div className="flex gap-3">
                   <div className="glass-card px-4 py-2.5 rounded-xl">
-                    <p className="text-[10px] uppercase tracking-widest text-neutral-500">Total</p>
-                    <p className="text-lg font-bold text-white">{stats.count}</p>
+                    <p className="text-[10px] uppercase tracking-widest text-fg-muted">Total</p>
+                    <p className="text-lg font-bold text-fg-strong">{stats.count}</p>
                   </div>
                   <div className="glass-card px-4 py-2.5 rounded-xl">
-                    <p className="text-[10px] uppercase tracking-widest text-neutral-500">Avg score</p>
-                    <p className="text-lg font-bold text-brand-400">{stats.avg}</p>
+                    <p className="text-[10px] uppercase tracking-widest text-fg-muted">Avg score</p>
+                    <p className="text-lg font-bold text-brand-600 dark:text-brand-400">{stats.avg}</p>
                   </div>
                 </div>
               )}
@@ -187,25 +187,25 @@ export function Admin() {
 
             <div className="glass-card p-5 rounded-xl mb-5">
               <div className="flex items-center justify-between gap-4 mb-2">
-                <h2 className="text-sm font-semibold text-white">Online now — signed-in users</h2>
+                <h2 className="text-sm font-semibold text-fg-strong">Online now — signed-in users</h2>
                 <span className="lp-live-pill" title="Live right now">
                   <span className="lp-live-dot" /> {onlines.length}
                 </span>
               </div>
               {onlines.length === 0 ? (
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-fg-muted">
                   No signed-in users online right now.
                 </p>
               ) : (
                 <ul className="space-y-2">
                   {onlines.map((o) => (
-                    <li key={o.email} className="flex items-center justify-between gap-3 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2">
+                    <li key={o.email} className="flex items-center justify-between gap-3 bg-fill border border-line rounded-lg px-3 py-2">
                       <div className="min-w-0">
-                        <p className="text-sm text-neutral-200 truncate">{o.displayName || 'Hirely user'}</p>
-                        <p className="text-xs text-neutral-500 truncate">{o.email}</p>
+                        <p className="text-sm text-fg-strong truncate">{o.displayName || 'Hirely user'}</p>
+                        <p className="text-xs text-fg-muted truncate">{o.email}</p>
                       </div>
                       {o.at != null && (
-                        <span className="text-[11px] text-neutral-500 shrink-0">
+                        <span className="text-[11px] text-fg-muted shrink-0">
                           {new Date(o.at).toLocaleTimeString()}
                         </span>
                       )}
@@ -217,30 +217,30 @@ export function Admin() {
 
             <div className="glass-card p-5 rounded-xl mb-5">
               <div className="flex items-center justify-between gap-4 mb-4">
-                <h2 className="text-sm font-semibold text-white">Recent activity</h2>
-                <span className="text-[11px] text-neutral-500">{visits.length} most recent</span>
+                <h2 className="text-sm font-semibold text-fg-strong">Recent activity</h2>
+                <span className="text-[11px] text-fg-muted">{visits.length} most recent</span>
               </div>
               {visits.length === 0 ? (
-                <p className="text-xs text-neutral-500">No activity recorded yet.</p>
+                <p className="text-xs text-fg-muted">No activity recorded yet.</p>
               ) : (
                 <ul className="space-y-2">
                   {visits.map((v) => (
-                    <li key={v.key} className="flex items-center justify-between gap-3 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2">
+                    <li key={v.key} className="flex items-center justify-between gap-3 bg-fill border border-line rounded-lg px-3 py-2">
                       <div className="flex items-center gap-3 min-w-0">
                         <span className={`shrink-0 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${VISIT_BADGE[v.kind]}`}>
                           {VISIT_LABEL[v.kind]}
                         </span>
                         <div className="min-w-0">
-                          <p className="text-sm text-neutral-200 truncate">
+                          <p className="text-sm text-fg-strong truncate">
                             {v.displayName || (v.email ? v.email.split('@')[0] : 'Guest')}
                           </p>
-                          <p className="text-xs text-neutral-500 truncate">
+                          <p className="text-xs text-fg-muted truncate">
                             {v.email || (v.deviceId ? `device ${v.deviceId.slice(0, 8)}…` : 'Anonymous')}
                           </p>
                         </div>
                       </div>
                       {v.at != null && (
-                        <span className="text-[11px] text-neutral-500 shrink-0">
+                        <span className="text-[11px] text-fg-muted shrink-0">
                           {new Date(v.at).toLocaleString()}
                         </span>
                       )}
@@ -253,10 +253,10 @@ export function Admin() {
             <div className="space-y-3">
               {denied && (
                 <div className="glass-card p-4 rounded-xl border border-amber-500/25">
-                  <p className="text-xs text-amber-300 font-medium mb-1">Read failed — check database rules</p>
-                  <p className="text-xs text-neutral-400 break-words">{denied}</p>
-                  <p className="text-xs text-neutral-500 mt-2">
-                    Firebase Realtime Database → Rules: paste the contents of <code className="text-amber-200">firebase.rules.json</code>
+                  <p className="text-xs text-amber-600 dark:text-amber-300 font-medium mb-1">Read failed — check database rules</p>
+                  <p className="text-xs text-fg-muted break-words">{denied}</p>
+                  <p className="text-xs text-fg-muted mt-2">
+                    Firebase Realtime Database → Rules: paste the contents of <code className="text-amber-700 dark:text-amber-200">firebase.rules.json</code>
                     and click Publish (owner emails need read access to the relevant nodes).
                   </p>
                 </div>
@@ -269,13 +269,13 @@ export function Admin() {
                         <ScoreRing value={s.overallScore} size={56} strokeWidth={5} />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-base font-semibold text-white truncate">{s.fileName}</h3>
-                        <p className="text-xs text-neutral-500">
+                        <h3 className="text-base font-semibold text-fg-strong truncate">{s.fileName}</h3>
+                        <p className="text-xs text-fg-muted">
                           {s.displayName || 'Hirely user'} · {s.email}
                         </p>
-                        <p className="text-xs text-neutral-600 mt-1">
+                        <p className="text-xs text-fg-faint mt-1">
                           {new Date(s.createdAt).toLocaleString()} · {s.sections} sections
-                          {s.jobMatchScore != null && <> · <span className="text-brand-400">Job match {s.jobMatchScore}%</span></>}
+                          {s.jobMatchScore != null && <> · <span className="text-brand-600 dark:text-brand-400">Job match {s.jobMatchScore}%</span></>}
                         </p>
                       </div>
                     </div>
@@ -284,22 +284,22 @@ export function Admin() {
                         <ScoreRing value={s.overallScore} size={48} strokeWidth={4} />
                       </div>
                       <div className="text-right hidden sm:block">
-                        <p className="text-xs text-neutral-500">Score</p>
-                        <p className="text-lg font-bold text-white">{s.overallScore}</p>
+                        <p className="text-xs text-fg-muted">Score</p>
+                        <p className="text-lg font-bold text-fg-strong">{s.overallScore}</p>
                       </div>
                       <div className="text-right hidden sm:block">
-                        <p className="text-xs text-neutral-500">ATS</p>
-                        <p className="text-sm font-medium text-neutral-300">{s.atsScore}</p>
+                        <p className="text-xs text-fg-muted">ATS</p>
+                        <p className="text-sm font-medium text-fg-strong">{s.atsScore}</p>
                       </div>
                       {s.jobCompany && (
                         <div className="text-right hidden sm:block">
-                          <p className="text-xs text-neutral-500">Target</p>
-                          <p className="text-sm font-medium text-neutral-300">{s.jobCompany}</p>
+                          <p className="text-xs text-fg-muted">Target</p>
+                          <p className="text-sm font-medium text-fg-strong">{s.jobCompany}</p>
                         </div>
                       )}
                       <button
                         onClick={() => handleDelete(s.key)}
-                        className="p-2 rounded-lg hover:bg-red-500/10 text-neutral-500 hover:text-red-400 transition-all"
+                        className="p-2 rounded-lg hover:bg-red-500/10 text-fg-muted hover:text-red-400 transition-all"
                         title="Delete submission"
                       >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -313,7 +313,7 @@ export function Admin() {
 
               {subs.length === 0 && (
                 <div className="glass-card p-8 text-center">
-                  <p className="text-sm text-neutral-500">
+                  <p className="text-sm text-fg-muted">
                     No submissions yet. Resumes analyzed by signed-in users will appear here in real time.
                   </p>
                 </div>

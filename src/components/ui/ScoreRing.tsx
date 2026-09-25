@@ -84,17 +84,17 @@ export function ScoreRing({
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold text-white">{value}</span>
-          <span className="text-[10px] font-medium text-neutral-400 uppercase tracking-wide">
+          <span className="text-2xl font-bold text-fg-strong">{value}</span>
+          <span className="text-[10px] font-medium text-fg-muted uppercase tracking-wide">
             {getScoreLabel(value)}
           </span>
         </div>
       </div>
       {label && (
-        <span className="text-sm font-medium text-neutral-300">{label}</span>
+        <span className="text-sm font-medium text-fg-strong">{label}</span>
       )}
       {sublabel && (
-        <span className="text-xs text-neutral-500">{sublabel}</span>
+        <span className="text-xs text-fg-muted">{sublabel}</span>
       )}
     </div>
   )
@@ -113,10 +113,10 @@ export function ScoreBar({ label, value, max = 100 }: BarProps) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-neutral-300">{label}</span>
-        <span className="text-sm font-semibold text-white">{value}/{max}</span>
+        <span className="text-sm font-medium text-fg-strong">{label}</span>
+        <span className="text-sm font-semibold text-fg-strong">{value}/{max}</span>
       </div>
-      <div className="h-2 rounded-full bg-neutral-800/30 overflow-hidden">
+      <div className="h-2 rounded-full bg-chip overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-1000 ease-out"
           style={{

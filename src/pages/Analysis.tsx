@@ -164,7 +164,7 @@ export function Analysis() {
             <h1 className="lp-page-title truncate" title={analysis.fileName}>
               {analysis.fileName}
             </h1>
-            <p className="text-sm text-neutral-400 mt-1">
+            <p className="text-sm text-fg-muted mt-1">
               Analyzed {new Date(analysis.createdAt).toLocaleDateString()} ·{' '}
               {analysis.extracted.detectedSections.length} sections detected
             </p>
@@ -172,7 +172,7 @@ export function Analysis() {
           <div className="flex gap-2 flex-wrap">
             <Link
               to={`/optimize/${analysis.id}`}
-              className="glass-button inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white rounded-xl"
+              className="glass-button inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-fg-strong rounded-xl"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -216,10 +216,10 @@ export function Analysis() {
             </Card>
           ) : (
             <Card className="p-6 flex flex-col items-center justify-center">
-              <p className="text-sm text-neutral-500 text-center">No job target yet</p>
+              <p className="text-sm text-fg-muted text-center">No job target yet</p>
               <Link
                 to={`/optimize/${analysis.id}`}
-                className="mt-2 text-sm font-medium text-brand-400 hover:text-brand-300"
+                className="mt-2 text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300"
               >
                 Add one →
               </Link>
@@ -267,7 +267,7 @@ export function Analysis() {
         {rewriteLoading ? (
           <div className="py-8 text-center">
             <Spinner size="lg" label={rewriteMsg || 'Generating...'} />
-            <p className="mt-4 text-sm text-neutral-500">This may take up to a minute.</p>
+            <p className="mt-4 text-sm text-fg-muted">This may take up to a minute.</p>
           </div>
         ) : rewriteContent ? (
           <div className="space-y-4">
@@ -278,15 +278,15 @@ export function Analysis() {
             <textarea
               value={rewriteContent}
               onChange={(e) => setRewriteContent(e.target.value)}
-              className="w-full h-[50vh] p-4 text-sm font-mono text-white bg-surface border border-white/[0.08] rounded-xl resize-y focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent"
+              className="w-full h-[50vh] p-4 text-sm font-mono text-fg-strong bg-surface border border-line rounded-xl resize-y focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-transparent"
               spellCheck={false}
             />
             {rewriteNotes.length > 0 && (
-              <div className="p-4 rounded-xl bg-surface-subtle border border-white/[0.05]">
-                <p className="text-xs font-medium text-neutral-400 mb-2">Notes:</p>
+              <div className="p-4 rounded-xl bg-surface-subtle border border-line">
+                <p className="text-xs font-medium text-fg-muted mb-2">Notes:</p>
                 <ul className="space-y-1">
                   {rewriteNotes.map((n, i) => (
-                    <li key={i} className="text-xs text-neutral-500">
+                    <li key={i} className="text-xs text-fg-muted">
                       • {n}
                     </li>
                   ))}
@@ -303,7 +303,7 @@ export function Analysis() {
           </div>
         ) : (
           <div className="py-8 text-center">
-            <p className="text-neutral-500">Failed to generate improved resume. Please try again.</p>
+            <p className="text-fg-muted">Failed to generate improved resume. Please try again.</p>
           </div>
         )}
       </Modal>

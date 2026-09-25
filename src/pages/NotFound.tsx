@@ -93,14 +93,15 @@ export function NotFound() {
             to="/"
             className="inline-flex items-center gap-2 rounded-xl relative
               bg-[linear-gradient(120deg,var(--lp-brand-600)_0%,var(--lp-brand-500)_70%,var(--lp-brand-400)_100%)]
-              hover:-translate-y-0.5 px-6 py-3.5 text-sm font-semibold text-white transition-all"
+hover:-translate-y-0.5 px-6 py-3.5 text-sm font-semibold text-white transition-all"
           >
             Back to Home
           </Link>
           <Link
             to="/upload"
             className="inline-flex items-center gap-2 rounded-xl relative px-6 py-3.5 text-sm font-semibold
-              text-[var(--lp-text)] border border-[var(--lp-line-2)] hover:border-[rgba(255,255,255,.3)]
+              text-[var(--lp-text)] border border-[var(--lp-line-2)] hover:border-[var(--lp-line-2)]
+              hover:bg-[var(--lp-scrim-hi)]
               hover:-translate-y-0.5 transition-all"
           >
             Analyze your resume

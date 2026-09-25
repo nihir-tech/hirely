@@ -61,7 +61,7 @@ export function Dashboard() {
           <div className="lp-head-left min-w-0">
             <span className="lp-page-eyebrow">Dashboard</span>
             <h1 className="lp-page-title">Your Resumes</h1>
-            <p className="text-sm text-neutral-400 mt-1">
+            <p className="text-sm text-fg-muted mt-1">
               {all.length} resume analysis{all.length !== 1 && 's'}
             </p>
           </div>
@@ -82,7 +82,7 @@ export function Dashboard() {
             </Button>
             <Link
               to="/upload"
-              className="glass-button inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white rounded-xl"
+              className="glass-button inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-fg-strong rounded-xl"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -107,16 +107,16 @@ export function Dashboard() {
                       <ScoreRing value={r.scores.overall} size={56} strokeWidth={5} />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-base font-semibold text-white truncate group-hover:text-brand-300 transition-colors">
+                      <h3 className="text-base font-semibold text-fg-strong truncate group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
                         {r.fileName}
                       </h3>
-                      <p className="text-xs text-neutral-500 mt-0.5">
+                      <p className="text-xs text-fg-muted mt-0.5">
                         {new Date(r.createdAt).toLocaleDateString()} ·{' '}
                         {r.extracted.detectedSections.length} sections
                       </p>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {r.extracted.detectedSections.slice(0, 4).map((s) => (
-                          <span key={s} className="px-2 py-0.5 rounded-full bg-neutral-800/30 text-[10px] text-neutral-400">
+                          <span key={s} className="px-2 py-0.5 rounded-full bg-chip text-[10px] text-fg-muted">
                             {s}
                           </span>
                         ))}
@@ -130,14 +130,14 @@ export function Dashboard() {
                     </div>
                     {r.jobMatch && (
                       <div className="text-right hidden sm:block">
-                        <p className="text-xs text-neutral-500">Job Match</p>
-                        <p className="text-lg font-bold text-brand-400">{r.jobMatch.score}%</p>
+                        <p className="text-xs text-fg-muted">Job Match</p>
+                        <p className="text-lg font-bold text-brand-600 dark:text-brand-400">{r.jobMatch.score}%</p>
                       </div>
                     )}
                     {r.jobTarget?.company && (
                       <div className="text-right hidden sm:block">
-                        <p className="text-xs text-neutral-500">Target</p>
-                        <p className="text-sm font-medium text-neutral-300">{r.jobTarget.company}</p>
+                        <p className="text-xs text-fg-muted">Target</p>
+                        <p className="text-sm font-medium text-fg-strong">{r.jobTarget.company}</p>
                       </div>
                     )}
                     <button
@@ -145,7 +145,7 @@ export function Dashboard() {
                         e.preventDefault()
                         setConfirmDelete(r.id)
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-red-500/10 text-neutral-500 hover:text-red-400 transition-all"
+                      className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-red-500/10 text-fg-muted hover:text-red-400 transition-all"
                       title="Delete"
                     >
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -187,7 +187,7 @@ export function Dashboard() {
           </>
         }
       >
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-fg-muted">
           Are you sure you want to delete this analysis? This action cannot be undone.
         </p>
       </Modal>

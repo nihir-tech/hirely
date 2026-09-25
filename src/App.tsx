@@ -37,7 +37,7 @@ function ScrollManager() {
 export default function App() {
   return (
     <SiteStatsProvider>
-      <div className="lp-app min-h-screen flex flex-col bg-[#050505]">
+      <div className="lp-app min-h-screen flex flex-col bg-canvas">
         <ScrollManager />
         <Ambient />
         <Navbar />

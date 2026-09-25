@@ -18,11 +18,11 @@ const variants: Record<Variant, string> = {
   primary:
     'bg-gradient-to-r from-brand-600 to-brand-500 text-white hover:from-brand-500 hover:to-brand-400 shadow-[0_0_20px_rgba(139,92,246,0.2)] hover:shadow-[0_0_30px_rgba(139,92,246,0.35)] hover:-translate-y-0.5 active:translate-y-0',
   secondary:
-    'glass-card text-neutral-200 hover:text-white hover:border-brand-500/30',
+    'glass-card text-fg-strong hover:text-fg-strong hover:border-brand-500/30',
   ghost:
-    'text-neutral-400 hover:text-white hover:bg-neutral-800/30',
+    'text-fg-muted hover:text-fg-strong hover:bg-chip',
   danger:
-    'bg-red-600/20 text-red-400 border border-red-500/20 hover:bg-red-600/30 hover:border-red-500/30',
+    'bg-red-600/20 text-red-700 dark:text-red-400 border border-red-500/20 hover:bg-red-600/30 hover:border-red-500/30',
 }
 
 const sizes: Record<Size, string> = {
