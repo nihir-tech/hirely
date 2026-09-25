@@ -101,6 +101,7 @@ function getPrompts(): Record<string, string> | null {
       'analyze': loadPrompt('ANALYZE_SYSTEM_PROMPT'),
       'job-match': loadPrompt('JOB_MATCH_SYSTEM_PROMPT'),
       'rewrite': loadPrompt('REWRITE_SYSTEM_PROMPT'),
+      'rank-candidates': loadPrompt('RANK_CANDIDATES_SYSTEM_PROMPT'),
     }
     return cachedPrompts
   } catch {
@@ -170,6 +171,28 @@ export function apiPlugin(): Plugin {
             const truncatedResume = resumeText.length > 30000 ? resumeText.slice(0, 30000) + '\n\n[Truncated]' : resumeText
             const result = await chatJson(prompts['rewrite'], `Rewrite this resume (${focus} focus):\n\n${truncatedResume}${context}`)
             return jsonResponse(res, 200, { rewritten: result })
+
+          } else if (url === 'rank-candidates') {
+            const jobDescription = typeof data.jobDescription === 'string' ? data.jobDescription : ''
+            const resumes = Array.isArray(data.resumes) ? data.resumes : []
+            if (jobDescription.length < 50 || resumes.length === 0) {
+              return jsonResponse(res, 400, { error: 'Job description and at least one resume are required.' })
+            }
+            const parts = [`JOB DESCRIPTION:\n${jobDescription}`]
+            if (typeof data.jobTitle === 'string' && data.jobTitle) parts.push(`\nJOB TITLE: ${data.jobTitle}`)
+            if (typeof data.company === 'string' && data.company) parts.push(`COMPANY: ${data.company}`)
+            parts.push('')
+            resumes.forEach((r, i) => {
+              const text = typeof r.text === 'string' ? r.text.slice(0, 2200) : ''
+              parts.push(`CANDIDATE ${i + 1} — id: "${r.id}", fileName: "${r.fileName}"\n${text}`)
+            })
+            const result = await chatJson(prompts['rank-candidates'], parts.join('\n\n'))
+            const raw = Array.isArray((result as { ranking?: unknown }).ranking)
+              ? (result as { ranking: Record<string, unknown>[] }).ranking
+              : Array.isArray((result as { candidates?: unknown }).candidates)
+                ? (result as { candidates: Record<string, unknown>[] }).candidates
+                : []
+            return jsonResponse(res, 200, { ranking: raw })
 
           } else {
             return jsonResponse(res, 404, { error: `Unknown endpoint: ${url}` })

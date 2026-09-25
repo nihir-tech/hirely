@@ -260,3 +260,49 @@ export interface RewriteRequest {
 export interface RewriteResponse {
   rewritten: Omit<RewrittenResume, 'createdAt'>
 }
+
+// ─── Candidate Ranking (company side) ──────────────────────
+export interface CandidateRank {
+  id: string
+  fileName: string
+  name?: string
+  email?: string
+  phone?: string
+  location?: string
+  linkedin?: string
+  headline?: string
+  score: number
+  priority: number
+  yearsExperience?: string
+  matchSummary: string
+  strengths: string[]
+  gaps: string[]
+  notableProjects: string[]
+}
+
+export interface CompanyJobFile {
+  id: string
+  fileName: string
+}
+
+export interface CompanyJob {
+  id: string
+  positionTitle?: string
+  company?: string
+  jobDescription: string
+  createdAt: string
+  updatedAt: string
+  files: CompanyJobFile[]
+  ranking: CandidateRank[]
+}
+
+export interface RankCandidatesRequest {
+  jobTitle?: string
+  company?: string
+  jobDescription: string
+  resumes: { id: string; fileName: string; text: string }[]
+}
+
+export interface RankCandidatesResponse {
+  ranking: CandidateRank[]
+}

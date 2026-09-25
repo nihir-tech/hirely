@@ -5,6 +5,8 @@ import type {
   JobMatchResponse,
   RewriteRequest,
   RewriteResponse,
+  RankCandidatesRequest,
+  RankCandidatesResponse,
 } from '../types'
 
 const API_BASE = '/api'
@@ -159,6 +161,14 @@ export async function rewriteResume(
 ): Promise<RewriteResponse> {
   return cached<RewriteResponse>('rw', request as unknown as Record<string, unknown>, () =>
     callFunction<RewriteResponse>('rewrite-resume', request, 180000),
+  )
+}
+
+export async function rankCandidates(
+  request: RankCandidatesRequest,
+): Promise<RankCandidatesResponse> {
+  return cached<RankCandidatesResponse>('rc', request as unknown as Record<string, unknown>, () =>
+    callFunction<RankCandidatesResponse>('rank-candidates', request, 180000),
   )
 }
 

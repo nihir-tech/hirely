@@ -35,7 +35,7 @@ function MobileAuthInfo() {
 }
 
 function AuthArea() {
-  const { user, loading, isOwner, signIn, signOut } = useAuth()
+  const { user, loading, isOwner, isCompany, signIn, signOut } = useAuth()
 
   if (loading) return null
 
@@ -62,6 +62,11 @@ function AuthArea() {
           Admin
         </Link>
       )}
+      {isCompany && (
+        <Link to="/company" className="lp-nav-cta lp-admin-cta">
+          Company
+        </Link>
+      )}
       <div className="lp-auth-chip" title={user.email ?? undefined}>
         <span className="lp-avatar">{initial}</span>
         <span className="lp-auth-name">{user.displayName?.split(' ')[0] || 'Signed in'}</span>
@@ -79,6 +84,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+  const { isCompany } = useAuth()
   const onLanding = location.pathname === '/'
 
   useEffect(() => {
@@ -147,6 +153,9 @@ export function Navbar() {
           <a key={l.label} href={l.to} onClick={() => setMobileOpen(false)}>{l.label}</a>
         ))}
         <Link to="/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</Link>
+        {isCompany && (
+          <Link to="/company" onClick={() => setMobileOpen(false)}>Company</Link>
+        )}
         <Link to="/upload" className="lp-nav-cta" onClick={() => setMobileOpen(false)}>Get Started</Link>
         <MobileAuthInfo />
       </div>

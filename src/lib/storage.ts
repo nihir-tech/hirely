@@ -1,5 +1,5 @@
-import type { AnalysisResult, ResumeVersion } from '../types'
-import { ANALYSIS_STORAGE_KEY, VERSION_STORAGE_KEY } from '../config'
+import type { AnalysisResult, ResumeVersion, CompanyJob } from '../types'
+import { ANALYSIS_STORAGE_KEY, VERSION_STORAGE_KEY, COMPANY_STORAGE_KEY } from '../config'
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
@@ -135,4 +135,45 @@ export function duplicateVersion(id: string): ResumeVersion | null {
   list.push(dup)
   setStore(VERSION_STORAGE_KEY, list)
   return dup
+}
+
+// ─── Company jobs (candidate ranking) ──────────────────────
+export function listCompanyJobs(): CompanyJob[] {
+  return getStore<CompanyJob>(COMPANY_STORAGE_KEY)
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+}
+
+export function getCompanyJob(id: string): CompanyJob | null {
+  return getStore<CompanyJob>(COMPANY_STORAGE_KEY).find(j => j.id === id) ?? null
+}
+
+export function saveCompanyJob(data: Omit<CompanyJob, 'id' | 'createdAt' | 'updatedAt'>): CompanyJob {
+  const now = new Date().toISOString()
+  const record: CompanyJob = {
+    ...data,
+    id: generateId(),
+    createdAt: now,
+    updatedAt: now,
+  }
+  const list = getStore<CompanyJob>(COMPANY_STORAGE_KEY)
+  list.push(record)
+  setStore(COMPANY_STORAGE_KEY, list)
+  return record
+}
+
+export function updateCompanyJob(id: string, updates: Partial<CompanyJob>): CompanyJob | null {
+  const list = getStore<CompanyJob>(COMPANY_STORAGE_KEY)
+  const idx = list.findIndex(j => j.id === id)
+  if (idx === -1) return null
+  list[idx] = { ...list[idx], ...updates, updatedAt: new Date().toISOString() }
+  setStore(COMPANY_STORAGE_KEY, list)
+  return list[idx]
+}
+
+export function deleteCompanyJob(id: string): boolean {
+  const list = getStore<CompanyJob>(COMPANY_STORAGE_KEY)
+  const filtered = list.filter(j => j.id !== id)
+  if (filtered.length === list.length) return false
+  setStore(COMPANY_STORAGE_KEY, filtered)
+  return true
 }

@@ -7,13 +7,14 @@ import {
   type User,
 } from 'firebase/auth'
 import { auth } from './firebase'
-import { ADMIN_EMAILS } from '../config'
+import { ADMIN_EMAILS, COMPANY_EMAILS } from '../config'
 import { sendTelegramText } from './telegram'
 
 export interface AuthState {
   user: User | null
   loading: boolean
   isOwner: boolean
+  isCompany: boolean
   signIn: () => Promise<void>
   signOut: () => Promise<void>
 }
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthState>({
   user: null,
   loading: true,
   isOwner: false,
+  isCompany: false,
   signIn: async () => {},
   signOut: async () => {},
 })
@@ -46,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       loading,
       isOwner: Boolean(user && user.email && ADMIN_EMAILS.includes(user.email.toLowerCase())),
+      isCompany: Boolean(user && user.email && COMPANY_EMAILS.includes(user.email.toLowerCase())),
       signIn: async () => {
         if (!auth) throw new Error('Sign-in is not available right now.')
         const cred = await signInWithPopup(auth, new GoogleAuthProvider())

@@ -13,6 +13,7 @@ import { Dashboard } from './pages/Dashboard'
 import { Privacy, Terms, DataSafety } from './pages/LegalPages'
 import { Contact } from './pages/Contact'
 import { Admin } from './pages/Admin'
+import { Company } from './pages/Company'
 import { NotFound } from './pages/NotFound'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="/data-safety" element={<DataSafety />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/company" element={<Company />} />
             <Route
               path="/upload"
               element={

@@ -7,6 +7,10 @@ export const ADMIN_EMAILS = [
   'gpstracking24x7@gmail.com',
 ]
 
+export const COMPANY_EMAILS = [
+  'ferved69@gmail.com',
+]
+
 export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 export const MIN_TEXT_LENGTH = 50
 export const MAX_TEXT_LENGTH = 50000
@@ -22,6 +26,7 @@ export const ALLOWED_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg', '.webp']
 
 export const ANALYSIS_STORAGE_KEY = 'hirely:analyses'
 export const VERSION_STORAGE_KEY = 'hirely:versions'
+export const COMPANY_STORAGE_KEY = 'hirely:company_jobs'
 
 export const SCORE_THRESHOLDS = {
   excellent: 85,
