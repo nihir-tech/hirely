@@ -90,7 +90,7 @@ export default async function handler(request: Request): Promise<Response> {
     const result = await chatJson({
       system: RANK_CANDIDATES_SYSTEM_PROMPT,
       user: parts.join('\n\n'),
-      maxTokens: 8000,
+      temperature: 0.2,
     })
 
     const raw = Array.isArray((result as { ranking?: unknown }).ranking)

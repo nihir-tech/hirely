@@ -69,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       parts.push(`CANDIDATE ${i + 1} — id: "${r.id}", fileName: "${r.fileName}"\n${truncated}`)
     })
 
-    const result = await chatJson({ system: RANK_CANDIDATES_SYSTEM_PROMPT, user: parts.join('\n\n'), maxTokens: 8000 })
+    const result = await chatJson({ system: RANK_CANDIDATES_SYSTEM_PROMPT, user: parts.join('\n\n') })
 
     const raw = Array.isArray((result as { ranking?: unknown }).ranking)
       ? (result as { ranking: RankedCandidate[] }).ranking
