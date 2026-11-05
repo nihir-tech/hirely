@@ -80,6 +80,7 @@ async function callFunction<T>(
   path: string,
   payload: unknown,
   timeoutMs = 120000,
+  retriesLeft = 2,
 ): Promise<T> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
@@ -95,12 +96,25 @@ async function callFunction<T>(
     const body = await res.json().catch(() => ({}))
 
     if (!res.ok) {
-      const message =
+      // Auto-retry transient 503 / 429 / 504 server overload
+      if ((res.status === 503 || res.status === 429 || res.status === 504) && retriesLeft > 0) {
+        clearTimeout(timeout)
+        await new Promise((r) => setTimeout(r, 1500 * (3 - retriesLeft)))
+        return callFunction<T>(path, payload, timeoutMs, retriesLeft - 1)
+      }
+
+      let message =
         (body as { error?: string }).error ||
         `Request failed with status ${res.status}`
+
+      // Clean up raw JSON error messages if any leaked from upstream APIs
+      if (typeof message === 'string' && (message.includes('503') || message.includes('high demand'))) {
+        message = 'The AI model was temporarily experiencing high traffic. Please try clicking Analyze again in a moment.'
+      }
+
       const code =
         (body as { code?: string }).code ||
-        (res.status === 503 ? 'AI_NOT_CONFIGURED' : 'API_ERROR')
+        (res.status === 503 ? 'AI_BUSY' : 'API_ERROR')
 
       if (res.status === 429) {
         throw new AiError(
@@ -129,6 +143,12 @@ async function callFunction<T>(
         'TIMEOUT',
         408,
       )
+    }
+    // Auto-retry on network disconnect / dropped connection
+    if (retriesLeft > 0) {
+      clearTimeout(timeout)
+      await new Promise((r) => setTimeout(r, 1500))
+      return callFunction<T>(path, payload, timeoutMs, retriesLeft - 1)
     }
     throw new AiError(
       'Unable to reach the analysis service. Please check your connection and try again.',

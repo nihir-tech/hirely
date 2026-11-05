@@ -18,6 +18,14 @@ try {
 const AI_API_KEY = envData.OPENAI_API_KEY || process.env.OPENAI_API_KEY || ''
 const AI_MODEL = envData.OPENAI_MODEL || process.env.OPENAI_MODEL || 'gemini-3.5-flash-lite'
 
+const CANDIDATE_MODELS = [
+  AI_MODEL,
+  'gemini-3.5-flash-lite',
+  'gemini-3.5-flash',
+  'gemini-3-flash-preview',
+  'gemini-flash-lite-latest',
+].filter((m, i, arr): m is string => Boolean(m) && arr.indexOf(m) === i)
+
 function getApiKey(): string {
   if (!AI_API_KEY || AI_API_KEY === 'your-ai-api-key-here') {
     throw new Error('Please set your AI API key in .env')
@@ -27,54 +35,62 @@ function getApiKey(): string {
 
 async function chatJson(system: string, user: string): Promise<Record<string, unknown>> {
   const apiKey = getApiKey()
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${AI_MODEL}:generateContent?key=${apiKey}`
-
   let lastError: Error | null = null
-  for (let attempt = 0; attempt < 3; attempt++) {
-    if (attempt > 0) {
-      const delay = Math.pow(2, attempt) * 5000
-      await new Promise(r => setTimeout(r, delay))
-    }
 
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: `${system}\n\n${user}` }] }],
-          generationConfig: {
-            temperature: 0.2,
-            maxOutputTokens: 4000,
-            responseMimeType: 'application/json',
-            thinkingConfig: { thinkingBudget: 0 },
-          },
-        }),
-      })
+  for (let mIdx = 0; mIdx < CANDIDATE_MODELS.length; mIdx++) {
+    const currentModel = CANDIDATE_MODELS[mIdx]
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`
 
-      if (response.status === 503 || response.status === 429) {
-        const errText = await response.text()
-        lastError = new Error(`AI API (${response.status}): ${errText}`)
-        continue
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (attempt > 0 || mIdx > 0) {
+        await new Promise((r) => setTimeout(r, 600 * (attempt + 1)))
       }
 
-      if (!response.ok) {
-        const err = await response.text()
-        throw new Error(`AI API error (${response.status}): ${err}`)
-      }
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ role: 'user', parts: [{ text: `${system}\n\n${user}` }] }],
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 4000,
+              responseMimeType: 'application/json',
+              thinkingConfig: { thinkingBudget: 0 },
+            },
+          }),
+        })
 
-      const result = (await response.json()) as any
-      const text = result.candidates?.[0]?.content?.parts?.[0]?.text
-      if (!text) throw new Error('AI returned empty response')
-      return JSON.parse(text)
-    } catch (err) {
-      if (err instanceof Error && (err.message.includes('503') || err.message.includes('429'))) {
-        lastError = err
-        continue
+        if (response.status === 503 || response.status === 429) {
+          lastError = new Error('AI API model temporarily busy, switching model...')
+          break // switch to next model in CANDIDATE_MODELS
+        }
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            lastError = new Error(`Model ${currentModel} not found`)
+            break
+          }
+          const err = await response.text()
+          throw new Error(`AI API error (${response.status}): ${err}`)
+        }
+
+        const result = (await response.json()) as any
+        const text = result.candidates?.[0]?.content?.parts?.[0]?.text
+        if (!text) throw new Error('AI returned empty response')
+        try {
+          return JSON.parse(text)
+        } catch {
+          const stripped = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
+          return JSON.parse(stripped)
+        }
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err))
       }
-      throw err
     }
   }
-  throw lastError || new Error('AI API unavailable after retries')
+
+  throw lastError || new Error('AI service unavailable after model fallbacks')
 }
 
 function jsonResponse(res: any, status: number, body: unknown) {
