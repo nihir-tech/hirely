@@ -1,9 +1,16 @@
 /**
- * Curated Database of Active Job Openings
+ * Curated Database of Active Job Openings & LinkedIn Integrations
  * Spans Frontend, Full-Stack, Backend, AI/ML, Cloud/DevOps, Design, and Product.
  */
 
 import type { JobOpening } from '../types'
+
+/**
+ * Builds a direct LinkedIn search URL based on job title, skills, or target company.
+ */
+export function buildLinkedInSearchUrl(keywords: string, location = 'Worldwide'): string {
+  return `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(keywords)}&location=${encodeURIComponent(location)}&f_TPR=r604800`
+}
 
 export const CURATED_JOB_OPENINGS: JobOpening[] = [
   {
@@ -21,6 +28,10 @@ export const CURATED_JOB_OPENINGS: JobOpening[] = [
     applyUrl: 'https://stripe.com/jobs',
     postedDate: '2026-11-04',
     featured: true,
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Stripe+Senior+Full-Stack+Engineer',
+    hasEasyApply: true,
+    applicantCount: 'Over 100 applicants on LinkedIn',
   },
   {
     id: 'job-lin-02',
@@ -37,6 +48,10 @@ export const CURATED_JOB_OPENINGS: JobOpening[] = [
     applyUrl: 'https://linear.app/careers',
     postedDate: '2026-11-05',
     featured: true,
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Linear+Frontend+Engineer',
+    hasEasyApply: false,
+    applicantCount: '48 applicants on LinkedIn · In top 10% of applicants',
   },
   {
     id: 'job-ver-03',
@@ -53,6 +68,49 @@ export const CURATED_JOB_OPENINGS: JobOpening[] = [
     applyUrl: 'https://vercel.com/careers',
     postedDate: '2026-11-03',
     featured: true,
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Vercel+AI+Frontend+Architect',
+    hasEasyApply: true,
+    applicantCount: 'Over 200 applicants on LinkedIn',
+  },
+  {
+    id: 'job-meta-09',
+    title: 'Full Stack Software Engineer - React / Python',
+    company: 'Meta',
+    location: 'Remote / Menlo Park, CA',
+    type: 'Full-time',
+    department: 'Product Infrastructure',
+    salaryRange: '$175,000 - $235,000',
+    description:
+      'Meta is looking for a Full Stack Software Engineer to build scalable web experiences and high-throughput backend services. You will design, develop, and test web applications using modern JavaScript/TypeScript frameworks and distributed backend services.',
+    requiredSkills: ['React', 'JavaScript', 'TypeScript', 'Python', 'Distributed Systems', 'Git'],
+    preferredSkills: ['GraphQL', 'Relay', 'SQL', 'CI/CD'],
+    applyUrl: 'https://www.metacareers.com',
+    postedDate: '2026-11-05',
+    featured: true,
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Meta+Full+Stack+Software+Engineer',
+    hasEasyApply: false,
+    applicantCount: 'Listed on LinkedIn 2 days ago',
+  },
+  {
+    id: 'job-spot-10',
+    title: 'Senior Frontend Developer - Web Experience',
+    company: 'Spotify',
+    location: 'Remote (Americas / EMEA)',
+    type: 'Full-time',
+    department: 'Core Web Platform',
+    salaryRange: '$155,000 - $195,000',
+    description:
+      'Join Spotify’s Web Player team to deliver seamless audio and video streaming experiences to over 600 million users. You will write clean, well-tested TypeScript and React code, optimize web performance metrics, and push modern web capabilities.',
+    requiredSkills: ['React', 'TypeScript', 'CSS/SCSS', 'Web Audio/Performance', 'Jest/RTL', 'REST/GraphQL'],
+    preferredSkills: ['Next.js', 'WebAssembly', 'Micro-frontends'],
+    applyUrl: 'https://www.lifeatspotify.com/jobs',
+    postedDate: '2026-11-04',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Spotify+Senior+Frontend+Developer',
+    hasEasyApply: true,
+    applicantCount: '85 applicants on LinkedIn',
   },
   {
     id: 'job-air-04',
@@ -68,6 +126,10 @@ export const CURATED_JOB_OPENINGS: JobOpening[] = [
     preferredSkills: ['Design Systems', 'Microfrontends', 'Accessibility (a11y)'],
     applyUrl: 'https://careers.airbnb.com',
     postedDate: '2026-11-02',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Airbnb+Senior+Software+Engineer',
+    hasEasyApply: false,
+    applicantCount: 'Over 100 applicants on LinkedIn',
   },
   {
     id: 'job-sup-05',
@@ -83,6 +145,29 @@ export const CURATED_JOB_OPENINGS: JobOpening[] = [
     preferredSkills: ['Kubernetes', 'Redis', 'CI/CD Pipelines'],
     applyUrl: 'https://supabase.com/careers',
     postedDate: '2026-11-01',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Supabase+Backend+Engineer',
+    hasEasyApply: true,
+    applicantCount: '32 applicants on LinkedIn · Early applicant opportunity',
+  },
+  {
+    id: 'job-goog-11',
+    title: 'Software Engineer III - Cloud & Developer Tools',
+    company: 'Google',
+    location: 'Sunnyvale, CA / Remote Eligible',
+    type: 'Full-time',
+    department: 'Google Cloud Platform',
+    salaryRange: '$180,000 - $240,000',
+    description:
+      'Create tools, dashboards, and developer APIs that power millions of enterprise cloud users. Experience in building scalable frontend architectures with TypeScript, Angular or React, and communicating with high-throughput cloud endpoints.',
+    requiredSkills: ['TypeScript', 'JavaScript', 'HTML/CSS', 'Data Structures & Algorithms', 'Cloud Systems'],
+    preferredSkills: ['React or Angular', 'Go', 'GCP / Kubernetes'],
+    applyUrl: 'https://www.google.com/about/careers',
+    postedDate: '2026-11-05',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Google+Software+Engineer+III',
+    hasEasyApply: false,
+    applicantCount: 'Posted on LinkedIn 1 day ago',
   },
   {
     id: 'job-fig-06',
@@ -98,10 +183,14 @@ export const CURATED_JOB_OPENINGS: JobOpening[] = [
     preferredSkills: ['HTML/CSS', 'Design Tokens', 'Micro-interactions'],
     applyUrl: 'https://figma.com/careers',
     postedDate: '2026-11-05',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Figma+Product+Designer',
+    hasEasyApply: true,
+    applicantCount: 'Over 150 applicants on LinkedIn',
   },
   {
     id: 'job-dat-07',
-    title: 'Full-Stack Software Engineer (Early Stage)',
+    title: 'Full-Stack Software Engineer (Core Analytics)',
     company: 'Datadog',
     location: 'Boston / Remote',
     type: 'Full-time',
@@ -113,6 +202,10 @@ export const CURATED_JOB_OPENINGS: JobOpening[] = [
     preferredSkills: ['Data Visualization (D3.js)', 'Docker', 'Kafka'],
     applyUrl: 'https://datadoghq.com/careers',
     postedDate: '2026-11-04',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Datadog+Full-Stack+Engineer',
+    hasEasyApply: false,
+    applicantCount: '62 applicants on LinkedIn',
   },
   {
     id: 'job-gen-08',
@@ -128,6 +221,9 @@ export const CURATED_JOB_OPENINGS: JobOpening[] = [
     preferredSkills: ['React', 'LangChain / LlamaIndex', 'Vector Databases (Pinecone/Chroma)'],
     applyUrl: 'https://scale.com/careers',
     postedDate: '2026-11-05',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Scale+AI+Application+Developer',
+    hasEasyApply: true,
+    applicantCount: 'Over 90 applicants on LinkedIn',
   },
 ]
-

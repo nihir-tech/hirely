@@ -348,6 +348,10 @@ export interface JobOpening {
   applyUrl: string
   postedDate: string
   featured?: boolean
+  source?: 'LinkedIn' | 'Direct' | 'Company'
+  linkedInUrl?: string
+  hasEasyApply?: boolean
+  applicantCount?: string
 }
 
 export interface JobMatchAlert {

@@ -287,6 +287,14 @@ export function Dashboard() {
                   <span className="px-1.5 py-0.2 rounded-md bg-emerald-500/15 text-emerald-300 text-[10px] font-bold">
                     {topJobAlert.score}% Match
                   </span>
+                  {topJobAlert.opening.source === 'LinkedIn' && (
+                    <span className="px-2 py-0.2 rounded-md bg-[#0A66C2]/20 text-[#70b5f9] text-[10px] font-bold flex items-center gap-1">
+                      <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.4 9.74v-8.37H5.06v8.37h2.8z" />
+                      </svg>
+                      LinkedIn
+                    </span>
+                  )}
                 </div>
                 <p className="text-sm font-semibold text-fg-strong truncate mt-0.5">
                   {topJobAlert.opening.title} @ {topJobAlert.opening.company}
