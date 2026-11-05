@@ -352,6 +352,8 @@ export interface JobOpening {
   linkedInUrl?: string
   hasEasyApply?: boolean
   applicantCount?: string
+  companyType?: 'Startup / Small Team' | 'Mid-Size' | 'Enterprise'
+  teamSize?: string
 }
 
 export interface JobMatchAlert {

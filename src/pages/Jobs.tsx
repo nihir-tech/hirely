@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { listAnalyses, saveApplication } from '../lib/storage'
+import { listAnalyses, saveApplication, updateAnalysis } from '../lib/storage'
 import { CURATED_JOB_OPENINGS, buildLinkedInSearchUrl } from '../lib/jobOpenings'
 import { getJobRecommendationsForResume } from '../lib/jobMatcher'
 import type { JobMatchAlert } from '../types'
@@ -14,7 +14,7 @@ export function Jobs() {
   const resumes = useMemo(() => listAnalyses(), [])
   const [selectedResumeId, setSelectedResumeId] = useState<string>(resumes[0]?.id || '')
   const [search, setSearch] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'linkedin' | 'remote' | 'engineering' | 'ai'>('all')
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'startups' | 'linkedin' | 'remote' | 'engineering' | 'ai'>('all')
   const [onlyBestFit, setOnlyBestFit] = useState(false)
   const [selectedJobAlert, setSelectedJobAlert] = useState<JobMatchAlert | null>(null)
   const [addedAlertId, setAddedAlertId] = useState<string | null>(null)
@@ -56,7 +56,9 @@ export function Jobs() {
         item.opening.requiredSkills.some((s) => s.toLowerCase().includes(q))
 
       let matchesCat = true
-      if (categoryFilter === 'linkedin') {
+      if (categoryFilter === 'startups') {
+        matchesCat = item.opening.companyType === 'Startup / Small Team'
+      } else if (categoryFilter === 'linkedin') {
         matchesCat = item.opening.source === 'LinkedIn' || Boolean(item.opening.linkedInUrl)
       } else if (categoryFilter === 'remote') {
         matchesCat = item.opening.location.toLowerCase().includes('remote')
@@ -86,7 +88,7 @@ export function Jobs() {
       status: 'saved',
       matchScore: alert.score,
       resumeId: activeResume?.id,
-      notes: `Matched via Hirely: ${alert.fitBadge} (${alert.score}% match) · ${alert.opening.source || 'Direct'}`,
+      notes: `Matched via Hirely: ${alert.fitBadge} (${alert.score}% match) · ${alert.opening.companyType || 'Company'} · ${alert.opening.source || 'Direct'}`,
     })
     setAddedAlertId(alert.opening.id)
     setTimeout(() => setAddedAlertId(null), 3000)
@@ -97,6 +99,14 @@ export function Jobs() {
       navigate('/upload')
       return
     }
+    // Update target job details on the active resume so optimize loads with pre-filled inputs
+    updateAnalysis(activeResume.id, {
+      jobTarget: {
+        title: alert.opening.title,
+        company: alert.opening.company,
+        jobDescription: alert.opening.description,
+      },
+    })
     navigate(`/optimize/${activeResume.id}`)
   }
 
@@ -104,6 +114,10 @@ export function Jobs() {
     const url = buildLinkedInSearchUrl(keywords)
     window.open(url, '_blank', 'noopener,noreferrer')
   }
+
+  const startupsCount = jobAlerts.filter(
+    (j) => j.opening.companyType === 'Startup / Small Team',
+  ).length
 
   const linkedInCount = jobAlerts.filter(
     (j) => j.opening.source === 'LinkedIn' || Boolean(j.opening.linkedInUrl),
@@ -166,6 +180,18 @@ export function Jobs() {
                   <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30 flex items-center gap-1.5">
                     ⭐ TOP OPENING RECOMMENDED FOR YOU
                   </span>
+                  {topBestFit.opening.companyType && (
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                        topBestFit.opening.companyType === 'Startup / Small Team'
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                          : 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
+                      }`}
+                    >
+                      {topBestFit.opening.companyType === 'Startup / Small Team' ? '🌱 ' : ''}
+                      {topBestFit.opening.companyType}
+                    </span>
+                  )}
                   {topBestFit.opening.source === 'LinkedIn' && (
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#0A66C2]/20 text-[#70b5f9] border border-[#0A66C2]/30 flex items-center gap-1">
                       <svg className="w-3 h-3 text-[#0A66C2]" fill="currentColor" viewBox="0 0 24 24">
@@ -190,11 +216,18 @@ export function Jobs() {
                   {topBestFit.matchReason}
                 </p>
 
-                {topBestFit.opening.applicantCount && (
-                  <p className="text-xs text-[#70b5f9] font-medium">
-                    👥 {topBestFit.opening.applicantCount}
-                  </p>
-                )}
+                <div className="flex flex-wrap items-center gap-3 text-xs">
+                  {topBestFit.opening.applicantCount && (
+                    <span className="text-[#70b5f9] font-medium">
+                      👥 {topBestFit.opening.applicantCount}
+                    </span>
+                  )}
+                  {topBestFit.opening.teamSize && (
+                    <span className="text-fg-muted">
+                      🏢 Team: {topBestFit.opening.teamSize}
+                    </span>
+                  )}
+                </div>
 
                 <div className="flex flex-wrap gap-2 pt-2">
                   {topBestFit.matchingSkills.slice(0, 5).map((s) => (
@@ -338,6 +371,20 @@ export function Jobs() {
                 All ({jobAlerts.length})
               </button>
 
+              {/* Startups & Small Teams Tab */}
+              <button
+                type="button"
+                onClick={() => setCategoryFilter('startups')}
+                className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-colors ${
+                  categoryFilter === 'startups'
+                    ? 'bg-emerald-600 text-white font-semibold shadow-xs'
+                    : 'text-emerald-400 hover:bg-emerald-500/15'
+                }`}
+              >
+                <span>🌱</span>
+                <span>Startups & Small Teams ({startupsCount})</span>
+              </button>
+
               {/* Dedicated LinkedIn Openings Tab */}
               <button
                 type="button"
@@ -392,6 +439,26 @@ export function Jobs() {
             </div>
           </div>
         </div>
+
+        {/* Startups & Small Teams Specific Banner */}
+        {categoryFilter === 'startups' && (
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs text-fg-muted">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🌱</span>
+              <span>
+                Showing <strong>{filteredAlerts.length} openings at early-stage startups & boutique small teams</strong>.
+                These roles feature direct founder contact, high ownership, fast interview loops, and lower competition on LinkedIn.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('all')}
+              className="text-emerald-400 hover:underline shrink-0 font-medium ml-4"
+            >
+              Show all sources
+            </button>
+          </div>
+        )}
 
         {/* LinkedIn Specific Banner if LinkedIn filter is active */}
         {categoryFilter === 'linkedin' && (
@@ -473,6 +540,21 @@ export function Jobs() {
                           {alert.fitBadge}
                         </span>
 
+                        {alert.opening.companyType && (
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                              alert.opening.companyType === 'Startup / Small Team'
+                                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                                : alert.opening.companyType === 'Mid-Size'
+                                ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30'
+                                : 'bg-surface text-fg-muted border-line'
+                            }`}
+                          >
+                            {alert.opening.companyType === 'Startup / Small Team' ? '🌱 ' : ''}
+                            {alert.opening.companyType}
+                          </span>
+                        )}
+
                         {isLinkedIn && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0A66C2]/15 text-[#70b5f9] border border-[#0A66C2]/30">
                             <svg className="w-3 h-3 text-[#0A66C2]" fill="currentColor" viewBox="0 0 24 24">
@@ -514,6 +596,9 @@ export function Jobs() {
                       <div className="flex flex-wrap gap-3 text-xs text-fg-muted pt-1 items-center">
                         <span>📍 {alert.opening.location}</span>
                         {alert.opening.salaryRange && <span>💰 {alert.opening.salaryRange}</span>}
+                        {alert.opening.teamSize && (
+                          <span className="text-fg-muted">👥 Team: {alert.opening.teamSize}</span>
+                        )}
                         {alert.opening.applicantCount && (
                           <span className="text-[#70b5f9] font-medium">👥 {alert.opening.applicantCount}</span>
                         )}
@@ -547,6 +632,14 @@ export function Jobs() {
                           className={wasAdded ? 'text-emerald-400 border-emerald-500/40' : ''}
                         >
                           {wasAdded ? '✓ Saved' : '+ Track Job'}
+                        </Button>
+
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleTailorResume(alert)}
+                        >
+                          Tailor
                         </Button>
 
                         {/* LinkedIn Apply Button */}
@@ -627,8 +720,14 @@ export function Jobs() {
               <div>
                 <span className="text-xs text-fg-muted uppercase tracking-wider font-semibold">Match Score</span>
                 <h3 className="text-xl font-bold text-fg-strong mt-0.5">{selectedJobAlert.score}% Match</h3>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex flex-wrap items-center gap-2 mt-1">
                   <p className="text-xs text-brand-400 font-semibold">{selectedJobAlert.fitBadge}</p>
+                  {selectedJobAlert.opening.companyType && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                      {selectedJobAlert.opening.companyType === 'Startup / Small Team' ? '🌱 ' : ''}
+                      {selectedJobAlert.opening.companyType}
+                    </span>
+                  )}
                   {selectedJobAlert.opening.source === 'LinkedIn' && (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0A66C2]/15 text-[#70b5f9] border border-[#0A66C2]/30">
                       LinkedIn Listing
@@ -643,6 +742,13 @@ export function Jobs() {
               </div>
               <ScoreRing value={selectedJobAlert.score} size={64} strokeWidth={6} />
             </div>
+
+            {selectedJobAlert.opening.teamSize && (
+              <div className="p-3 rounded-xl bg-surface border border-line text-xs text-fg-muted flex items-center gap-2">
+                <span>🏢</span>
+                <span>Company Structure: <strong className="text-fg-strong">{selectedJobAlert.opening.teamSize}</strong></span>
+              </div>
+            )}
 
             {selectedJobAlert.opening.applicantCount && (
               <div className="p-3 rounded-xl bg-[#0A66C2]/10 border border-[#0A66C2]/20 text-xs text-[#70b5f9] flex items-center gap-2">
