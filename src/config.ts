@@ -27,6 +27,9 @@ export const ALLOWED_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg', '.webp']
 export const ANALYSIS_STORAGE_KEY = 'hirely:analyses'
 export const VERSION_STORAGE_KEY = 'hirely:versions'
 export const COMPANY_STORAGE_KEY = 'hirely:company_jobs'
+export const APPLICATIONS_STORAGE_KEY = 'hirely:applications'
+export const COACH_STORAGE_KEY = 'hirely:coach_messages'
+export const JOB_ALERTS_STORAGE_KEY = 'hirely:job_alerts_seen'
 
 export const SCORE_THRESHOLDS = {
   excellent: 85,

@@ -306,3 +306,92 @@ export interface RankCandidatesRequest {
 export interface RankCandidatesResponse {
   ranking: CandidateRank[]
 }
+
+// ─── Progress Tracking & Applications ──────────────────────
+export type ApplicationStatus = 'saved' | 'applied' | 'interviewing' | 'offer' | 'rejected'
+
+export interface JobApplication {
+  id: string
+  company: string
+  position: string
+  location?: string
+  salary?: string
+  url?: string
+  status: ApplicationStatus
+  appliedDate?: string
+  notes?: string
+  matchScore?: number
+  resumeId?: string
+  updatedAt: string
+}
+
+export interface ProgressMilestone {
+  id: string
+  title: string
+  description: string
+  completed: boolean
+  category: 'resume' | 'ats' | 'optimization' | 'applications'
+}
+
+// ─── Job Openings & Match Alerts ───────────────────────────
+export interface JobOpening {
+  id: string
+  title: string
+  company: string
+  location: string
+  type: 'Full-time' | 'Contract' | 'Remote' | 'Hybrid'
+  department: string
+  salaryRange?: string
+  description: string
+  requiredSkills: string[]
+  preferredSkills?: string[]
+  applyUrl: string
+  postedDate: string
+  featured?: boolean
+}
+
+export interface JobMatchAlert {
+  opening: JobOpening
+  score: number
+  fitBadge: 'Best Fit For You' | 'High Match' | 'Good Match'
+  matchReason: string
+  matchingSkills: string[]
+  missingSkills: string[]
+  highlightedAdvantages: string[]
+}
+
+// ─── AI Resume Coach ───────────────────────────────────────
+export interface CoachMessage {
+  id: string
+  sender: 'user' | 'coach'
+  text: string
+  timestamp: string
+  suggestions?: string[]
+  action?: {
+    type: 'apply_improvement' | 'copy_bullet' | 'open_tab'
+    payload?: string
+  }
+}
+
+// ─── LinkedIn Import ───────────────────────────────────────
+export interface LinkedInImportData {
+  fullName?: string
+  headline?: string
+  location?: string
+  about?: string
+  experience: Array<{
+    title: string
+    company: string
+    period?: string
+    description?: string
+  }>
+  education: Array<{
+    school: string
+    degree?: string
+    field?: string
+    period?: string
+  }>
+  skills: string[]
+  certifications?: string[]
+}
+

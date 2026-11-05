@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Dropzone, FileCard } from '../components/upload/Dropzone'
+import { LinkedInImportModal } from '../components/upload/LinkedInImportModal'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Alert } from '../components/ui/Alert'
@@ -19,6 +20,7 @@ export function Upload() {
   const { user } = useAuth()
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | undefined>()
+  const [linkedinModal, setLinkedinModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState('')
   const [loadingProgress, setLoadingProgress] = useState(0)
@@ -141,8 +143,28 @@ export function Upload() {
                 </Button>
               </div>
             ) : (
-              <Dropzone onFile={handleFile} />
+              <div className="space-y-4">
+                <Dropzone onFile={handleFile} />
+                <div className="flex items-center justify-center gap-3 pt-1">
+                  <span className="text-xs text-fg-muted font-medium">Or</span>
+                  <button
+                    type="button"
+                    onClick={() => setLinkedinModal(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-line bg-surface hover:bg-surface-subtle text-xs font-semibold text-fg-strong transition-all hover:border-[#0A66C2]/40 shadow-sm"
+                  >
+                    <svg className="w-4 h-4 text-[#0A66C2]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.4 9.74v-8.37H5.06v8.37h2.8z" />
+                    </svg>
+                    Import from LinkedIn
+                  </button>
+                </div>
+              </div>
             )}
+
+            <LinkedInImportModal
+              open={linkedinModal}
+              onClose={() => setLinkedinModal(false)}
+            />
 
             <div className="text-center">
               <p className="text-xs text-fg-faint leading-relaxed max-w-md mx-auto">

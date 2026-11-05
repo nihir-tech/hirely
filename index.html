@@ -13,7 +13,7 @@
       (function () {
         try {
           var stored = localStorage.getItem('hirely-theme')
-          var theme = stored === 'dark' ? 'dark' : 'light'
+          var theme = stored === 'light' ? 'light' : 'dark'
           var root = document.documentElement
           root.classList.toggle('dark', theme === 'dark')
           root.style.colorScheme = theme

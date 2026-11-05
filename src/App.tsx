@@ -10,12 +10,14 @@ import { Upload } from './pages/Upload'
 import { Analysis } from './pages/Analysis'
 import { Optimize } from './pages/Optimize'
 import { Dashboard } from './pages/Dashboard'
+import { Jobs } from './pages/Jobs'
 import { Privacy, Terms, DataSafety } from './pages/LegalPages'
 import { Contact } from './pages/Contact'
 import { Admin } from './pages/Admin'
 import { Company } from './pages/Company'
 import { NotFound } from './pages/NotFound'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
+import { ResumeCoachDrawer } from './components/coach/ResumeCoachDrawer'
 
 function ScrollManager() {
   const location = useLocation()
@@ -82,11 +84,13 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/jobs" element={<Jobs />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />
         <BackToTop />
+        <ResumeCoachDrawer />
       </div>
     </SiteStatsProvider>
   )

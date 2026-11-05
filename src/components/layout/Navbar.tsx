@@ -132,6 +132,15 @@ export function Navbar() {
             <Link to="/dashboard" className="lp-nav-cta" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.12)', boxShadow: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.75' }} onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}>
               Dashboard
             </Link>
+            <Link
+              to="/jobs"
+              className="lp-nav-cta flex items-center gap-1.5"
+              style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#fbbf24', boxShadow: 'none' }}
+              title="Matched Job Openings"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              Jobs
+            </Link>
             <AuthArea />
             <Link to="/upload" className="lp-nav-cta">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
@@ -158,6 +167,9 @@ export function Navbar() {
           <a key={l.label} href={l.to} onClick={() => setMobileOpen(false)}>{l.label}</a>
         ))}
         <Link to="/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</Link>
+        <Link to="/jobs" onClick={() => setMobileOpen(false)}>
+          Jobs <span className="text-amber-400 font-bold ml-1 text-xs">★ Matched</span>
+        </Link>
         {isCompany && (
           <Link to="/company" onClick={() => setMobileOpen(false)}>Company</Link>
         )}

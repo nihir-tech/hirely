@@ -62,7 +62,7 @@ async function chatJson(system: string, user: string): Promise<Record<string, un
         throw new Error(`AI API error (${response.status}): ${err}`)
       }
 
-      const result = await response.json()
+      const result = (await response.json()) as any
       const text = result.candidates?.[0]?.content?.parts?.[0]?.text
       if (!text) throw new Error('AI returned empty response')
       return JSON.parse(text)
@@ -129,12 +129,10 @@ export function apiPlugin(): Plugin {
           return jsonResponse(res, 400, { error: 'Invalid JSON' })
         }
 
-        let prompts: Record<string, string>
-        try {
-          prompts = getPrompts()
-        } catch (err) {
+        const prompts = getPrompts()
+        if (!prompts) {
           return jsonResponse(res, 500, {
-            error: 'Failed to load prompts: ' + (err instanceof Error ? err.message : String(err)),
+            error: 'Failed to load prompts',
             code: 'PROMPT_LOAD_ERROR',
           })
         }
@@ -193,6 +191,18 @@ export function apiPlugin(): Plugin {
                 ? (result as { candidates: Record<string, unknown>[] }).candidates
                 : []
             return jsonResponse(res, 200, { ranking: raw })
+
+          } else if (url === 'coach') {
+            const message = typeof data.message === 'string' ? data.message : ''
+            const reply = `Great question! When addressing **"${message}"**, focus on demonstrating quantifiable business impact. Frame your achievements using the Google X-Y-Z method: *"Accomplished [X] as measured by [Y], by doing [Z]"*. Also make sure your technical skills match the target job description keywords.`
+            return jsonResponse(res, 200, {
+              reply,
+              suggestions: [
+                'How can I rewrite my experience bullets?',
+                'What ATS keywords should I add?',
+                'Give me 3 behavioral interview questions',
+              ],
+            })
 
           } else {
             return jsonResponse(res, 404, { error: `Unknown endpoint: ${url}` })

@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { getAnalysis, updateAnalysis, deleteAnalysis } from '../lib/storage'
+import { getAnalysis, updateAnalysis, deleteAnalysis, saveVersion } from '../lib/storage'
+import { generatePdfResume, printResumePreview } from '../lib/pdfGenerator'
 import { ScoreRing } from '../components/ui/ScoreRing'
 import { Tabs } from '../components/ui/Tabs'
 import { Button } from '../components/ui/Button'
@@ -128,9 +129,27 @@ export function Analysis() {
       createdAt: new Date().toISOString(),
     }
     updateAnalysis(analysis.id, { rewritten })
+    saveVersion({
+      name: `${analysis.fileName.replace(/\.[^.]+$/, '')} (Optimized)`,
+      markdown: rewriteContent,
+      sourceAnalysisId: analysis.id,
+    })
     setAnalysis({ ...analysis, rewritten })
     setRewriteModal(false)
   }, [analysis, rewriteContent, rewriteNotes])
+
+  const handleDownloadPdf = useCallback((customContent?: string) => {
+    if (!analysis) return
+    const content = customContent || analysis.rewritten?.markdown || analysis.resumeText
+    const baseName = analysis.fileName.replace(/\.[^.]+$/, '')
+    generatePdfResume(content, `${baseName}-hirely.pdf`, analysis.extracted.name || 'Candidate')
+  }, [analysis])
+
+  const handlePrintPreview = useCallback((customContent?: string) => {
+    if (!analysis) return
+    const content = customContent || analysis.rewritten?.markdown || analysis.resumeText
+    printResumePreview(content, analysis.fileName.replace(/\.[^.]+$/, ''))
+  }, [analysis])
 
   const handleDownload = useCallback(() => {
     if (!analysis?.rewritten) return
@@ -184,6 +203,17 @@ export function Analysis() {
                 Clear Job Target
               </Button>
             )}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handleDownloadPdf()}
+              className="inline-flex items-center gap-1.5"
+            >
+              <svg className="h-4 w-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download PDF
+            </Button>
             <Button
               variant="secondary"
               size="sm"
@@ -254,13 +284,25 @@ export function Analysis() {
         size="xl"
         footer={
           rewriteContent && !rewriteLoading ? (
-            <>
+            <div className="flex flex-wrap items-center justify-between gap-2 w-full">
               <Button variant="secondary" onClick={() => setRewriteModal(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleDownload}>Download</Button>
-              <Button onClick={handleSaveRewrite}>Save Version</Button>
-            </>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="secondary" onClick={() => handlePrintPreview(rewriteContent)}>
+                  Print / Preview
+                </Button>
+                <Button variant="secondary" onClick={handleDownload}>
+                  Download .MD
+                </Button>
+                <Button onClick={() => handleDownloadPdf(rewriteContent)}>
+                  Download PDF
+                </Button>
+                <Button onClick={handleSaveRewrite}>
+                  Save Version
+                </Button>
+              </div>
+            </div>
           ) : undefined
         }
       >

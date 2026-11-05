@@ -11,7 +11,7 @@ function resolveTheme(): Theme {
   } catch {
     /* ignore storage errors */
   }
-  return 'light'
+  return 'dark'
 }
 
 function applyTheme(theme: Theme) {

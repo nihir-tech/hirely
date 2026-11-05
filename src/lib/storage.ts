@@ -1,5 +1,11 @@
-import type { AnalysisResult, ResumeVersion, CompanyJob } from '../types'
-import { ANALYSIS_STORAGE_KEY, VERSION_STORAGE_KEY, COMPANY_STORAGE_KEY } from '../config'
+import type { AnalysisResult, ResumeVersion, CompanyJob, JobApplication, CoachMessage } from '../types'
+import {
+  ANALYSIS_STORAGE_KEY,
+  VERSION_STORAGE_KEY,
+  COMPANY_STORAGE_KEY,
+  APPLICATIONS_STORAGE_KEY,
+  COACH_STORAGE_KEY,
+} from '../config'
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
@@ -176,4 +182,64 @@ export function deleteCompanyJob(id: string): boolean {
   if (filtered.length === list.length) return false
   setStore(COMPANY_STORAGE_KEY, filtered)
   return true
+}
+
+// ─── Job Applications (Progress Tracking) ──────────────────
+export function listApplications(): JobApplication[] {
+  return getStore<JobApplication>(APPLICATIONS_STORAGE_KEY)
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+}
+
+export function getApplication(id: string): JobApplication | null {
+  return getStore<JobApplication>(APPLICATIONS_STORAGE_KEY).find(a => a.id === id) ?? null
+}
+
+export function saveApplication(data: Omit<JobApplication, 'id' | 'updatedAt'>): JobApplication {
+  const now = new Date().toISOString()
+  const record: JobApplication = {
+    ...data,
+    id: generateId(),
+    updatedAt: now,
+  }
+  const list = getStore<JobApplication>(APPLICATIONS_STORAGE_KEY)
+  list.push(record)
+  setStore(APPLICATIONS_STORAGE_KEY, list)
+  return record
+}
+
+export function updateApplication(id: string, updates: Partial<JobApplication>): JobApplication | null {
+  const list = getStore<JobApplication>(APPLICATIONS_STORAGE_KEY)
+  const idx = list.findIndex(a => a.id === id)
+  if (idx === -1) return null
+  list[idx] = { ...list[idx], ...updates, updatedAt: new Date().toISOString() }
+  setStore(APPLICATIONS_STORAGE_KEY, list)
+  return list[idx]
+}
+
+export function deleteApplication(id: string): boolean {
+  const list = getStore<JobApplication>(APPLICATIONS_STORAGE_KEY)
+  const filtered = list.filter(a => a.id !== id)
+  if (filtered.length === list.length) return false
+  setStore(APPLICATIONS_STORAGE_KEY, filtered)
+  return true
+}
+
+// ─── AI Resume Coach Messages ──────────────────────────────
+export function listCoachMessages(resumeId?: string): CoachMessage[] {
+  const key = resumeId ? `${COACH_STORAGE_KEY}:${resumeId}` : COACH_STORAGE_KEY
+  return getStore<CoachMessage>(key)
+}
+
+export function saveCoachMessage(message: CoachMessage, resumeId?: string): void {
+  const key = resumeId ? `${COACH_STORAGE_KEY}:${resumeId}` : COACH_STORAGE_KEY
+  const list = getStore<CoachMessage>(key)
+  list.push(message)
+  setStore(key, list)
+}
+
+export function clearCoachMessages(resumeId?: string): void {
+  const key = resumeId ? `${COACH_STORAGE_KEY}:${resumeId}` : COACH_STORAGE_KEY
+  try {
+    localStorage.removeItem(key)
+  } catch {}
 }
