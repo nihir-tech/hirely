@@ -147,8 +147,8 @@ export function InterviewPrepModal({
           </div>
         </div>
 
-        {/* Category Filter Tabs */}
-        <div className="flex flex-wrap gap-1.5 border-b border-line pb-3">
+        {/* Category Filter Tabs with smooth mobile horizontal scroll */}
+        <div className="flex gap-1.5 border-b border-line pb-3 overflow-x-auto whitespace-nowrap scrollbar-none">
           {categories.map((cat) => {
             const count = cat === 'all' ? questions.length : questions.filter((q) => q.category === cat).length
             return (
@@ -265,3 +265,4 @@ export function InterviewPrepModal({
     </Modal>
   )
 }
+

@@ -3,10 +3,11 @@ const AI_API_KEY = process.env.OPENAI_API_KEY
 // Primary and fallback models to cascade through if one experiences high demand (503/429)
 const CANDIDATE_MODELS = [
   process.env.OPENAI_MODEL,
-  'gemini-3.5-flash-lite',
-  'gemini-3.5-flash',
-  'gemini-3-flash-preview',
-  'gemini-flash-lite-latest',
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro',
 ].filter((m, i, arr): m is string => Boolean(m) && arr.indexOf(m) === i)
 
 function getApiKey(): string {

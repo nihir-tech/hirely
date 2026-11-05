@@ -316,7 +316,7 @@ export function Dashboard() {
         )}
 
         {/* Main Tab Navigation */}
-        <div className="flex border-b border-line gap-6 mb-7 text-sm font-medium">
+        <div className="flex border-b border-line gap-4 sm:gap-6 mb-7 text-sm font-medium overflow-x-auto whitespace-nowrap scrollbar-none pb-1">
           {MAIN_TABS.map((tab) => {
             const isActive = activeMainTab === tab.id
             const badgeCount =
@@ -355,7 +355,7 @@ export function Dashboard() {
         {activeMainTab === 'resumes' && (
           <div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-              <div className="flex gap-1.5 bg-surface border border-line p-1 rounded-xl text-xs">
+              <div className="flex gap-1.5 bg-surface border border-line p-1 rounded-xl text-xs overflow-x-auto whitespace-nowrap scrollbar-none max-w-full">
                 {STATUS_FILTERS.map((f) => (
                   <button
                     key={f.id}
@@ -590,7 +590,7 @@ export function Dashboard() {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3.5">
                 {PIPELINE_COLUMNS.map((col) => {
                   const items = applications.filter((a) => a.status === col.status)
                   return (

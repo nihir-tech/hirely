@@ -139,8 +139,8 @@ export function SkillGapRoadmapModal({
               </span>
             </div>
 
-            {/* Skill Tabs */}
-            <div className="flex flex-wrap gap-1.5">
+            {/* Skill Tabs with smooth mobile horizontal scroll */}
+            <div className="flex gap-1.5 overflow-x-auto pb-1.5 whitespace-nowrap scrollbar-none">
               {roadmaps.map((item, idx) => (
                 <button
                   key={item.skill}
@@ -277,3 +277,4 @@ export function SkillGapRoadmapModal({
     </Modal>
   )
 }
+

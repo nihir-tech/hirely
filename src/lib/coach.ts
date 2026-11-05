@@ -57,6 +57,28 @@ function getOfflineCoachAdvice(message: string, resume?: AnalysisResult | null):
     }
   }
 
+  if (lower.includes('salary') || lower.includes('negotiat') || lower.includes('offer') || lower.includes('comp')) {
+    return {
+      reply: `Here is a battle-tested strategy for salary and offer negotiation:\n\n1. **Never Give the First Number**: When recruiters ask for your target, deflect gracefully: *"I'm currently focused on finding the right role alignment. Once we determine I'm the top fit, I'm confident we can agree on competitive market compensation."*\n2. **Negotiate the Total Package**: If base salary is firm, negotiate signing bonuses, equity refreshers, performance review cycles at 6 months, or remote stipends.\n3. **Use Multiple Counter-Anchors**: Frame your counter-offer with market data (e.g. Levels.fyi): *"Based on my skill set and comparable offers in this tier, I was targeting $X."*`,
+      suggestions: [
+        'How do I counter-offer without sounding aggressive?',
+        'How to evaluate startup equity vs cash?',
+        'What are common salary negotiation mistakes?',
+      ],
+    }
+  }
+
+  if (lower.includes('system design') || lower.includes('architecture') || lower.includes('scale') || lower.includes('database')) {
+    return {
+      reply: `Here is a high-level framework for modern system design and architecture:\n\n1. **Scope Requirements**: Clarify functional requirements (reads vs writes, latency SLA) and non-functional requirements (availability, consistency).\n2. **High-Level Diagram**: Client $\\to$ DNS/CDN (CloudFront) $\\to$ Load Balancer (ALB) $\\to$ Stateless API Instances $\\to$ Primary/Replica DB with an In-Memory Cache (Redis).\n3. **Bottleneck Mitigation**: Introduce message queues (Kafka/RabbitMQ) for asynchronous work, horizontal pod autoscaling (HPA), and rate limiting to prevent cascading failures.`,
+      suggestions: [
+        'Explain Redis caching strategies',
+        'How to handle database sharding?',
+        'System design mock question',
+      ],
+    }
+  }
+
   if (lower.includes('summary') || lower.includes('about')) {
     const name = resume?.extracted.name || 'Candidate'
     const skills = resume?.skills.detected.slice(0, 4).join(', ') || 'React, TypeScript, Cloud'

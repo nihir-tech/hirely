@@ -458,3 +458,4 @@ export function buildSkillGapAnalysis(alert: JobMatchAlert, candidateBackground?
     strategicAdvice,
   }
 }
+

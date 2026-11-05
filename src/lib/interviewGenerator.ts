@@ -180,3 +180,4 @@ export async function fetchAiInterviewQuestions(
 
   return generateInterviewQuestions(alert, resume)
 }
+

@@ -510,8 +510,8 @@ export function Jobs() {
             </select>
           </div>
 
-          {/* Filter Tabs */}
-          <div className="flex flex-wrap gap-1 bg-surface border border-line p-1 rounded-xl text-xs overflow-x-auto">
+          {/* Filter Tabs with horizontal smooth scroll on mobile */}
+          <div className="flex gap-1.5 bg-surface border border-line p-1.5 rounded-xl text-xs overflow-x-auto whitespace-nowrap scrollbar-none max-w-full">
             <button
               type="button"
               onClick={() => setCategoryFilter('all')}
@@ -793,7 +793,7 @@ export function Jobs() {
                         <ScoreRing value={alert.score} size={54} strokeWidth={5} />
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-1.5 justify-end">
+                      <div className="flex flex-wrap items-center gap-1.5 justify-start sm:justify-end w-full lg:w-auto">
                         
                         {/* 1. Skill Gap & Learning Roadmap Action */}
                         <Button

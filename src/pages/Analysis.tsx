@@ -227,15 +227,15 @@ export function Analysis() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-          <Card className="p-6 flex flex-col items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 mb-8">
+          <Card className="p-4 sm:p-6 flex flex-col items-center">
             <ScoreRing value={analysis.scores.overall} size={100} strokeWidth={7} label="Overall Score" />
           </Card>
-          <Card className="p-6 flex flex-col items-center">
+          <Card className="p-4 sm:p-6 flex flex-col items-center">
             <ScoreRing value={analysis.ats.score} size={100} strokeWidth={7} label="ATS Score" sublabel="AI estimate" />
           </Card>
           {analysis.jobMatch ? (
-            <Card className="p-6 flex flex-col items-center">
+            <Card className="p-4 sm:p-6 flex flex-col items-center">
               <ScoreRing
                 value={analysis.jobMatch.score}
                 size={100}
@@ -245,7 +245,7 @@ export function Analysis() {
               />
             </Card>
           ) : (
-            <Card className="p-6 flex flex-col items-center justify-center">
+            <Card className="p-4 sm:p-6 flex flex-col items-center justify-center">
               <p className="text-sm text-fg-muted text-center">No job target yet</p>
               <Link
                 to={`/optimize/${analysis.id}`}

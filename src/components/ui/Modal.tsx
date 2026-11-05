@@ -40,21 +40,21 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }: P
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div
-        className={`relative glass-strong rounded-2xl shadow-2xl w-full ${sizes[size]} max-h-[90vh] flex flex-col animate-fade-in`}
+        className={`relative glass-strong rounded-2xl shadow-2xl w-full ${sizes[size]} max-h-[92vh] flex flex-col animate-fade-in`}
         role="dialog"
         aria-modal="true"
         aria-label={title}
         style={{ boxShadow: '0 0 60px rgba(139, 92, 246, 0.08), 0 25px 50px rgba(0,0,0,0.5)' }}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-line">
-            <h2 className="text-lg font-semibold text-fg-strong">{title}</h2>
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-line">
+            <h2 className="text-base sm:text-lg font-semibold text-fg-strong truncate pr-2">{title}</h2>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-fg-muted hover:text-fg-strong hover:bg-chip transition-colors"
+              className="p-1.5 rounded-lg text-fg-muted hover:text-fg-strong hover:bg-chip transition-colors shrink-0"
               aria-label="Close"
             >
               <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -63,9 +63,9 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }: P
             </button>
           </div>
         )}
-        <div className="overflow-y-auto px-6 py-4 flex-1">{children}</div>
+        <div className="overflow-y-auto px-4 sm:px-6 py-3.5 sm:py-4 flex-1">{children}</div>
         {footer && (
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-line">
+          <div className="flex flex-wrap items-center justify-end gap-2.5 px-4 sm:px-6 py-3 sm:py-4 border-t border-line">
             {footer}
           </div>
         )}
