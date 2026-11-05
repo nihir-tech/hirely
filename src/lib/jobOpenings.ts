@@ -382,3 +382,137 @@ export const CURATED_JOB_OPENINGS: JobOpening[] = [
     applicantCount: 'Over 90 applicants on LinkedIn',
   },
 ]
+
+/**
+ * Continuous Dynamic Influx Stream:
+ * Fresh openings discovered and injected into the auto-refresh feed over time.
+ */
+export const SURFACED_FEED_STREAM: JobOpening[] = [
+  {
+    id: 'job-dyn-01',
+    title: 'Full-Stack Product Engineer',
+    company: 'PulseWave AI',
+    location: 'Remote (Worldwide)',
+    type: 'Full-time',
+    department: 'Engineering',
+    salaryRange: '$110,000 - $145,000',
+    description:
+      'PulseWave AI is an 11-person generative audio platform. We are seeking a Product Engineer proficient in React, Tailwind, and Node.js to build fast consumer-facing generation tools and integrate streaming API endpoints.',
+    requiredSkills: ['React', 'Node.js', 'TypeScript', 'Tailwind CSS', 'REST APIs'],
+    preferredSkills: ['PostgreSQL', 'WebSockets', 'AI SDKs'],
+    applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=PulseWave+Product+Engineer',
+    postedDate: 'Just now',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Full+Stack+Product+Engineer+Startup',
+    hasEasyApply: true,
+    companyType: 'Startup / Small Team',
+    teamSize: '11 employees (Seed stage)',
+    applicantCount: '4 applicants on LinkedIn · Be an early applicant',
+  },
+  {
+    id: 'job-dyn-02',
+    title: 'Frontend UI/UX Specialist',
+    company: 'Veloce Design Systems',
+    location: 'Remote',
+    type: 'Full-time',
+    department: 'Design Systems',
+    salaryRange: '$95,000 - $130,000',
+    description:
+      'Veloce is a 16-person digital studio building high-fidelity component libraries and web experiences. We need a frontend developer who obsesses over fluid micro-interactions, responsive CSS, and accessible React components.',
+    requiredSkills: ['React', 'TypeScript', 'Tailwind CSS', 'Responsive Design', 'HTML/CSS'],
+    preferredSkills: ['Framer Motion', 'Figma', 'Storybook'],
+    applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Veloce+Frontend+Engineer',
+    postedDate: '12m ago',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Frontend+UI+Developer+Remote',
+    hasEasyApply: true,
+    companyType: 'Startup / Small Team',
+    teamSize: '16 employees',
+    applicantCount: '8 applicants on LinkedIn · Quick response rate',
+  },
+  {
+    id: 'job-dyn-03',
+    title: 'Cloud & DevOps Automation Engineer',
+    company: 'Aether Cloud Technologies',
+    location: 'Remote',
+    type: 'Full-time',
+    department: 'Cloud Infrastructure',
+    salaryRange: '$120,000 - $160,000',
+    description:
+      'Aether Cloud provides automated multi-cloud provisioning for scale-ups. Looking for an infrastructure engineer to manage containerized deployments, optimize CI/CD pipelines, and configure Kubernetes clusters.',
+    requiredSkills: ['Docker', 'AWS', 'Linux', 'CI/CD Pipelines', 'Git'],
+    preferredSkills: ['Kubernetes', 'Terraform', 'Python / Bash'],
+    applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Aether+Cloud+DevOps',
+    postedDate: '24m ago',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Cloud+DevOps+Engineer+Remote',
+    hasEasyApply: true,
+    companyType: 'Startup / Small Team',
+    teamSize: '22 employees (Series A)',
+    applicantCount: '11 applicants on LinkedIn',
+  },
+  {
+    id: 'job-dyn-04',
+    title: 'Junior-Mid Full-Stack Web Developer',
+    company: 'Cloverleaf Systems',
+    location: 'Remote',
+    type: 'Full-time',
+    department: 'Core Web',
+    salaryRange: '$85,000 - $110,000',
+    description:
+      'Cloverleaf is a bootstrapped 9-person software company creating collaboration tools for remote teams. Great mentorship, direct founder collaboration, and healthy work-life balance.',
+    requiredSkills: ['React', 'JavaScript', 'Node.js', 'REST APIs', 'Git'],
+    preferredSkills: ['TypeScript', 'SQL', 'Tailwind CSS'],
+    applyUrl: 'https://www.linkedin.com/jobs/search/?keywords=Cloverleaf+Web+Developer',
+    postedDate: '45m ago',
+    source: 'LinkedIn',
+    linkedInUrl: 'https://www.linkedin.com/jobs/search/?keywords=Junior+Web+Developer+Small+Company',
+    hasEasyApply: true,
+    companyType: 'Startup / Small Team',
+    teamSize: '9 employees',
+    applicantCount: '6 applicants on LinkedIn · Be an early applicant',
+  },
+]
+
+const STORAGE_KEY_FEED_JOBS = 'hirely_custom_feed_jobs'
+
+/**
+ * Returns all active curated jobs plus any dynamically discovered feed openings
+ */
+export function getStoredFeedOpenings(): JobOpening[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_FEED_JOBS)
+    if (raw) {
+      const extra: JobOpening[] = JSON.parse(raw)
+      const existingIds = new Set(CURATED_JOB_OPENINGS.map((j) => j.id))
+      const combined = [...CURATED_JOB_OPENINGS]
+      for (const item of extra) {
+        if (!existingIds.has(item.id)) {
+          combined.unshift(item)
+          existingIds.add(item.id)
+        }
+      }
+      return combined
+    }
+  } catch {
+    // ignore
+  }
+  return [...CURATED_JOB_OPENINGS]
+}
+
+/**
+ * Injects a new opening into the continuous feed
+ */
+export function injectFeedOpening(opening: JobOpening): void {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_FEED_JOBS)
+    const list: JobOpening[] = raw ? JSON.parse(raw) : []
+    if (!list.some((j) => j.id === opening.id)) {
+      list.unshift(opening)
+      localStorage.setItem(STORAGE_KEY_FEED_JOBS, JSON.stringify(list))
+    }
+  } catch {
+    // ignore
+  }
+}
+

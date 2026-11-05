@@ -220,6 +220,42 @@ export function apiPlugin(): Plugin {
               ],
             })
 
+          } else if (url === 'interview') {
+            const jobTitle = typeof data.jobTitle === 'string' ? data.jobTitle : 'Software Engineer'
+            const company = typeof data.company === 'string' ? data.company : 'Company'
+            const matchingSkills = Array.isArray(data.matchingSkills) ? data.matchingSkills : ['React', 'TypeScript']
+            const missingSkills = Array.isArray(data.missingSkills) ? data.missingSkills : ['Docker']
+            return jsonResponse(res, 200, {
+              questions: [
+                {
+                  id: 'q-dev-1',
+                  category: 'Technical & Architecture',
+                  difficulty: 'Challenging',
+                  question: `How would you architect an end-to-end scalable application for ${company} utilizing ${matchingSkills[0] || 'React'} and modern best practices?`,
+                  whyTheyAsk: 'Evaluates your technical depth, architectural boundaries, and performance awareness.',
+                  keyPointsToHit: [
+                    'Component separation & state isolation',
+                    'Caching layers and API request optimization',
+                    'Testing and error boundary resiliency',
+                  ],
+                  modelAnswer: `In my last production project, I structured our frontend using modular feature boundaries and unified schema validation, cutting bundle size by 35% and keeping p95 latency under 100ms.`,
+                },
+                {
+                  id: 'q-dev-2',
+                  category: 'Resume Deep Dive & Gaps',
+                  difficulty: 'Senior',
+                  question: `This role at ${company} requires hands-on familiarity with ${missingSkills[0] || 'Cloud Infrastructure'}. How will you ramp up and ensure production velocity in your first month?`,
+                  whyTheyAsk: 'Tests intellectual humility, rapid learning speed, and practical plan to close skill gaps.',
+                  keyPointsToHit: [
+                    'Acknowledge existing transferrable conceptual knowledge',
+                    'Outline a structured sandbox learning project',
+                    'Commit to delivering peer-reviewed pull requests within 30 days',
+                  ],
+                  modelAnswer: `I have strong foundational knowledge in adjacent architectures. In my first two weeks, I build sandbox prototypes and pair with senior team members to master team-specific deployment patterns.`,
+                },
+              ],
+            })
+
           } else {
             return jsonResponse(res, 404, { error: `Unknown endpoint: ${url}` })
           }

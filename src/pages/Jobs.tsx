@@ -1,31 +1,73 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { listAnalyses, saveApplication, updateAnalysis } from '../lib/storage'
-import { CURATED_JOB_OPENINGS, buildLinkedInSearchUrl } from '../lib/jobOpenings'
+import {
+  CURATED_JOB_OPENINGS,
+  SURFACED_FEED_STREAM,
+  buildLinkedInSearchUrl,
+  getStoredFeedOpenings,
+  injectFeedOpening,
+} from '../lib/jobOpenings'
 import { getJobRecommendationsForResume } from '../lib/jobMatcher'
-import type { JobMatchAlert } from '../types'
+import type { JobMatchAlert, JobOpening } from '../types'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { ScoreRing } from '../components/ui/ScoreRing'
 import { Modal } from '../components/ui/Modal'
+import { SkillGapRoadmapModal } from '../components/jobs/SkillGapRoadmapModal'
+import { InterviewPrepModal } from '../components/jobs/InterviewPrepModal'
 
 export function Jobs() {
   const navigate = useNavigate()
   const resumes = useMemo(() => listAnalyses(), [])
   const [selectedResumeId, setSelectedResumeId] = useState<string>(resumes[0]?.id || '')
   const [search, setSearch] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'startups' | 'linkedin' | 'remote' | 'engineering' | 'ai'>('all')
-  const [onlyBestFit, setOnlyBestFit] = useState(false)
+  const [categoryFilter, setCategoryFilter] = useState<
+    'all' | 'best-fit' | 'near-miss' | 'startups' | 'linkedin' | 'remote' | 'engineering' | 'ai'
+  >('all')
+  const [sortBy, setSortBy] = useState<'match' | 'newest' | 'competition'>('match')
   const [selectedJobAlert, setSelectedJobAlert] = useState<JobMatchAlert | null>(null)
+  const [roadmapAlert, setRoadmapAlert] = useState<JobMatchAlert | null>(null)
+  const [interviewAlert, setInterviewAlert] = useState<JobMatchAlert | null>(null)
   const [addedAlertId, setAddedAlertId] = useState<string | null>(null)
   const [customLinkedInSearch, setCustomLinkedInSearch] = useState('')
 
+  // Continuous Live Feed Engine State
+  const [openingsPool, setOpeningsPool] = useState<JobOpening[]>(() => getStoredFeedOpenings())
+  const [autoRefresh, setAutoRefresh] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(new Date())
+  const [newJobNotification, setNewJobNotification] = useState<string | null>(null)
+  const [displayLimit, setDisplayLimit] = useState(8)
+
   const activeResume = resumes.find((r) => r.id === selectedResumeId) || resumes[0] || null
 
-  // Compute matches
+  // Continuous Auto-Refresh Timer
+  useEffect(() => {
+    if (!autoRefresh) return
+
+    const interval = setInterval(() => {
+      setLastRefreshedAt(new Date())
+
+      // Occasionally surface an unadded opening from the live stream
+      const currentIds = new Set(openingsPool.map((j) => j.id))
+      const nextUnadded = SURFACED_FEED_STREAM.find((j) => !currentIds.has(j.id))
+
+      if (nextUnadded) {
+        injectFeedOpening(nextUnadded)
+        setOpeningsPool((prev) => [nextUnadded, ...prev])
+        setNewJobNotification(`🔔 New match surfaced: ${nextUnadded.title} @ ${nextUnadded.company}`)
+        setTimeout(() => setNewJobNotification(null), 5000)
+      }
+    }, 45000) // every 45s
+
+    return () => clearInterval(interval)
+  }, [autoRefresh, openingsPool])
+
+  // Compute matches against the active resume
   const jobAlerts = useMemo(() => {
     if (!activeResume) {
-      return CURATED_JOB_OPENINGS.map((op) => ({
+      return openingsPool.map((op) => ({
         opening: op,
         score: 75,
         fitBadge: 'Good Match' as const,
@@ -33,10 +75,12 @@ export function Jobs() {
         matchingSkills: op.requiredSkills.slice(0, 2),
         missingSkills: op.requiredSkills.slice(2),
         highlightedAdvantages: ['Competitive market opportunity'],
+        isNearMiss: false,
+        gapSummary: 'Select resume to compute gap',
       }))
     }
-    return getJobRecommendationsForResume(activeResume, CURATED_JOB_OPENINGS)
-  }, [activeResume])
+    return getJobRecommendationsForResume(activeResume, openingsPool)
+  }, [activeResume, openingsPool])
 
   // Top candidate role & skills for LinkedIn search generator
   const detectedRole =
@@ -45,9 +89,9 @@ export function Jobs() {
     'Software Engineer'
   const topSkill = activeResume?.skills.detected[0] || 'React'
 
-  // Filtered jobs
+  // Filtered & Ranked jobs
   const filteredAlerts = useMemo(() => {
-    return jobAlerts.filter((item) => {
+    const list = jobAlerts.filter((item) => {
       const q = search.toLowerCase()
       const matchesSearch =
         !q ||
@@ -56,7 +100,11 @@ export function Jobs() {
         item.opening.requiredSkills.some((s) => s.toLowerCase().includes(q))
 
       let matchesCat = true
-      if (categoryFilter === 'startups') {
+      if (categoryFilter === 'best-fit') {
+        matchesCat = item.fitBadge === 'Best Fit For You'
+      } else if (categoryFilter === 'near-miss') {
+        matchesCat = Boolean(item.isNearMiss || (item.score >= 60 && item.score <= 84 && item.missingSkills.length > 0))
+      } else if (categoryFilter === 'startups') {
         matchesCat = item.opening.companyType === 'Startup / Small Team'
       } else if (categoryFilter === 'linkedin') {
         matchesCat = item.opening.source === 'LinkedIn' || Boolean(item.opening.linkedInUrl)
@@ -70,13 +118,47 @@ export function Jobs() {
           item.opening.description.toLowerCase().includes('ai')
       }
 
-      const matchesFit = !onlyBestFit || item.fitBadge === 'Best Fit For You'
-
-      return matchesSearch && matchesCat && matchesFit
+      return matchesSearch && matchesCat
     })
-  }, [jobAlerts, search, categoryFilter, onlyBestFit])
+
+    // Sort
+    if (sortBy === 'newest') {
+      return [...list].sort((a, b) => b.opening.id.localeCompare(a.opening.id))
+    }
+    if (sortBy === 'competition') {
+      return [...list].sort((a, b) => {
+        const aLow = (a.opening.applicantCount || '').includes('early') || (a.opening.applicantCount || '').includes('Be an early') ? 1 : 0
+        const bLow = (b.opening.applicantCount || '').includes('early') || (b.opening.applicantCount || '').includes('Be an early') ? 1 : 0
+        return bLow - aLow || b.score - a.score
+      })
+    }
+    // Default: Sort by Match Score Descending
+    return [...list].sort((a, b) => b.score - a.score)
+  }, [jobAlerts, search, categoryFilter, sortBy])
 
   const topBestFit = jobAlerts.find((j) => j.fitBadge === 'Best Fit For You') || jobAlerts[0]
+
+  const handleManualRefresh = () => {
+    setIsRefreshing(true)
+    setTimeout(() => {
+      setLastRefreshedAt(new Date())
+      setIsRefreshing(false)
+    }, 600)
+  }
+
+  const handleSurfaceNewJobs = () => {
+    const currentIds = new Set(openingsPool.map((j) => j.id))
+    const nextUnadded = SURFACED_FEED_STREAM.find((j) => !currentIds.has(j.id))
+
+    if (nextUnadded) {
+      injectFeedOpening(nextUnadded)
+      setOpeningsPool((prev) => [nextUnadded, ...prev])
+      setNewJobNotification(`✨ Successfully surfaced: ${nextUnadded.title} @ ${nextUnadded.company}!`)
+    } else {
+      setNewJobNotification(`✓ Your continuous feed is already up to date with all live openings.`)
+    }
+    setTimeout(() => setNewJobNotification(null), 4000)
+  }
 
   const handleAddToTracker = (alert: JobMatchAlert) => {
     saveApplication({
@@ -115,60 +197,117 @@ export function Jobs() {
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
+  // Counts for tabs
+  const bestFitCount = jobAlerts.filter((j) => j.fitBadge === 'Best Fit For You').length
+  const nearMissCount = jobAlerts.filter(
+    (j) => j.isNearMiss || (j.score >= 60 && j.score <= 84 && j.missingSkills.length > 0),
+  ).length
   const startupsCount = jobAlerts.filter(
     (j) => j.opening.companyType === 'Startup / Small Team',
   ).length
-
   const linkedInCount = jobAlerts.filter(
     (j) => j.opening.source === 'LinkedIn' || Boolean(j.opening.linkedInUrl),
   ).length
+
+  // Paginated visible items
+  const visibleAlerts = filteredAlerts.slice(0, displayLimit)
 
   return (
     <div className="min-h-[85vh] relative pt-20 pb-16">
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-8">
         
-        {/* Top Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-8">
+        {/* Top Header & Continuous Feed Live Bar */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="lp-page-eyebrow">Smart Job Match</span>
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="lp-page-eyebrow">Continuous Job Match Feed</span>
+              
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Live Feed Active
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                Live Auto-Matching Active
               </span>
+
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#0A66C2]/15 text-[#70b5f9] border border-[#0A66C2]/30">
                 <svg className="w-3 h-3 text-[#0A66C2]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.4 9.74v-8.37H5.06v8.37h2.8z" />
                 </svg>
-                LinkedIn Verified
+                LinkedIn Verified Feed
               </span>
             </div>
+
             <h1 className="lp-page-title">
-              Openings <span className="lp-grad-text">Matched For You</span>
+              Jobs <span className="lp-grad-text">Ranked For You</span>
             </h1>
+
             <p className="text-sm text-fg-muted mt-1.5 max-w-2xl">
-              Curated openings scored directly against your resume with live LinkedIn listings, Easy Apply badges,
-              and 1-click tailored optimization.
+              Continuous live job feed automatically ranked against your resume. Explore skill gap roadmaps for near-miss roles, generate custom interview question rubrics, and apply directly on LinkedIn.
             </p>
           </div>
 
-          {resumes.length > 0 && (
-            <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-surface border border-line">
-              <span className="text-xs text-fg-muted font-medium pl-1">Matching against:</span>
-              <select
-                value={selectedResumeId}
-                onChange={(e) => setSelectedResumeId(e.target.value)}
-                className="text-xs bg-surface-subtle border border-line rounded-xl px-3 py-1.5 text-fg-strong focus:outline-none focus:border-brand-500 max-w-[200px] truncate"
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            {resumes.length > 0 && (
+              <div className="flex items-center gap-2 p-2 rounded-2xl bg-surface border border-line">
+                <span className="text-xs text-fg-muted font-medium pl-1">Resume:</span>
+                <select
+                  value={selectedResumeId}
+                  onChange={(e) => setSelectedResumeId(e.target.value)}
+                  className="text-xs bg-surface-subtle border border-line rounded-xl px-2.5 py-1 text-fg-strong focus:outline-none focus:border-brand-500 max-w-[170px] truncate"
+                >
+                  {resumes.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.fileName} ({r.scores.overall} pts)
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Live Feed Controls */}
+            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-surface border border-line">
+              <button
+                type="button"
+                onClick={handleManualRefresh}
+                title="Refresh rankings & feed"
+                className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-surface-subtle hover:bg-surface border border-line text-fg-strong transition-all flex items-center gap-1.5"
               >
-                {resumes.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.fileName} ({r.scores.overall} pts)
-                  </option>
-                ))}
-              </select>
+                <span className={isRefreshing ? 'animate-spin inline-block' : ''}>⚡</span>
+                <span>Refresh</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSurfaceNewJobs}
+                className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-brand-600/15 hover:bg-brand-600/25 text-brand-300 border border-brand-500/30 transition-all flex items-center gap-1"
+              >
+                <span>✨</span>
+                <span>Surface New</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`px-2 py-1 rounded-xl text-[11px] font-medium transition-all ${
+                  autoRefresh
+                    ? 'text-emerald-400 bg-emerald-500/10'
+                    : 'text-fg-muted hover:text-fg-strong'
+                }`}
+              >
+                Auto: {autoRefresh ? 'ON' : 'OFF'}
+              </button>
             </div>
-          )}
+          </div>
         </div>
+
+        {/* Live Influx Notification Banner */}
+        {newJobNotification && (
+          <div className="mb-6 p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-medium flex items-center justify-between animate-fade-in shadow-lg">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span>{newJobNotification}</span>
+            </div>
+            <span className="text-[10px] text-emerald-400/80">Refreshed live</span>
+          </div>
+        )}
 
         {/* Highlight Banner: Best Fit For You */}
         {topBestFit && activeResume && (
@@ -246,30 +385,43 @@ export function Jobs() {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row md:flex-col items-center justify-center gap-3 shrink-0">
+              <div className="flex flex-col sm:flex-row md:flex-col items-center justify-center gap-2.5 shrink-0">
                 <ScoreRing value={topBestFit.score} size={88} strokeWidth={6} label="Match Score" />
-                <Button size="sm" onClick={() => handleTailorResume(topBestFit)} className="w-full">
-                  Tailor My Resume
-                </Button>
-                {topBestFit.opening.linkedInUrl && (
-                  <a
-                    href={topBestFit.opening.linkedInUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white text-xs font-semibold transition-colors"
+                
+                <div className="flex flex-col gap-1.5 w-full">
+                  <Button size="sm" onClick={() => handleTailorResume(topBestFit)} className="w-full">
+                    Tailor My Resume
+                  </Button>
+
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setInterviewAlert(topBestFit)}
+                    className="w-full text-xs"
                   >
-                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.4 9.74v-8.37H5.06v8.37h2.8z" />
-                    </svg>
-                    Apply on LinkedIn
-                  </a>
-                )}
+                    🎯 Mock Interview Prep
+                  </Button>
+
+                  {topBestFit.opening.linkedInUrl && (
+                    <a
+                      href={topBestFit.opening.linkedInUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white text-xs font-semibold transition-colors"
+                    >
+                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.4 9.74v-8.37H5.06v8.37h2.8z" />
+                      </svg>
+                      Apply on LinkedIn
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Live LinkedIn Job Finder Box */}
+        {/* Live LinkedIn Custom Finder Box */}
         <div className="mb-8 p-5 rounded-2xl bg-surface border border-[#0A66C2]/30 shadow-sm space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
@@ -280,10 +432,10 @@ export function Jobs() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-fg-strong">
-                  Explore Live LinkedIn Jobs For Your Profile
+                  Live LinkedIn Search Generator
                 </h3>
                 <p className="text-xs text-fg-muted">
-                  One-click live searches tailored to your experience and skills on LinkedIn.
+                  Instant real-time searches calibrated to your exact role and tech stack on LinkedIn.
                 </p>
               </div>
             </div>
@@ -330,119 +482,140 @@ export function Jobs() {
           </div>
         </div>
 
-        {/* Dedicated Filter Tabs & Search */}
-        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-6">
-          <div className="relative w-full sm:w-80">
-            <svg className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Filter by role, skill, or company..."
-              className="w-full pl-10 pr-4 py-2 text-xs bg-surface border border-line rounded-xl text-fg-strong focus:outline-none focus:border-brand-500"
-            />
+        {/* Dedicated Filter Tabs, Sort & Search */}
+        <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row gap-2 flex-1 max-w-lg">
+            <div className="relative flex-1">
+              <svg className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Filter feed by role, skill, or company..."
+                className="w-full pl-10 pr-4 py-2 text-xs bg-surface border border-line rounded-xl text-fg-strong focus:outline-none focus:border-brand-500"
+              />
+            </div>
+
+            {/* Sort Dropdown */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="px-3 py-2 text-xs bg-surface border border-line rounded-xl text-fg-strong focus:outline-none focus:border-brand-500 shrink-0"
+            >
+              <option value="match">Rank: Highest Match %</option>
+              <option value="newest">Rank: Newest Postings First</option>
+              <option value="competition">Rank: Low Competition First</option>
+            </select>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* Filter Tabs */}
+          <div className="flex flex-wrap gap-1 bg-surface border border-line p-1 rounded-xl text-xs overflow-x-auto">
             <button
               type="button"
-              onClick={() => setOnlyBestFit(!onlyBestFit)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
-                onlyBestFit
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                  : 'bg-surface text-fg-muted border-line hover:text-fg-strong'
+              onClick={() => setCategoryFilter('all')}
+              className={`px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap ${
+                categoryFilter === 'all'
+                  ? 'bg-brand-600 text-white font-medium'
+                  : 'text-fg-muted hover:text-fg-strong'
               }`}
             >
-              ⭐ Best Fit Only
+              All ({jobAlerts.length})
             </button>
 
-            <div className="flex flex-wrap gap-1 bg-surface border border-line p-1 rounded-xl text-xs">
-              <button
-                type="button"
-                onClick={() => setCategoryFilter('all')}
-                className={`px-2.5 py-1 rounded-lg transition-colors ${
-                  categoryFilter === 'all'
-                    ? 'bg-brand-600 text-white font-medium'
-                    : 'text-fg-muted hover:text-fg-strong'
-                }`}
-              >
-                All ({jobAlerts.length})
-              </button>
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('best-fit')}
+              className={`px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap ${
+                categoryFilter === 'best-fit'
+                  ? 'bg-amber-600 text-white font-semibold'
+                  : 'text-amber-400 hover:bg-amber-500/15'
+              }`}
+            >
+              ⭐ Best Fit ({bestFitCount})
+            </button>
 
-              {/* Startups & Small Teams Tab */}
-              <button
-                type="button"
-                onClick={() => setCategoryFilter('startups')}
-                className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-colors ${
-                  categoryFilter === 'startups'
-                    ? 'bg-emerald-600 text-white font-semibold shadow-xs'
-                    : 'text-emerald-400 hover:bg-emerald-500/15'
-                }`}
-              >
-                <span>🌱</span>
-                <span>Startups & Small Teams ({startupsCount})</span>
-              </button>
+            {/* Near-Miss & Roadmaps Filter Tab */}
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('near-miss')}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${
+                categoryFilter === 'near-miss'
+                  ? 'bg-amber-500 text-black font-bold shadow-xs'
+                  : 'text-amber-300 hover:bg-amber-500/15'
+              }`}
+            >
+              <span>🎯</span>
+              <span>Near-Miss & Roadmaps ({nearMissCount})</span>
+            </button>
 
-              {/* Dedicated LinkedIn Openings Tab */}
-              <button
-                type="button"
-                onClick={() => setCategoryFilter('linkedin')}
-                className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-colors ${
-                  categoryFilter === 'linkedin'
-                    ? 'bg-[#0A66C2] text-white font-semibold shadow-xs'
-                    : 'text-[#70b5f9] hover:bg-[#0A66C2]/15'
-                }`}
-              >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.4 9.74v-8.37H5.06v8.37h2.8z" />
-                </svg>
-                LinkedIn Openings ({linkedInCount})
-              </button>
+            {/* Startups & Small Teams Tab */}
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('startups')}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${
+                categoryFilter === 'startups'
+                  ? 'bg-emerald-600 text-white font-semibold shadow-xs'
+                  : 'text-emerald-400 hover:bg-emerald-500/15'
+              }`}
+            >
+              <span>🌱</span>
+              <span>Startups ({startupsCount})</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setCategoryFilter('remote')}
-                className={`px-2.5 py-1 rounded-lg transition-colors ${
-                  categoryFilter === 'remote'
-                    ? 'bg-brand-600 text-white font-medium'
-                    : 'text-fg-muted hover:text-fg-strong'
-                }`}
-              >
-                Remote
-              </button>
+            {/* Dedicated LinkedIn Openings Tab */}
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('linkedin')}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                categoryFilter === 'linkedin'
+                  ? 'bg-[#0A66C2] text-white font-semibold shadow-xs'
+                  : 'text-[#70b5f9] hover:bg-[#0A66C2]/15'
+              }`}
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.4 9.74v-8.37H5.06v8.37h2.8z" />
+              </svg>
+              LinkedIn ({linkedInCount})
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setCategoryFilter('engineering')}
-                className={`px-2.5 py-1 rounded-lg transition-colors ${
-                  categoryFilter === 'engineering'
-                    ? 'bg-brand-600 text-white font-medium'
-                    : 'text-fg-muted hover:text-fg-strong'
-                }`}
-              >
-                Engineering
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setCategoryFilter('ai')}
-                className={`px-2.5 py-1 rounded-lg transition-colors ${
-                  categoryFilter === 'ai'
-                    ? 'bg-brand-600 text-white font-medium'
-                    : 'text-fg-muted hover:text-fg-strong'
-                }`}
-              >
-                AI & ML
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('remote')}
+              className={`px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap ${
+                categoryFilter === 'remote'
+                  ? 'bg-brand-600 text-white font-medium'
+                  : 'text-fg-muted hover:text-fg-strong'
+              }`}
+            >
+              Remote
+            </button>
           </div>
         </div>
 
-        {/* Startups & Small Teams Specific Banner */}
+        {/* Near-Miss Specific Banner */}
+        {categoryFilter === 'near-miss' && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs text-fg-muted animate-fade-in">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🎯</span>
+              <span>
+                Showing <strong>{filteredAlerts.length} Near-Miss Opportunities (60–84% match)</strong>. You meet the primary core requirements! Click <strong>"Skill Gap & Roadmap"</strong> on any opening to see your exact 1–2 week action plan to close the gap.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('all')}
+              className="text-amber-300 hover:underline shrink-0 font-medium ml-4"
+            >
+              Show all
+            </button>
+          </div>
+        )}
+
+        {/* Startups Specific Banner */}
         {categoryFilter === 'startups' && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs text-fg-muted">
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs text-fg-muted animate-fade-in">
             <div className="flex items-center gap-2">
               <span className="text-base">🌱</span>
               <span>
@@ -460,14 +633,13 @@ export function Jobs() {
           </div>
         )}
 
-        {/* LinkedIn Specific Banner if LinkedIn filter is active */}
+        {/* LinkedIn Specific Banner */}
         {categoryFilter === 'linkedin' && (
-          <div className="mb-6 p-4 rounded-2xl bg-[#0A66C2]/10 border border-[#0A66C2]/30 flex items-center justify-between text-xs text-fg-muted">
+          <div className="mb-6 p-4 rounded-2xl bg-[#0A66C2]/10 border border-[#0A66C2]/30 flex items-center justify-between text-xs text-fg-muted animate-fade-in">
             <div className="flex items-center gap-2">
               <span className="text-base">💼</span>
               <span>
-                Showing <strong>{filteredAlerts.length} active openings available on LinkedIn</strong>. Each includes
-                direct LinkedIn application links, Easy Apply indicators, and applicant insights.
+                Showing <strong>{filteredAlerts.length} active openings available on LinkedIn</strong> with direct apply links, Easy Apply indicators, and applicant insights.
               </span>
             </div>
             <button
@@ -480,7 +652,7 @@ export function Jobs() {
           </div>
         )}
 
-        {/* Jobs List */}
+        {/* Continuous Jobs Feed List */}
         <div className="space-y-4">
           {filteredAlerts.length === 0 ? (
             <Card className="p-12 text-center">
@@ -491,7 +663,6 @@ export function Jobs() {
                 onClick={() => {
                   setSearch('')
                   setCategoryFilter('all')
-                  setOnlyBestFit(false)
                 }}
                 className="mt-3"
               >
@@ -499,9 +670,10 @@ export function Jobs() {
               </Button>
             </Card>
           ) : (
-            filteredAlerts.map((alert) => {
+            visibleAlerts.map((alert) => {
               const isBest = alert.fitBadge === 'Best Fit For You'
               const isHigh = alert.fitBadge === 'High Match'
+              const isNearMiss = alert.isNearMiss || (alert.score >= 60 && alert.score <= 84 && alert.missingSkills.length > 0)
               const wasAdded = addedAlertId === alert.opening.id
               const isLinkedIn = alert.opening.source === 'LinkedIn' || Boolean(alert.opening.linkedInUrl)
 
@@ -511,12 +683,14 @@ export function Jobs() {
                   className={`glass-card p-5 sm:p-6 transition-all border ${
                     isBest
                       ? 'border-amber-400/30 bg-amber-950/10 hover:border-amber-400/50'
+                      : isNearMiss
+                      ? 'border-amber-500/25 bg-amber-950/5 hover:border-amber-500/40'
                       : isLinkedIn
                       ? 'border-[#0A66C2]/20 hover:border-[#0A66C2]/40'
                       : 'hover:border-brand-500/30'
                   }`}
                 >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
                     
                     {/* Left Details */}
                     <div className="space-y-2 min-w-0 flex-1">
@@ -532,12 +706,14 @@ export function Jobs() {
                           className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
                             isBest
                               ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30'
+                              : isNearMiss
+                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                               : isHigh
                               ? 'bg-brand-500/20 text-brand-300 border border-brand-500/30'
                               : 'bg-surface text-fg-muted border border-line'
                           }`}
                         >
-                          {alert.fitBadge}
+                          {isNearMiss ? 'Near-Miss Match' : alert.fitBadge}
                         </span>
 
                         {alert.opening.companyType && (
@@ -575,6 +751,7 @@ export function Jobs() {
                         {alert.opening.description}
                       </p>
 
+                      {/* Matching vs Missing Skills Breakdown */}
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {alert.opening.requiredSkills.map((skill) => {
                           const matched = alert.matchingSkills.includes(skill)
@@ -584,10 +761,10 @@ export function Jobs() {
                               className={`px-2 py-0.5 rounded-md text-[11px] font-medium border ${
                                 matched
                                   ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                                  : 'bg-surface text-fg-faint border-line'
+                                  : 'bg-amber-500/10 text-amber-300/90 border-amber-500/20'
                               }`}
                             >
-                              {matched ? '✓ ' : ''}{skill}
+                              {matched ? '✓ ' : '⚡ '}{skill}
                             </span>
                           )
                         })}
@@ -606,58 +783,72 @@ export function Jobs() {
                       </div>
                     </div>
 
-                    {/* Right Match Ring & Actions */}
-                    <div className="flex sm:flex-row md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-line">
+                    {/* Right Match Ring & Comprehensive Actions */}
+                    <div className="flex sm:flex-row lg:flex-col items-center lg:items-end justify-between gap-3 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-line">
                       <div className="flex items-center gap-3">
-                        <div className="text-right hidden md:block">
-                          <p className="text-xs font-semibold text-fg-strong">{alert.fitBadge}</p>
+                        <div className="text-right hidden sm:block lg:block">
+                          <p className="text-xs font-semibold text-fg-strong">{isNearMiss ? 'Near-Miss' : alert.fitBadge}</p>
                           <p className="text-[10px] text-fg-muted">Fit Rating</p>
                         </div>
                         <ScoreRing value={alert.score} size={54} strokeWidth={5} />
                       </div>
 
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5 justify-end">
+                        
+                        {/* 1. Skill Gap & Learning Roadmap Action */}
                         <Button
                           variant="secondary"
                           size="sm"
-                          onClick={() => setSelectedJobAlert(alert)}
+                          onClick={() => setRoadmapAlert(alert)}
+                          className="text-xs text-amber-300 border-amber-500/30 hover:border-amber-500/50"
                         >
-                          View Fit Analysis
+                          📚 Skill Gap & Roadmap
                         </Button>
 
+                        {/* 2. Interview Prep Generator Action */}
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => setInterviewAlert(alert)}
+                          className="text-xs text-brand-300 border-brand-500/30 hover:border-brand-500/50"
+                        >
+                          🎯 Interview Prep
+                        </Button>
+
+                        {/* 3. Track Job in Pipeline */}
                         <Button
                           variant="secondary"
                           size="sm"
                           onClick={() => handleAddToTracker(alert)}
-                          className={wasAdded ? 'text-emerald-400 border-emerald-500/40' : ''}
+                          className={wasAdded ? 'text-emerald-400 border-emerald-500/40 text-xs' : 'text-xs'}
                         >
-                          {wasAdded ? '✓ Saved' : '+ Track Job'}
+                          {wasAdded ? '✓ Saved' : '+ Track'}
                         </Button>
 
+                        {/* 4. Tailor Resume */}
                         <Button
                           variant="secondary"
                           size="sm"
                           onClick={() => handleTailorResume(alert)}
+                          className="text-xs"
                         >
                           Tailor
                         </Button>
 
-                        {/* LinkedIn Apply Button */}
-                        {isLinkedIn && (
+                        {/* 5. Direct LinkedIn Apply */}
+                        {isLinkedIn ? (
                           <a
                             href={alert.opening.linkedInUrl || buildLinkedInSearchUrl(`${alert.opening.title} ${alert.opening.company}`)}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white rounded-xl bg-[#0A66C2] hover:bg-[#084e96] transition-colors shadow-xs"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white rounded-xl bg-[#0A66C2] hover:bg-[#084e96] transition-colors shadow-xs"
                           >
                             <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                               <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.4 9.74v-8.37H5.06v8.37h2.8z" />
                             </svg>
-                            Apply on LinkedIn
+                            LinkedIn
                           </a>
-                        )}
-
-                        {!isLinkedIn && (
+                        ) : (
                           <a
                             href={alert.opening.applyUrl}
                             target="_blank"
@@ -677,9 +868,50 @@ export function Jobs() {
           )}
         </div>
 
+        {/* Continuous Feed Scroll Trigger */}
+        {filteredAlerts.length > displayLimit && (
+          <div className="pt-6 text-center">
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => setDisplayLimit((prev) => prev + 6)}
+              className="px-6 py-2.5 rounded-2xl text-xs font-semibold"
+            >
+              Load More Openings (Showing {displayLimit} of {filteredAlerts.length}) ↓
+            </Button>
+          </div>
+        )}
+
+        {filteredAlerts.length <= displayLimit && filteredAlerts.length > 0 && (
+          <div className="pt-8 text-center text-xs text-fg-muted flex items-center justify-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>All {filteredAlerts.length} ranked openings loaded for your profile · Feed is continuously listening for new openings</span>
+          </div>
+        )}
+
       </div>
 
-      {/* Match Details Modal */}
+      {/* ─── MODALS ────────────────────────────────────────── */}
+
+      {/* 1. Skill Gap & Learning Roadmap Modal */}
+      <SkillGapRoadmapModal
+        open={Boolean(roadmapAlert)}
+        onClose={() => setRoadmapAlert(null)}
+        alert={roadmapAlert}
+        resume={activeResume}
+        onTailorResume={handleTailorResume}
+        onAddToTracker={handleAddToTracker}
+      />
+
+      {/* 2. Interview Prep Generator Modal */}
+      <InterviewPrepModal
+        open={Boolean(interviewAlert)}
+        onClose={() => setInterviewAlert(null)}
+        alert={interviewAlert}
+        resume={activeResume}
+      />
+
+      {/* 3. Match Details Modal */}
       {selectedJobAlert && (
         <Modal
           open={Boolean(selectedJobAlert)}
@@ -694,6 +926,26 @@ export function Jobs() {
               <div className="flex flex-wrap gap-2">
                 <Button variant="secondary" onClick={() => handleAddToTracker(selectedJobAlert)}>
                   Save to Pipeline
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setRoadmapAlert(selectedJobAlert)
+                    setSelectedJobAlert(null)
+                  }}
+                  className="text-amber-300"
+                >
+                  Skill Gap & Roadmap
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setInterviewAlert(selectedJobAlert)
+                    setSelectedJobAlert(null)
+                  }}
+                  className="text-brand-300"
+                >
+                  Interview Prep
                 </Button>
                 {selectedJobAlert.opening.linkedInUrl && (
                   <a

@@ -359,11 +359,65 @@ export interface JobOpening {
 export interface JobMatchAlert {
   opening: JobOpening
   score: number
-  fitBadge: 'Best Fit For You' | 'High Match' | 'Good Match'
+  fitBadge: 'Best Fit For You' | 'High Match' | 'Near-Miss Match' | 'Good Match'
   matchReason: string
   matchingSkills: string[]
   missingSkills: string[]
   highlightedAdvantages: string[]
+  isNearMiss?: boolean
+  gapSummary?: string
+}
+
+// ─── Skill Gap & Learning Roadmap ─────────────────────────
+export interface SkillRoadmapStep {
+  step: number
+  title: string
+  description: string
+  actionItem: string
+  recommendedProject?: string
+  resumeBulletExample?: string
+}
+
+export interface SkillGapItem {
+  skill: string
+  category: string
+  timeToClose: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  whyItMatters: string
+  steps: SkillRoadmapStep[]
+  resources: Array<{ name: string; url: string; free: boolean }>
+  resumeBulletExample: string
+}
+
+export interface SkillGapAnalysis {
+  jobId: string
+  jobTitle: string
+  company: string
+  overallMatchScore: number
+  isNearMiss: boolean
+  matchingSkills: string[]
+  missingSkills: string[]
+  roadmaps: SkillGapItem[]
+  strategicAdvice: string
+}
+
+// ─── Interview Question Generator ──────────────────────────
+export interface InterviewQuestion {
+  id: string
+  category: 'Technical & Architecture' | 'Resume Deep Dive & Gaps' | 'Behavioral (STAR)' | 'Questions to Ask Them'
+  question: string
+  difficulty: 'Standard' | 'Challenging' | 'Senior'
+  whyTheyAsk: string
+  keyPointsToHit: string[]
+  modelAnswer: string
+}
+
+export interface InterviewKit {
+  jobTitle: string
+  company: string
+  candidateName?: string
+  questions: InterviewQuestion[]
+  generatedAt: string
 }
 
 // ─── AI Resume Coach ───────────────────────────────────────

@@ -85,11 +85,15 @@ export function matchResumeToJob(resume: AnalysisResult, opening: JobOpening): J
   // Ensure score is between 45 and 98
   rawScore = Math.min(98, Math.max(45, Math.round(rawScore)))
 
+  const isNearMiss = rawScore >= 60 && rawScore <= 84 && missingSkills.length > 0
+
   let fitBadge: JobMatchAlert['fitBadge'] = 'Good Match'
   if (rawScore >= 88) {
     fitBadge = 'Best Fit For You'
-  } else if (rawScore >= 74) {
+  } else if (rawScore >= 75) {
     fitBadge = 'High Match'
+  } else if (isNearMiss) {
+    fitBadge = 'Near-Miss Match'
   }
 
   // Generate personalized match reasoning
@@ -97,8 +101,10 @@ export function matchResumeToJob(resume: AnalysisResult, opening: JobOpening): J
   let matchReason = ''
   if (rawScore >= 88) {
     matchReason = `Your strong background in ${topMatched || 'core engineering'} directly matches this ${opening.title} role at ${opening.company}. Your experience profile puts you in the top candidate tier.`
-  } else if (rawScore >= 74) {
+  } else if (rawScore >= 75) {
     matchReason = `You meet most core requirements including ${topMatched || 'key technical skills'}. Adding a few emphasized keywords can push you to top match status.`
+  } else if (isNearMiss) {
+    matchReason = `Near-miss opportunity! You already match ${matchingSkills.length} skills (${topMatched || 'core foundations'}). Closing the gap on ${missingSkills.slice(0, 2).join(' and ')} can elevate you to top candidate status.`
   } else {
     matchReason = `This position aligns with your broader experience. Highlighting ${missingSkills.slice(0, 2).join(' and ') || 'relevant tools'} will strengthen your application.`
   }
@@ -114,6 +120,10 @@ export function matchResumeToJob(resume: AnalysisResult, opening: JobOpening): J
     highlightedAdvantages.push('Remote flexibility aligns with your modern tech stack')
   }
 
+  const gapSummary = missingSkills.length > 0
+    ? `Missing ${missingSkills.slice(0, 2).join(' and ')} (${missingSkills.length} gap${missingSkills.length > 1 ? 's' : ''})`
+    : 'Full keyword match'
+
   return {
     opening,
     score: rawScore,
@@ -122,6 +132,8 @@ export function matchResumeToJob(resume: AnalysisResult, opening: JobOpening): J
     matchingSkills,
     missingSkills,
     highlightedAdvantages,
+    isNearMiss,
+    gapSummary,
   }
 }
 
