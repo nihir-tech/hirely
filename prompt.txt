@@ -1,0 +1,195 @@
+================================================================================
+HIRELLY (HIRELY) - OFFICIAL AI VIDEO GENERATION PROMPTS & PRODUCTION KIT
+Target Website: https://hirelly.vercel.app
+Platform: Free AI Resume Review, ATS Scorer, Continuous Job Matching & Career Coach
+================================================================================
+
+This document contains ready-to-copy prompts tailored for all major AI video 
+generators (InVideo AI, HeyGen, Runway Gen-3, Sora, Pika, CapCut, ElevenLabs).
+Choose the section that matches your preferred AI video generation tool.
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS:
+1. OPTION 1: ALL-IN-ONE ONE-CLICK PROMPT (For InVideo AI, CapCut AI, Pictory)
+2. OPTION 2: AI AVATAR / SPOKESPERSON PROMPT (For HeyGen, Synthesia, D-ID)
+3. OPTION 3: CINEMATIC SHOT-BY-SHOT PROMPTS (For Runway Gen-3, Sora, Kling, Luma)
+4. OPTION 4: VIRAL SHORT-FORM 30-SEC HOOK (For TikTok, Instagram Reels, YouTube Shorts)
+5. OFFICIAL VOICEOVER SCRIPT WITH TIMESTAMPS & SOUND DESIGN
+--------------------------------------------------------------------------------
+
+
+================================================================================
+SECTION 1: ALL-IN-ONE ONE-CLICK PROMPT
+Best For: InVideo AI, CapCut Script-to-Video, Pictory, Veed.io
+(Simply copy and paste the block below into InVideo or CapCut prompt box)
+================================================================================
+
+Create a modern, high-energy 60-second product launch explainer video introducing "Hirelly" (accessible at hirelly.vercel.app). 
+
+Topic: Why traditional job searching and resume sending is broken, and how Hirelly uses AI to give job seekers an unfair advantage with instant ATS resume scoring, live job matching, skill gap roadmaps, interview prep, and an AI career coach.
+
+Tone: Inspirational, tech-forward, authoritative, energetic, and clean. Modern Silicon Valley SaaS vibe with sleek dark-mode aesthetics (deep purple, violet glows, neon emerald accents).
+
+Visual Style: High-production B-roll featuring tech professionals, sleek laptop screens showing dark-mode dashboards, glowing UI graphs, resume scanning holograms, LinkedIn integrations, and confident job seekers landing offers. Fast dynamic pacing with smooth zooms and cinematic motion.
+
+Voiceover & Audio: Confident, warm, persuasive American male or female tech narrator. Upbeat, premium electronic lo-fi or modern future-bass background music with soft whooshes and UI click sound effects. Bold animated text overlays for every key metric.
+
+Key Features To Showcase In The Video:
+1. The Problem: 75% of resumes get rejected by automated ATS filters before a human recruiter even sees them.
+2. The Solution - Hirelly: Upload any PDF or image resume and get a comprehensive AI analysis in under 30 seconds.
+3. ATS Score & Bullet Optimization: Instant 0-100 score, missing keywords detection, and line-by-line bullet rewrites.
+4. Continuous Job Match Feed: A live feed of real LinkedIn-verified job openings (startups to tech giants) automatically ranked for your exact resume.
+5. Skill Gap + Learning Roadmap: When you are a near-miss for a dream job, Hirelly shows exact missing skills and a step-by-step roadmap to close the gap.
+6. Custom AI Interview Prep: Tailored technical and STAR-method behavioral questions with model answers based on the job description.
+7. Hirelly Coach: A built-in AI career, coding, and salary negotiation mentor ready to answer any question anytime.
+8. Call to Action: "Stop guessing. Start getting hired. Try Hirelly 100% free right now at hirelly.vercel.app".
+
+
+================================================================================
+SECTION 2: AI AVATAR / SPOKESPERSON PROMPT & SCRIPT
+Best For: HeyGen, Synthesia, Colossyan, D-ID
+Instructions:
+- Select an avatar: Charismatic, professional young adult in business casual or modern tech hoodie in a sleek modern studio or loft background.
+- Select voice: Confident, conversational, engaging (e.g., "Marcus" or "Ava" in HeyGen / ElevenLabs "Adam" or "Rachel").
+================================================================================
+
+[AVATAR SCRIPT]:
+
+"What if the only thing standing between you and your dream job... isn't your experience, but how your resume talks to the algorithm?
+
+Fact: over seventy-five percent of resumes are rejected by ATS filters before a recruiter even glances at them.
+
+That’s why we built Hirelly.
+
+Hirelly is your personal, AI-powered career copilot. 
+
+Just drop in your resume at hirelly.vercel.app. In under thirty seconds, our AI breaks down your formatting, scores your ATS readiness, highlights missing high-value keywords, and strengthens your bullet points with real metric-driven impact.
+
+But Hirelly doesn't stop at reviewing your resume.
+
+It gives you a live, continuous job match feed—pulling real, verified LinkedIn openings from high-growth startups to tech giants, ranked specifically for your profile.
+
+Found a role you love but you're missing a skill? Hirelly’s Skill Gap engine generates a personalized learning roadmap with curated resources so you can close the gap.
+
+Getting ready for the interview? Hirelly generates custom interview questions with model STAR-method answers tailored to that exact job.
+
+And with Hirelly Coach, you have a universal engineering lead and career mentor in your corner to answer coding questions, prep system design, and help you negotiate the salary you deserve.
+
+Best part? It’s completely free to start. No credit card, no waiting.
+
+Visit hirelly.vercel.app right now, optimize your resume, and let your next opportunity find you."
+
+
+================================================================================
+SECTION 3: CINEMATIC SHOT-BY-SHOT PROMPTS (60 SECONDS)
+Best For: Runway Gen-3 Alpha, OpenAI Sora, Kling AI, Luma Dream Machine, Pika Labs
+Use these individual scene prompts to generate ultra-realistic footage and assemble in Premiere, CapCut, or DaVinci Resolve.
+================================================================================
+
+--- SCENE 1 (0:00 - 0:08) | THE HOOK & THE PAIN POINT ---
+Visual Prompt:
+Cinematic close-up of a focused software engineer sitting in a dimly lit modern home office at night. Laptop screen glows casting purple and cool blue light on their face. The user sighs in frustration looking at a generic job rejection email. Camera slowly tracks in. Photorealistic, 8k resolution, cinematic color grading, shallow depth of field, 35mm lens.
+Voiceover:
+"You’ve sent out dozens of job applications into the void... and heard nothing back. It’s not your fault. Automated filters are tossing your resume out before a human even reads it."
+On-Screen Text:
+"75% of Resumes Never Reach a Human Recruiter"
+
+--- SCENE 2 (0:08 - 0:18) | INTRODUCING HIRELLY ---
+Visual Prompt:
+Dynamic macro shot of a sleek glass interface hovering in dark space. An animated glowing purple resume PDF smoothly uploads into a futuristic web dashboard with logo 'Hirelly' glowing in vibrant purple and neon violet. Glowing neon laser scan sweeps over the resume extracting skills, text nodes illuminating. Smooth fluid camera orbit, high-tech SaaS HUD, hyper-detailed, ray-traced lighting.
+Voiceover:
+"Meet Hirelly. The AI-powered career intelligence platform designed to get you hired faster."
+On-Screen Text:
+"Meet Hirelly · Your AI Career Copilot"
+
+--- SCENE 3 (0:18 - 0:28) | INSTANT ATS AUDIT & BULLET OPTIMIZATION ---
+Visual Prompt:
+Over-the-shoulder shot looking at a sleek curved 4K monitor. The Hirelly web application displays a dynamic glowing radial score ring calculating an ATS score of 94/100. Cards animate on screen revealing missing keywords, impact meters, and one-click bullet rewrites. Clean UI typography, vibrant dark theme, glassmorphic card design.
+Voiceover:
+"In under 30 seconds, Hirelly analyzes your entire resume. You get an instant ATS score, missing industry keywords, and high-impact rewrites that recruiters love."
+On-Screen Text:
+"30-Second Deep AI Review · 94% ATS Optimization"
+
+--- SCENE 4 (0:28 - 0:38) | CONTINUOUS LIVE JOB FEED & LINKEDIN MATCH ---
+Visual Prompt:
+Sleek screen recording simulation of the Hirelly 'Jobs for You' dashboard. Real-time feed of job cards scrolling smoothly showing top tech roles with '95% Match' badges, LinkedIn verified checkmarks, salary tags, and 'Easy Apply' indicators. An ambient golden glow highlights the top matched job. Smooth tracking shot, cinematic parallax UI motion.
+Voiceover:
+"Then, the magic happens. Hirelly's continuous job feed ranks active LinkedIn openings specifically for your background—from nimble startups to industry titans."
+On-Screen Text:
+"Continuous Job Match Feed · Ranked For You"
+
+--- SCENE 5 (0:38 - 0:48) | SKILL GAP ROADMAP & INTERVIEW PREP ---
+Visual Prompt:
+Split-screen visual: On the left, a multi-step interactive learning roadmap unfolding with milestone checkmarks for missing skills. On the right, an AI Interview Prep card opening with tailored technical questions and structured STAR-method answers. Futuristic digital particles and clean modern UX.
+Voiceover:
+"Near-miss for your dream role? Hirelly builds you a personalized skill roadmap to close the gap, plus tailored interview questions with model answers so you walk into the room confident."
+On-Screen Text:
+"Skill Gap Learning Roadmap + Custom Interview Rubrics"
+
+--- SCENE 6 (0:48 - 0:54) | UNIVERSAL AI COACH & INSTANT PDF ---
+Visual Prompt:
+Close-up of a sleek chat drawer sliding out with the title 'Hirelly Coach'. Fast interactive typing answering a system design and salary negotiation query in real-time. Then a crisp, formatted PDF resume downloading with one click. Modern glowing aesthetics, 4k ultra-sharp.
+Voiceover:
+"Got coding or interview questions? Your built-in AI Coach has answers anytime. Download your polished PDF resume and apply with confidence."
+On-Screen Text:
+"Universal AI Career Coach · Direct PDF Download"
+
+--- SCENE 7 (0:54 - 1:00) | CALL TO ACTION & OUTRO ---
+Visual Prompt:
+The confident professional closes their laptop, smiling with an interview invitation badge on their phone. Screen cuts to a dark violet backdrop with the glowing 3D logo 'Hirelly' in gradient purple, with the URL 'hirelly.vercel.app' centered with pulsing glow. Cinematic lens flare, clean fade out.
+Voiceover:
+"Stop sending resumes into the dark. Make your resume hire-ready today. Visit hirelly.vercel.app — it's free."
+On-Screen Text:
+"Hirelly · Make Your Resume Hire-Ready"
+"👉 Try it free at hirelly.vercel.app"
+
+
+================================================================================
+SECTION 4: VIRAL SHORT-FORM PROMPT (30 SECONDS)
+Best For: TikTok, Instagram Reels, YouTube Shorts (9:16 Vertical Video)
+Prompt for InVideo AI / CapCut / Submagic / Opus Clip:
+================================================================================
+
+Create a viral 30-second vertical 9:16 video targeting college students, software engineers, and job seekers struggling with job applications.
+
+Visual style: Fast-paced UGC style mixed with screen recordings of hirelly.vercel.app in dark mode. Giant bold captions with color highlights (yellow, green, purple). Sound design with dramatic whooshes, keyboard clicks, and upbeat trending phonk or synthwave beat.
+
+Script:
+"Stop applying to 100 jobs with the same generic resume! ❌ 
+Here's the secret tech recruiters don't tell you:
+75% of resumes get rejected by automated ATS bots before anyone reads them. 💀
+Go to hirelly.vercel.app.
+Drop in your resume.
+In literally 20 seconds, it scores your ATS compatibility, tells you the exact missing keywords, and rewrites your bullet points with real numbers.
+Even crazier? It scans LinkedIn and gives you a ranked feed of jobs that fit YOUR exact resume, plus a roadmap for any missing skills.
+Best part? It’s completely free.
+Save this video and test your resume score right now at hirelly.vercel.app!"
+
+
+================================================================================
+SECTION 5: AUDIO, SOUND DESIGN & ELEVENLABS SETTINGS
+================================================================================
+
+1. Recommended AI Voice (ElevenLabs / HeyGen):
+   - Voice Name: "Adam" (Warm, deep, authentic, authoritative) OR "Rachel" (Clear, professional, modern tech)
+   - Stability: 55%
+   - Clarity + Similarity: 85%
+   - Style Exaggeration: 15%
+
+2. Background Music:
+   - Genre: Futuristic Downtempo Ambient / Tech House / Lo-Fi Electronic
+   - Mood: Inspiring, sleek, confident, non-distracting
+   - Volume: Duck music to -18dB during voiceover, boost to -10dB during intro and outro
+
+3. Sound Effects (SFX Cues):
+   - 0:02 - Low ambient rumble / digital glitch (symbolizing rejection)
+   - 0:09 - Clean digital chime / holographic whoosh (Hirelly intro)
+   - 0:21 - Rapid digital scan sweep & success ping (ATS score reveal)
+   - 0:31 - UI pop / click sound (job match feed scrolling)
+   - 0:42 - Positive chime / milestone level-up sound (roadmap unlocked)
+   - 0:50 - Fast keyboard taps & paper rustle (PDF download)
+   - 0:58 - Uplifting orchestral / electronic swell into brand outro
+
+================================================================================
+END OF PRODUCTION PROMPT KIT · HIRELLY (hirelly.vercel.app)
+================================================================================
