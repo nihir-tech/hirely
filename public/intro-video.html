@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hirelly - Official Introduction Video</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.04); }
+    }
+    .glow-pulse { animation: pulseGlow 3s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased p-3 sm:p-6 min-h-screen flex flex-col items-center justify-center font-sans">
+
+  <!-- Main Container -->
+  <div class="w-full max-w-4xl bg-slate-900/90 border border-purple-500/30 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl flex flex-col">
+    
+    <!-- Top Header Bar -->
+    <div class="px-5 py-3.5 border-b border-purple-500/20 bg-slate-950/70 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center font-black text-white text-xs shadow-md">
+          H
+        </div>
+        <div>
+          <h1 class="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+            Hirelly — Official Launch Video
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              Interactive AI Player
+            </span>
+          </h1>
+          <p class="text-xs text-slate-400">hirelly.vercel.app · AI Resume & Job Intelligence</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="recordBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md transition-all">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="7" fill="currentColor"/>
+          </svg>
+          <span id="recordBtnText">Record &amp; Download Video</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Video Canvas Viewport -->
+    <div class="relative w-full aspect-video bg-black flex items-center justify-center overflow-hidden group">
+      <canvas id="videoCanvas" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+
+      <!-- Center Big Play Overlay when paused -->
+      <div id="bigPlayOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center transition-all cursor-pointer">
+        <div class="w-20 h-20 rounded-full bg-purple-600/90 hover:bg-purple-500 text-white flex items-center justify-center pl-1 shadow-2xl transition-transform hover:scale-110 glow-pulse">
+          <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Live Scene Watermark Badge -->
+      <div class="absolute top-4 left-4 pointer-events-none flex items-center gap-2 bg-slate-950/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-purple-500/20 text-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span id="sceneBadgeText" class="font-semibold text-purple-200">Scene 1 · The Problem</span>
+      </div>
+
+      <!-- Captions Bar -->
+      <div class="absolute bottom-4 left-6 right-6 pointer-events-none">
+        <div id="captionBox" class="bg-slate-950/85 backdrop-blur-md border border-slate-700/60 text-white font-medium text-xs sm:text-sm px-4 py-2 rounded-xl text-center shadow-lg transition-all duration-300">
+          "75% of resumes get rejected by automated ATS filters before a recruiter even sees them."
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="p-4 bg-slate-950/80 border-t border-purple-500/20 space-y-3">
+      
+      <!-- Scrubber Timeline -->
+      <div class="flex items-center gap-3">
+        <span id="currentTime" class="text-xs font-mono text-purple-300 w-10 text-right">0:00</span>
+        <div id="timelineTrack" class="flex-1 h-2 bg-slate-800 rounded-full cursor-pointer relative overflow-hidden group">
+          <div id="timelineProgress" class="h-full bg-gradient-to-r from-purple-600 via-indigo-500 to-emerald-400 w-0 transition-all duration-75"></div>
+        </div>
+        <span id="totalTime" class="text-xs font-mono text-slate-400 w-10">0:45</span>
+      </div>
+
+      <!-- Playback Actions & Scene Navigation -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        
+        <div class="flex items-center gap-2">
+          <!-- Play / Pause -->
+          <button id="playPauseBtn" class="p-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all shadow-sm">
+            <svg id="playIcon" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg id="pauseIcon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+          </button>
+
+          <!-- Restart -->
+          <button id="restartBtn" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all" title="Restart">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </button>
+
+          <!-- Voiceover Audio Toggle -->
+          <button id="voiceToggleBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-all">
+            <span>🗣️ Voice:</span>
+            <span id="voiceStatus" class="text-emerald-400 font-bold">ON</span>
+          </button>
+
+          <!-- Music Toggle -->
+          <button id="musicToggleBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-all">
+            <span>🎵 Music:</span>
+            <span id="musicStatus" class="text-emerald-400 font-bold">ON</span>
+          </button>
+        </div>
+
+        <!-- Scene Jump Buttons -->
+        <div class="flex items-center gap-1 overflow-x-auto whitespace-nowrap text-xs max-w-full">
+          <button class="scene-jump px-2 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/40 text-slate-300 hover:text-purple-300 text-[11px]" data-scene="0">1. Problem</button>
+          <button class="scene-jump px-2 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/40 text-slate-300 hover:text-purple-300 text-[11px]" data-scene="1">2. Hirelly</button>
+          <button class="scene-jump px-2 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/40 text-slate-300 hover:text-purple-300 text-[11px]" data-scene="2">3. ATS Score</button>
+          <button class="scene-jump px-2 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/40 text-slate-300 hover:text-purple-300 text-[11px]" data-scene="3">4. Job Match</button>
+          <button class="scene-jump px-2 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/40 text-slate-300 hover:text-purple-300 text-[11px]" data-scene="4">5. Roadmap</button>
+          <button class="scene-jump px-2 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/40 text-slate-300 hover:text-purple-300 text-[11px]" data-scene="5">6. AI Coach</button>
+          <button class="scene-jump px-2 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/40 text-slate-300 hover:text-purple-300 text-[11px]" data-scene="6">7. Outro</button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Quick Tool Info Banner -->
+    <div class="px-5 py-3 bg-slate-950 border-t border-slate-800 text-xs text-slate-400 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+        <span>Generated for <strong>Hirelly</strong> (hirelly.vercel.app) · 100% Client-Side Rendered &amp; Exportable</span>
+      </div>
+      <div class="text-[11px] text-slate-500">
+        Click <strong class="text-purple-300">Record &amp; Download</strong> to save as a ready-to-share video!
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SCRIPT ENGINE -->
+  <script>
+    const canvas = document.getElementById('videoCanvas');
+    const ctx = canvas.getContext('2d');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const bigPlayOverlay = document.getElementById('bigPlayOverlay');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const restartBtn = document.getElementById('restartBtn');
+    const timelineTrack = document.getElementById('timelineTrack');
+    const timelineProgress = document.getElementById('timelineProgress');
+    const currentTimeEl = document.getElementById('currentTime');
+    const totalTimeEl = document.getElementById('totalTime');
+    const captionBox = document.getElementById('captionBox');
+    const sceneBadgeText = document.getElementById('sceneBadgeText');
+    const recordBtn = document.getElementById('recordBtn');
+    const recordBtnText = document.getElementById('recordBtnText');
+    const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const musicToggleBtn = document.getElementById('musicToggleBtn');
+    const musicStatus = document.getElementById('musicStatus');
+
+    // Video State
+    const TOTAL_DURATION = 42; // 42 seconds total
+    let currentTime = 0;
+    let isPlaying = false;
+    let lastTimestamp = 0;
+    let isRecording = false;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let voiceEnabled = true;
+    let musicEnabled = true;
+
+    // SCENES DEFINITIONS
+    const SCENES = [
+      {
+        id: 0,
+        title: "Scene 1 · The Problem",
+        start: 0,
+        end: 6,
+        caption: "75% of resumes get rejected by automated ATS filters before a recruiter even sees them.",
+        draw: drawScene1
+      },
+      {
+        id: 1,
+        title: "Scene 2 · Introducing Hirelly",
+        start: 6,
+        end: 12,
+        caption: "Meet Hirelly — your all-in-one AI career intelligence platform.",
+        draw: drawScene2
+      },
+      {
+        id: 2,
+        title: "Scene 3 · 30-Second ATS Optimization",
+        start: 12,
+        end: 18,
+        caption: "Instant 0-100 ATS readiness score, missing keyword detection, and metric-driven bullet rewrites.",
+        draw: drawScene3
+      },
+      {
+        id: 3,
+        title: "Scene 4 · Continuous Job Match Feed",
+        start: 18,
+        end: 25,
+        caption: "Live continuous feed of LinkedIn-verified jobs automatically ranked for your exact resume.",
+        draw: drawScene4
+      },
+      {
+        id: 4,
+        title: "Scene 5 · Skill Gap & Learning Roadmap",
+        start: 25,
+        end: 31,
+        caption: "Near-miss for a dream role? Hirelly builds a step-by-step roadmap to close the gap.",
+        draw: drawScene5
+      },
+      {
+        id: 5,
+        title: "Scene 6 · AI Coach & Custom Interview Prep",
+        start: 31,
+        end: 37,
+        caption: "Role-specific interview prep + an AI Coach to answer coding, system design, and salary questions.",
+        draw: drawScene6
+      },
+      {
+        id: 6,
+        title: "Scene 7 · Make Your Resume Hire-Ready",
+        start: 37,
+        end: 42,
+        caption: "Stop guessing. Start getting hired. Try Hirelly 100% free right now at hirelly.vercel.app!",
+        draw: drawScene7
+      }
+    ];
+
+    // Web Audio Synthesizer (Ambient Future Beat)
+    let audioCtx = null;
+    let musicInterval = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playNote(freq, type = 'sine', duration = 0.5, gainLevel = 0.08) {
+      if (!audioCtx || !musicEnabled) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(gainLevel, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    // Modern Lo-Fi synth chord sequence
+    const CHORDS = [220, 277.18, 329.63, 440]; // A minor
+    let chordStep = 0;
+    function startMusic() {
+      if (musicInterval) clearInterval(musicInterval);
+      musicInterval = setInterval(() => {
+        if (!isPlaying || !musicEnabled) return;
+        const root = CHORDS[chordStep % CHORDS.length];
+        playNote(root, 'triangle', 0.8, 0.05);
+        playNote(root * 1.5, 'sine', 0.4, 0.03);
+        chordStep++;
+      }, 750);
+    }
+
+    function stopMusic() {
+      if (musicInterval) {
+        clearInterval(musicInterval);
+        musicInterval = null;
+      }
+    }
+
+    // Web Speech API Voiceover Narrator
+    let lastSpokenScene = -1;
+    function speakCaption(text) {
+      if (!voiceEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+      // Prefer modern natural English voice
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
+      if (preferred) utterance.voice = preferred;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // ── GRAPHICS ENGINE (1280 x 720) ──────────────────────────
+
+    function clearCanvas() {
+      ctx.fillStyle = '#050508';
+      ctx.fillRect(0, 0, 1280, 720);
+    }
+
+    // Draw ambient background grid & violet gradients
+    function drawBackground(t) {
+      // Vignette radial glow
+      const grad = ctx.createRadialGradient(640, 360, 50, 640, 360, 650);
+      grad.addColorStop(0, 'rgba(124, 58, 237, 0.18)');
+      grad.addColorStop(0.5, 'rgba(76, 29, 149, 0.08)');
+      grad.addColorStop(1, 'rgba(5, 5, 8, 1)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1280, 720);
+
+      // Digital Grid lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < 1280; x += 60) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, 720);
+        ctx.stroke();
+      }
+      for (let y = 0; y < 720; y += 60) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(1280, y);
+        ctx.stroke();
+      }
+    }
+
+    // SCENE 1: The Problem
+    function drawScene1(progress, localTime) {
+      // Big dramatic stat
+      ctx.textAlign = 'center';
+      
+      // Floating alert icon
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(640, 170, 40, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 36px Inter, sans-serif';
+      ctx.fillText('✕', 640, 183);
+
+      // Warning Badge
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+      ctx.lineWidth = 2;
+      roundRect(ctx, 470, 230, 340, 36, 18, true, true);
+      ctx.fillStyle = '#f87171';
+      ctx.font = 'bold 14px Inter, sans-serif';
+      ctx.fillText('THE REJECTION BLACK HOLE', 640, 254);
+
+      // Giant 75% Stat
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 88px Inter, sans-serif';
+      ctx.fillText('75% OF RESUMES', 640, 360);
+
+      // Subtitle
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '500 24px Inter, sans-serif';
+      ctx.fillText('Are rejected by automated ATS bots before a recruiter sees them.', 640, 420);
+
+      // Floating rejected resume silhouette cards
+      const floatY = Math.sin(localTime * 3) * 8;
+      ctx.fillStyle = 'rgba(30, 27, 46, 0.8)';
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+      roundRect(ctx, 440, 460 + floatY, 400, 120, 16, true, true);
+      
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = 'bold 16px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('Candidate_Resume.pdf', 470, 500 + floatY);
+      ctx.fillStyle = '#f87171';
+      ctx.font = 'bold 14px Inter, sans-serif';
+      ctx.fillText('Status: Filtered by Keyword Scanner', 470, 535 + floatY);
+    }
+
+    // SCENE 2: Meet Hirelly
+    function drawScene2(progress, localTime) {
+      ctx.textAlign = 'center';
+
+      // Laser Scanner effect over floating resume
+      const scanY = 220 + ((localTime * 90) % 240);
+
+      // Glowing Logo Icon
+      const glowGrad = ctx.createRadialGradient(640, 160, 10, 640, 160, 90);
+      glowGrad.addColorStop(0, 'rgba(139, 92, 246, 0.7)');
+      glowGrad.addColorStop(1, 'rgba(139, 92, 246, 0)');
+      ctx.fillStyle = glowGrad;
+      ctx.fillRect(540, 60, 200, 200);
+
+      ctx.fillStyle = '#7c3aed';
+      roundRect(ctx, 600, 120, 80, 80, 22, true, false);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 48px Inter, sans-serif';
+      ctx.fillText('H', 640, 178);
+
+      // Brand Title
+      ctx.font = '800 64px Inter, sans-serif';
+      ctx.fillText('Hirelly', 640, 260);
+
+      ctx.fillStyle = '#c4b5fd';
+      ctx.font = '600 22px Inter, sans-serif';
+      ctx.fillText('Your Personal AI Career Copilot', 640, 305);
+
+      // Glass Card
+      ctx.fillStyle = 'rgba(18, 16, 28, 0.85)';
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.4)';
+      ctx.lineWidth = 2;
+      roundRect(ctx, 390, 340, 500, 230, 20, true, true);
+
+      // Resume Lines
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+      roundRect(ctx, 420, 380, 220, 14, 6, true, false);
+      roundRect(ctx, 420, 410, 440, 10, 5, true, false);
+      roundRect(ctx, 420, 435, 410, 10, 5, true, false);
+      roundRect(ctx, 420, 460, 380, 10, 5, true, false);
+      roundRect(ctx, 420, 485, 430, 10, 5, true, false);
+
+      // Glowing Scanning Line
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = '#34d399';
+      ctx.shadowBlur = 15;
+      ctx.beginPath();
+      ctx.moveTo(390, scanY);
+      ctx.lineTo(890, scanY);
+      ctx.stroke();
+      ctx.shadowBlur = 0; // reset
+
+      // Pill
+      ctx.fillStyle = 'rgba(52, 211, 153, 0.2)';
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 1;
+      roundRect(ctx, 510, 520, 260, 32, 16, true, true);
+      ctx.fillStyle = '#34d399';
+      ctx.font = 'bold 13px Inter, sans-serif';
+      ctx.fillText('✦ AI Parsing & Skill Extraction', 640, 541);
+    }
+
+    // SCENE 3: ATS Score & Optimization
+    function drawScene3(progress, localTime) {
+      ctx.textAlign = 'center';
+
+      // Header
+      ctx.fillStyle = '#a78bfa';
+      ctx.font = 'bold 15px Inter, sans-serif';
+      ctx.fillText('DEEP ATS READINESS BREAKDOWN', 640, 120);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 44px Inter, sans-serif';
+      ctx.fillText('Instant 30-Second AI Audit', 640, 170);
+
+      // Score Ring Circle
+      const score = Math.min(94, Math.floor(localTime * 20));
+      const cx = 420, cy = 350, r = 85;
+
+      // Track
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 14;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Progress Arc
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.lineWidth = 14;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * (score / 100)));
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 52px Inter, sans-serif';
+      ctx.fillText(score, cx, cy + 14);
+      ctx.fillStyle = '#34d399';
+      ctx.font = 'bold 14px Inter, sans-serif';
+      ctx.fillText('✓ ATS Passed', cx, cy + 42);
+
+      // Right Cards (Bullet rewrites & Keywords)
+      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(24, 21, 36, 0.85)';
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.25)';
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, 560, 240, 480, 240, 18, true, true);
+
+      ctx.fillStyle = '#c4b5fd';
+      ctx.font = 'bold 16px Inter, sans-serif';
+      ctx.fillText('💡 One-Click AI Bullet Rewrites', 590, 280);
+
+      // Before
+      ctx.fillStyle = '#f87171';
+      ctx.font = 'bold 12px Inter, sans-serif';
+      ctx.fillText('BEFORE:', 590, 320);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '13px Inter, sans-serif';
+      ctx.fillText('Responsible for improving frontend performance.', 650, 320);
+
+      // After
+      ctx.fillStyle = '#34d399';
+      ctx.font = 'bold 12px Inter, sans-serif';
+      ctx.fillText('AFTER:', 590, 365);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 13px Inter, sans-serif';
+      ctx.fillText('Optimized React bundle size by 42%, cutting LCP by 1.2s.', 650, 365);
+
+      // Keywords pill
+      ctx.fillStyle = 'rgba(139, 92, 246, 0.15)';
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.35)';
+      roundRect(ctx, 590, 405, 120, 28, 8, true, true);
+      ctx.fillStyle = '#c4b5fd';
+      ctx.font = 'bold 11px Inter, sans-serif';
+      ctx.fillText('+ TypeScript', 610, 423);
+
+      roundRect(ctx, 720, 405, 110, 28, 8, true, true);
+      ctx.fillText('+ Docker', 745, 423);
+
+      roundRect(ctx, 840, 405, 110, 28, 8, true, true);
+      ctx.fillText('+ GraphQL', 860, 423);
+    }
+
+    // SCENE 4: Continuous Job Match Feed
+    function drawScene4(progress, localTime) {
+      ctx.textAlign = 'center';
+
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 15px Inter, sans-serif';
+      ctx.fillText('CONTINUOUS AUTO-MATCHING FEED', 640, 110);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 42px Inter, sans-serif';
+      ctx.fillText('Jobs Ranked Live For You', 640, 160);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '16px Inter, sans-serif';
+      ctx.fillText('Real LinkedIn-verified openings, from nimble startups to tech giants.', 640, 200);
+
+      // 3 Job Cards
+      const jobs = [
+        { title: 'Senior Frontend Engineer', company: 'Stripe', match: '96%', loc: 'Remote · $165k-$195k', color: '#10b981' },
+        { title: 'Full Stack AI Developer', company: 'Vercel / Next.js', match: '92%', loc: 'San Francisco · $180k', color: '#8b5cf6' },
+        { title: 'Cloud Infrastructure Lead', company: 'Supabase', match: '88%', loc: 'Remote · $160k', color: '#3b82f6' }
+      ];
+
+      jobs.forEach((j, idx) => {
+        const y = 240 + idx * 105;
+        ctx.fillStyle = 'rgba(18, 16, 28, 0.85)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 1;
+        roundRect(ctx, 280, y, 720, 90, 16, true, true);
+
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 18px Inter, sans-serif';
+        ctx.fillText(j.title, 310, y + 36);
+
+        ctx.fillStyle = '#a78bfa';
+        ctx.font = 'bold 14px Inter, sans-serif';
+        ctx.fillText('@' + j.company, 310, y + 62);
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '13px Inter, sans-serif';
+        ctx.fillText(j.loc, 480, y + 62);
+
+        // Match Badge
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(52, 211, 153, 0.15)';
+        ctx.strokeStyle = j.color;
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, 860, y + 25, 110, 40, 12, true, true);
+
+        ctx.fillStyle = j.color;
+        ctx.font = 'bold 16px Inter, sans-serif';
+        ctx.fillText(j.match + ' Fit', 915, y + 50);
+      });
+    }
+
+    // SCENE 5: Skill Gap Roadmap
+    function drawScene5(progress, localTime) {
+      ctx.textAlign = 'center';
+
+      ctx.fillStyle = '#34d399';
+      ctx.font = 'bold 15px Inter, sans-serif';
+      ctx.fillText('NEAR-MISS FOR A DREAM ROLE?', 640, 110);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 42px Inter, sans-serif';
+      ctx.fillText('Personalized Skill Gap Roadmap', 640, 160);
+
+      // Milestone Path
+      const steps = [
+        { week: 'Week 1-2', skill: 'Kubernetes & Docker Containerization', state: 'Active' },
+        { week: 'Week 3', skill: 'System Design & Distributed Caching', state: 'Roadmap' },
+        { week: 'Week 4', skill: 'Mock Interview & STAR Rubric Ready', state: 'Goal' }
+      ];
+
+      steps.forEach((s, idx) => {
+        const y = 230 + idx * 115;
+
+        // Number Circle
+        ctx.fillStyle = idx === 0 ? '#8b5cf6' : '#1e1b2e';
+        ctx.beginPath();
+        ctx.arc(360, y + 35, 24, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Inter, sans-serif';
+        ctx.fillText(idx + 1, 360, y + 41);
+
+        // Content Card
+        ctx.textAlign = 'left';
+        ctx.fillStyle = 'rgba(18, 16, 28, 0.85)';
+        ctx.strokeStyle = idx === 0 ? 'rgba(139, 92, 246, 0.4)' : 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, 410, y, 510, 75, 14, true, true);
+
+        ctx.fillStyle = '#34d399';
+        ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.fillText(s.week.toUpperCase(), 430, y + 28);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Inter, sans-serif';
+        ctx.fillText(s.skill, 430, y + 54);
+      });
+    }
+
+    // SCENE 6: Universal AI Coach & Interview Prep
+    function drawScene6(progress, localTime) {
+      ctx.textAlign = 'center';
+
+      ctx.fillStyle = '#c4b5fd';
+      ctx.font = 'bold 15px Inter, sans-serif';
+      ctx.fillText('IN YOUR CORNER 24/7', 640, 110);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 42px Inter, sans-serif';
+      ctx.fillText('Universal AI Career & Coding Coach', 640, 160);
+
+      // Chat Drawer Simulation
+      ctx.fillStyle = 'rgba(15, 13, 24, 0.9)';
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.35)';
+      ctx.lineWidth = 2;
+      roundRect(ctx, 360, 210, 560, 320, 20, true, true);
+
+      ctx.textAlign = 'left';
+      // User bubble
+      ctx.fillStyle = 'rgba(124, 58, 237, 0.25)';
+      roundRect(ctx, 480, 240, 410, 50, 14, true, false);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '14px Inter, sans-serif';
+      ctx.fillText('How should I answer: "Explain a time you resolved a Sev-1 outage"?', 500, 270);
+
+      // Coach bubble
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      roundRect(ctx, 390, 310, 500, 150, 14, true, false);
+      ctx.fillStyle = '#a78bfa';
+      ctx.font = 'bold 13px Inter, sans-serif';
+      ctx.fillText('Hirelly Coach · STAR Framework', 415, 338);
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '13px Inter, sans-serif';
+      ctx.fillText('Situation: Database deadlock halted 12,000 active checkout sessions.', 415, 368);
+      ctx.fillText('Action: Executed traffic reroute, isolated lock, patched ORM query.', 415, 395);
+      ctx.fillText('Result: Restored 99.99% uptime in 8 mins without data loss.', 415, 422);
+
+      // Interview kit badge
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#34d399';
+      ctx.font = 'bold 14px Inter, sans-serif';
+      ctx.fillText('🎯 Custom Interview Prep + Model Answers for Any Role', 640, 500);
+    }
+
+    // SCENE 7: Outro & Call to Action
+    function drawScene7(progress, localTime) {
+      ctx.textAlign = 'center';
+
+      // Big Sparkle Icon
+      ctx.fillStyle = '#7c3aed';
+      roundRect(ctx, 600, 130, 80, 80, 24, true, false);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 48px Inter, sans-serif';
+      ctx.fillText('H', 640, 188);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 56px Inter, sans-serif';
+      ctx.fillText('Make Your Resume Hire-Ready.', 640, 280);
+
+      ctx.fillStyle = '#a78bfa';
+      ctx.font = '500 22px Inter, sans-serif';
+      ctx.fillText('Analyze your resume & discover jobs matched for you in seconds.', 640, 335);
+
+      // Glowing Button
+      ctx.fillStyle = '#7c3aed';
+      ctx.shadowColor = '#8b5cf6';
+      ctx.shadowBlur = 30;
+      roundRect(ctx, 460, 380, 360, 64, 18, true, false);
+      ctx.shadowBlur = 0; // reset
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px Inter, sans-serif';
+      ctx.fillText('Try Free at hirelly.vercel.app', 640, 420);
+
+      // Trust points
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '14px Inter, sans-serif';
+      ctx.fillText('✓ 100% Free  ·  ✓ No Credit Card Required  ·  ✓ Results in 30 Seconds', 640, 485);
+    }
+
+    // Round rect utility
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    // MAIN RENDER LOOP
+    function render(timestamp) {
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const delta = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      if (isPlaying) {
+        currentTime += delta;
+        if (currentTime >= TOTAL_DURATION) {
+          currentTime = TOTAL_DURATION;
+          pause();
+        }
+      }
+
+      // Find current scene
+      const currentScene = SCENES.find(s => currentTime >= s.start && currentTime < s.end) || SCENES[SCENES.length - 1];
+
+      // Update UI elements
+      const pct = (currentTime / TOTAL_DURATION) * 100;
+      timelineProgress.style.width = pct + '%';
+      currentTimeEl.innerText = formatTime(currentTime);
+
+      if (captionBox.innerText !== currentScene.caption) {
+        captionBox.innerText = currentScene.caption;
+      }
+      sceneBadgeText.innerText = currentScene.title;
+
+      // Handle voice trigger on scene transition
+      if (currentScene.id !== lastSpokenScene && isPlaying) {
+        lastSpokenScene = currentScene.id;
+        speakCaption(currentScene.caption);
+      }
+
+      // Draw graphics
+      clearCanvas();
+      drawBackground(currentTime);
+      const localTime = currentTime - currentScene.start;
+      const progress = localTime / (currentScene.end - currentScene.start);
+      currentScene.draw(progress, localTime);
+
+      requestAnimationFrame(render);
+    }
+
+    function formatTime(s) {
+      const mins = Math.floor(s / 60);
+      const secs = Math.floor(s % 60);
+      return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    }
+
+    // Playback Controls
+    function play() {
+      initAudio();
+      isPlaying = true;
+      playIcon.classList.add('hidden');
+      pauseIcon.classList.remove('hidden');
+      bigPlayOverlay.classList.add('hidden');
+      startMusic();
+      const currentScene = SCENES.find(s => currentTime >= s.start && currentTime < s.end) || SCENES[0];
+      speakCaption(currentScene.caption);
+    }
+
+    function pause() {
+      isPlaying = false;
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      bigPlayOverlay.classList.remove('hidden');
+      stopMusic();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function togglePlay() {
+      if (isPlaying) pause();
+      else {
+        if (currentTime >= TOTAL_DURATION) currentTime = 0;
+        play();
+      }
+    }
+
+    playPauseBtn.addEventListener('click', togglePlay);
+    bigPlayOverlay.addEventListener('click', togglePlay);
+
+    restartBtn.addEventListener('click', () => {
+      currentTime = 0;
+      lastSpokenScene = -1;
+      play();
+    });
+
+    // Timeline Scrubber Click
+    timelineTrack.addEventListener('click', (e) => {
+      const rect = timelineTrack.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = Math.max(0, Math.min(1, clickX / rect.width));
+      currentTime = pct * TOTAL_DURATION;
+      lastSpokenScene = -1;
+    });
+
+    // Scene Jump buttons
+    document.querySelectorAll('.scene-jump').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sceneIdx = parseInt(btn.getAttribute('data-scene'), 10);
+        if (SCENES[sceneIdx]) {
+          currentTime = SCENES[sceneIdx].start;
+          lastSpokenScene = -1;
+          play();
+        }
+      });
+    });
+
+    // Toggles
+    voiceToggleBtn.addEventListener('click', () => {
+      voiceEnabled = !voiceEnabled;
+      voiceStatus.innerText = voiceEnabled ? 'ON' : 'OFF';
+      voiceStatus.className = voiceEnabled ? 'text-emerald-400 font-bold' : 'text-slate-500 font-bold';
+      if (!voiceEnabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+    });
+
+    musicToggleBtn.addEventListener('click', () => {
+      musicEnabled = !musicEnabled;
+      musicStatus.innerText = musicEnabled ? 'ON' : 'OFF';
+      musicStatus.className = musicEnabled ? 'text-emerald-400 font-bold' : 'text-slate-500 font-bold';
+      if (!musicEnabled) stopMusic();
+      else if (isPlaying) startMusic();
+    });
+
+    // ── VIDEO EXPORT / RECORDING ENGINE ──────────────────────────
+    recordBtn.addEventListener('click', async () => {
+      if (isRecording) {
+        mediaRecorder?.stop();
+        return;
+      }
+
+      initAudio();
+      isRecording = true;
+      recordBtnText.innerText = 'Recording Video...';
+      recordBtn.classList.replace('bg-purple-600', 'bg-red-600');
+
+      currentTime = 0;
+      lastSpokenScene = -1;
+      recordedChunks = [];
+
+      const stream = canvas.captureStream(30); // 30 FPS
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        isRecording = false;
+        recordBtnText.innerText = 'Record & Download Video';
+        recordBtn.classList.replace('bg-red-600', 'bg-purple-600');
+        
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Hirelly_Official_Intro_Video.webm';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
+      mediaRecorder.start();
+      play();
+
+      // Stop recorder when video finishes
+      const checkEnd = setInterval(() => {
+        if (currentTime >= TOTAL_DURATION || !isPlaying) {
+          clearInterval(checkEnd);
+          if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+          }
+        }
+      }, 500);
+    });
+
+    // Initial first frame render
+    requestAnimationFrame(render);
+  </script>
+</body>
+</html>

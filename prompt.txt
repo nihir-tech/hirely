@@ -193,3 +193,4 @@ SECTION 5: AUDIO, SOUND DESIGN & ELEVENLABS SETTINGS
 ================================================================================
 END OF PRODUCTION PROMPT KIT · HIRELLY (hirelly.vercel.app)
 ================================================================================
+
