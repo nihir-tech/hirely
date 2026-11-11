@@ -362,3 +362,4 @@ const HirelyMatcher = (() => {
 if (typeof globalThis !== 'undefined') {
   globalThis.HirelyMatcher = HirelyMatcher;
 }
+

@@ -811,3 +811,4 @@
     setInterval(scheduleScan, 2000);
   });
 })();
+

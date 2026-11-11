@@ -5,6 +5,11 @@
  */
 
 (() => {
+  const host = window.location.hostname;
+  if (host !== 'localhost' && host !== '127.0.0.1' && !/^hirel{1,2}y/i.test(host)) {
+    return;
+  }
+
   const ANALYSIS_KEY = 'hirely:analyses';
   const APPLICATIONS_KEY = 'hirely:applications';
 
@@ -82,3 +87,4 @@
     pullPendingActions();
   }, 600);
 })();
+

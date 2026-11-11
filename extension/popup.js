@@ -252,10 +252,13 @@
 
   document.getElementById('syncNowBtn').addEventListener('click', () => {
     chrome.tabs.query(
-      { url: ['https://hirelly.vercel.app/*', 'https://hirelly-*.vercel.app/*', 'http://localhost/*'] },
+      { url: ['https://hirelly.vercel.app/*', 'https://*.vercel.app/*', 'http://localhost/*'] },
       (tabs) => {
-        if (tabs.length && tabs[0].id) {
-          chrome.tabs.sendMessage(tabs[0].id, { type: 'REQUEST_IMMEDIATE_SYNC' }, () => {
+        const hirelyTabs = tabs.filter(
+          (t) => t.url && /^https?:\/\/(localhost|127\.0\.0\.1|hirel{1,2}y)/i.test(t.url)
+        );
+        if (hirelyTabs.length && hirelyTabs[0].id) {
+          chrome.tabs.sendMessage(hirelyTabs[0].id, { type: 'REQUEST_IMMEDIATE_SYNC' }, () => {
             setTimeout(loadState, 250);
           });
         } else {
@@ -344,3 +347,4 @@
 
   loadState();
 })();
+

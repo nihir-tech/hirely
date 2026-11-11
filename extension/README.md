@@ -16,3 +16,4 @@ Bring Hirely's AI job matching, ATS skill-gap detection, recruiter pitch writer,
 3. Click **Load unpacked**.
 4. Select this `extension/` folder (`f:\hirelly\extension`).
 5. Pin **Hirely — LinkedIn Job Copilot** to your browser toolbar and visit `linkedin.com/jobs`!
+

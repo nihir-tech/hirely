@@ -91,13 +91,14 @@ async function broadcastResumeUpdate() {
 }
 
 async function findHirelyTabs() {
-  return chrome.tabs.query({
+  const tabs = await chrome.tabs.query({
     url: [
       'https://hirelly.vercel.app/*',
-      'https://hirelly-*.vercel.app/*',
+      'https://*.vercel.app/*',
       'http://localhost/*',
     ],
   });
+  return tabs.filter((t) => t.url && /^https?:\/\/(localhost|127\.0\.0\.1|hirel{1,2}y)/i.test(t.url));
 }
 
 async function deliverPendingToOpenTabs() {
@@ -387,3 +388,4 @@ Best regards${candidateName ? ',\n' + candidateName : ''}`;
   })();
   return true; // keep channel open for async response
 });
+
