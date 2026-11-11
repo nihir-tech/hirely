@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hirely LinkedIn Copilot</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">H</div>
+        <div>
+          <div class="brand-name">Hirely <span class="badge-copilot">Copilot</span></div>
+          <div class="brand-sub" id="syncStatusText">Checking resume sync...</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="openWebBtn" title="Open Hirely Web App">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="finder">🔍 Job Finder</button>
+      <button class="tab" data-tab="resume">📄 Resume</button>
+      <button class="tab" data-tab="saved">📌 Saved <span class="tab-count" id="savedCountBadge">0</span></button>
+      <button class="tab" data-tab="coach">🤖 Coach</button>
+    </nav>
+
+    <!-- TAB 1: LINKEDIN JOB FINDER -->
+    <main class="content">
+      <section class="tab-pane active" id="tab-finder">
+        <!-- Context card if user is on LinkedIn right now -->
+        <div class="context-card hidden" id="activeLinkedInCard"></div>
+
+        <div class="card">
+          <div class="card-title">Smart LinkedIn Search Builder</div>
+          <div class="form-group">
+            <label for="kwInput">Target Role / Skills</label>
+            <input type="text" id="kwInput" placeholder="e.g. React TypeScript Developer" />
+          </div>
+          <div class="form-group">
+            <label for="locInput">Location</label>
+            <input type="text" id="locInput" placeholder="Worldwide, Remote, United States, India..." value="Worldwide" />
+          </div>
+          <div class="toggles-row">
+            <label class="toggle-chip"><input type="checkbox" id="chkRemote" /> Remote</label>
+            <label class="toggle-chip"><input type="checkbox" id="chkEasyApply" /> Easy Apply</label>
+            <label class="toggle-chip"><input type="checkbox" id="chkPast24h" /> Last 24h</label>
+          </div>
+          <button class="btn btn-primary btn-full" id="searchLinkedInBtn">
+            Search on LinkedIn Jobs →
+          </button>
+        </div>
+
+        <div class="section-label">One-Click Discovery Presets</div>
+        <div class="preset-grid">
+          <button class="preset-btn" data-preset="best-match">
+            <span class="preset-icon">🎯</span>
+            <div>
+              <strong>Best For Resume</strong>
+              <span>Matched skills &amp; recent</span>
+            </div>
+          </button>
+          <button class="preset-btn" data-preset="startups">
+            <span class="preset-icon">🚀</span>
+            <div>
+              <strong>Startups &amp; Small Teams</strong>
+              <span>Seed / agile companies</span>
+            </div>
+          </button>
+          <button class="preset-btn" data-preset="early-bird">
+            <span class="preset-icon">⚡</span>
+            <div>
+              <strong>Early Bird (&lt;10 Applicants)</strong>
+              <span>Low competition roles</span>
+            </div>
+          </button>
+          <button class="preset-btn" data-preset="remote-easy">
+            <span class="preset-icon">🌍</span>
+            <div>
+              <strong>Remote + Easy Apply</strong>
+              <span>Fast 1-click applications</span>
+            </div>
+          </button>
+        </div>
+
+        <button class="btn btn-secondary btn-full" id="openFeedBtn">
+          ✨ Open Live "Jobs For You" Feed on Hirely
+        </button>
+      </section>
+
+      <!-- TAB 2: RESUME SYNC & FALLBACK -->
+      <section class="tab-pane" id="tab-resume">
+        <div class="card" id="syncedResumeCard">
+          <div class="card-title">Synced Hirely Resume</div>
+          <div id="resumeDetails"></div>
+          <div class="btn-row">
+            <button class="btn btn-secondary" id="syncNowBtn">🔄 Sync from Hirely Tab</button>
+            <button class="btn btn-primary" id="uploadWebBtn">+ Upload New</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Quick Paste Resume (Works Anytime)</div>
+          <p class="helper-txt">Haven't opened Hirely yet? Paste your resume text below so the LinkedIn score overlay starts working immediately.</p>
+          <textarea id="manualResumeInput" rows="5" placeholder="Paste your resume or LinkedIn summary + skills here..."></textarea>
+          <button class="btn btn-primary btn-full" id="saveManualBtn">Save &amp; Activate Resume</button>
+          <div class="status-msg hidden" id="manualSaveMsg"></div>
+        </div>
+      </section>
+
+      <!-- TAB 3: SAVED JOBS -->
+      <section class="tab-pane" id="tab-saved">
+        <div class="saved-header">
+          <span class="section-label" style="margin:0;">Saved LinkedIn Roles</span>
+          <button class="btn btn-secondary btn-sm" id="openPipelineBtn">Open Hirely Pipeline →</button>
+        </div>
+        <div id="savedJobsList" class="saved-list"></div>
+      </section>
+
+      <!-- TAB 4: AI COACH -->
+      <section class="tab-pane" id="tab-coach">
+        <div class="coach-context-pill" id="coachCtxBadge">Coach ready — answers career, coding &amp; interview questions</div>
+        <div class="coach-messages" id="coachMessages">
+          <div class="msg msg-coach">
+            Hi! I'm <strong>Hirely Coach</strong>. Ask me anything — tailoring your resume for a LinkedIn job, cold-DMing a recruiter, coding/system design, or salary negotiation.
+          </div>
+        </div>
+        <div class="coach-quick-chips">
+          <button class="q-chip" data-q="Write a LinkedIn connection message for the job I'm viewing">✉️ Pitch for this job</button>
+          <button class="q-chip" data-q="What top 3 skills am I missing most often?">🗺️ Skill gaps</button>
+          <button class="q-chip" data-q="Give me 3 behavioral STAR tips">🎯 STAR tips</button>
+        </div>
+        <form class="coach-form" id="coachForm">
+          <input type="text" id="coachInput" placeholder="Ask Hirely Coach anything..." required />
+          <button type="submit" class="btn btn-primary" id="coachSendBtn">Send</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="lib/matcher.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

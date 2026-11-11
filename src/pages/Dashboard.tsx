@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   listAnalyses,
@@ -69,6 +69,12 @@ export function Dashboard() {
 
   // Applications / Progress state
   const [applications, setApplications] = useState<JobApplication[]>(() => listApplications())
+
+  useEffect(() => {
+    const syncApps = () => setApplications(listApplications())
+    window.addEventListener('hirely:applications-changed', syncApps)
+    return () => window.removeEventListener('hirely:applications-changed', syncApps)
+  }, [])
   const [appModalOpen, setAppModalOpen] = useState(false)
   const [appForm, setAppForm] = useState<{
     company: string

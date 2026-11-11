@@ -9,6 +9,7 @@ import {
   injectFeedOpening,
 } from '../lib/jobOpenings'
 import { getJobRecommendationsForResume } from '../lib/jobMatcher'
+import { EXT_PENDING_MODAL_KEY } from '../lib/extensionBridge'
 import type { JobMatchAlert, JobOpening } from '../types'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
@@ -135,6 +136,47 @@ export function Jobs() {
     // Default: Sort by Match Score Descending
     return [...list].sort((a, b) => b.score - a.score)
   }, [jobAlerts, search, categoryFilter, sortBy])
+
+  // Open Skill Gap or Interview modal if requested by Chrome Extension
+  useEffect(() => {
+    const checkPendingModal = () => {
+      try {
+        const raw = sessionStorage.getItem(EXT_PENDING_MODAL_KEY)
+        if (!raw) return
+        const { modalType, jobId } = JSON.parse(raw) as { modalType?: string; jobId?: string }
+        if (!jobId) return
+
+        const refreshed = getStoredFeedOpenings()
+        setOpeningsPool(refreshed)
+        const targetOpening = refreshed.find((o) => o.id === jobId)
+        if (!targetOpening) return
+
+        sessionStorage.removeItem(EXT_PENDING_MODAL_KEY)
+        const computed = activeResume
+          ? getJobRecommendationsForResume(activeResume, [targetOpening])[0]
+          : {
+              opening: targetOpening,
+              score: 75,
+              fitBadge: 'Good Match' as const,
+              matchReason: 'Imported from LinkedIn via Hirely Copilot Extension.',
+              matchingSkills: targetOpening.requiredSkills.slice(0, 3),
+              missingSkills: targetOpening.requiredSkills.slice(3),
+              highlightedAdvantages: ['Imported directly from active LinkedIn job post'],
+              isNearMiss: false,
+            }
+
+        if (modalType === 'roadmap') {
+          setRoadmapAlert(computed)
+        } else {
+          setInterviewAlert(computed)
+        }
+      } catch { /* ignore */ }
+    }
+
+    checkPendingModal()
+    window.addEventListener('hirely:ext-modal', checkPendingModal)
+    return () => window.removeEventListener('hirely:ext-modal', checkPendingModal)
+  }, [activeResume])
 
   const topBestFit = jobAlerts.find((j) => j.fitBadge === 'Best Fit For You') || jobAlerts[0]
 
@@ -294,6 +336,15 @@ export function Jobs() {
               >
                 Auto: {autoRefresh ? 'ON' : 'OFF'}
               </button>
+
+              <Link
+                to="/extension"
+                className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-[#0A66C2]/15 hover:bg-[#0A66C2]/25 text-[#70b5f9] border border-[#0A66C2]/30 transition-all flex items-center gap-1"
+                title="Install the Hirely Chrome Extension for LinkedIn"
+              >
+                <span>🧩</span>
+                <span className="hidden sm:inline">Chrome Extension</span>
+              </Link>
             </div>
           </div>
         </div>

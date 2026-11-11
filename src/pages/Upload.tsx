@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Dropzone, FileCard } from '../components/upload/Dropzone'
 import { LinkedInImportModal } from '../components/upload/LinkedInImportModal'
@@ -8,12 +8,17 @@ import { Alert } from '../components/ui/Alert'
 import { LoadingOverlay } from '../components/ui/Spinner'
 import { PageHead } from '../components/layout/PageHead'
 import { extractResumeText } from '../lib/parsers'
-import { saveAnalysis } from '../lib/storage'
+import { saveAnalysis, updateAnalysis } from '../lib/storage'
 import { analyzeResume } from '../lib/ai'
 import { publishSubmission } from '../lib/feed'
 import { notifyOwner } from '../lib/telegram'
 import { LOADING_MESSAGES } from '../config'
 import { useAuth } from '../lib/auth'
+import {
+  EXT_PENDING_PROFILE_KEY,
+  EXT_PENDING_TAILOR_KEY,
+  type PendingLinkedInProfile,
+} from '../lib/extensionBridge'
 
 export function Upload() {
   const navigate = useNavigate()
@@ -21,10 +26,29 @@ export function Upload() {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | undefined>()
   const [linkedinModal, setLinkedinModal] = useState(false)
+  const [extProfile, setExtProfile] = useState<PendingLinkedInProfile | null>(null)
   const [loading, setLoading] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState('')
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const consumePendingProfile = () => {
+      try {
+        const raw = sessionStorage.getItem(EXT_PENDING_PROFILE_KEY)
+        if (!raw) return
+        const parsed = JSON.parse(raw) as PendingLinkedInProfile
+        sessionStorage.removeItem(EXT_PENDING_PROFILE_KEY)
+        if (parsed?.markdown) {
+          setExtProfile(parsed)
+          setLinkedinModal(true)
+        }
+      } catch { /* ignore */ }
+    }
+    consumePendingProfile()
+    window.addEventListener('hirely:ext-import-profile', consumePendingProfile)
+    return () => window.removeEventListener('hirely:ext-import-profile', consumePendingProfile)
+  }, [])
 
   const handleFile = useCallback((f: File) => {
     setFile(f)
@@ -76,6 +100,19 @@ export function Upload() {
         ...response.analysis,
       })
 
+      let navigateTo = `/analyze/${record.id}`
+      try {
+        const pendingTailor = sessionStorage.getItem(EXT_PENDING_TAILOR_KEY)
+        if (pendingTailor) {
+          const parsedJob = JSON.parse(pendingTailor)
+          sessionStorage.removeItem(EXT_PENDING_TAILOR_KEY)
+          if (parsedJob?.jobDescription || parsedJob?.title) {
+            updateAnalysis(record.id, { jobTarget: parsedJob })
+            navigateTo = `/optimize/${record.id}`
+          }
+        }
+      } catch { /* ignore */ }
+
       if (user) {
         void publishSubmission(record, user)
         void notifyOwner({
@@ -89,7 +126,7 @@ export function Upload() {
       }
 
       setLoadingProgress(100)
-      navigate(`/analyze/${record.id}`)
+      navigate(navigateTo)
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Something went wrong. Please try again.'
@@ -164,6 +201,8 @@ export function Upload() {
             <LinkedInImportModal
               open={linkedinModal}
               onClose={() => setLinkedinModal(false)}
+              initialText={extProfile?.markdown}
+              sourceLabel={extProfile?.sourceName}
             />
 
             <div className="text-center">

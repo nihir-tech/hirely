@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 import { Alert } from '../ui/Alert'
@@ -12,16 +12,25 @@ import { useNavigate } from 'react-router-dom'
 interface LinkedInImportModalProps {
   open: boolean
   onClose: () => void
+  initialText?: string
+  sourceLabel?: string
 }
 
-export function LinkedInImportModal({ open, onClose }: LinkedInImportModalProps) {
+export function LinkedInImportModal({ open, onClose, initialText, sourceLabel }: LinkedInImportModalProps) {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<'pdf' | 'text'>('pdf')
-  const [pastedText, setPastedText] = useState('')
+  const [activeTab, setActiveTab] = useState<'pdf' | 'text'>(initialText ? 'text' : 'pdf')
+  const [pastedText, setPastedText] = useState(initialText || '')
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [progressMsg, setProgressMsg] = useState('')
+
+  useEffect(() => {
+    if (open && initialText) {
+      setActiveTab('text')
+      setPastedText(initialText)
+    }
+  }, [open, initialText])
 
   const handleProcessText = useCallback(async (textToProcess: string, sourceName = 'LinkedIn-Profile') => {
     setLoading(true)
@@ -153,6 +162,11 @@ export function LinkedInImportModal({ open, onClose }: LinkedInImportModalProps)
           </div>
         ) : (
           <div className="space-y-4">
+            {sourceLabel && (
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-300 font-medium">
+                ✓ Profile text imported via Hirely Extension ({sourceLabel}). Review below and click <strong>Import &amp; Analyze</strong>!
+              </div>
+            )}
             <p className="text-xs text-fg-muted">
               Select all text on your LinkedIn profile page (Ctrl+A / Cmd+A or copy sections like About, Experience, Education) and paste it below:
             </p>
@@ -169,7 +183,7 @@ export function LinkedInImportModal({ open, onClose }: LinkedInImportModalProps)
               </Button>
               <Button
                 disabled={pastedText.trim().length < 50}
-                onClick={() => void handleProcessText(pastedText, 'LinkedIn-Import')}
+                onClick={() => void handleProcessText(pastedText, sourceLabel || 'LinkedIn-Import')}
               >
                 Import & Analyze
               </Button>

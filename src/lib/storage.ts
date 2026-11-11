@@ -20,8 +20,28 @@ function getStore<T>(key: string): T[] {
   }
 }
 
+function notifyExtensionBridge() {
+  if (typeof window === 'undefined') return
+  try {
+    window.postMessage(
+      {
+        source: 'hirely-app',
+        type: 'HIRELY_SYNC_STATE',
+        payload: {
+          analyses: getStore<AnalysisResult>(ANALYSIS_STORAGE_KEY),
+          applications: getStore<JobApplication>(APPLICATIONS_STORAGE_KEY),
+        },
+      },
+      '*',
+    )
+  } catch { /* bridge broadcast is best-effort */ }
+}
+
 function setStore<T>(key: string, data: T[]): void {
   localStorage.setItem(key, JSON.stringify(data))
+  if (key === ANALYSIS_STORAGE_KEY || key === APPLICATIONS_STORAGE_KEY) {
+    notifyExtensionBridge()
+  }
 }
 
 // ─── Analyses ──────────────────────────────────────────────

@@ -23,7 +23,8 @@ const SOCIALS = [
 const PRODUCT_LINKS = [
   { label: 'Analyze Resume', to: '/upload' },
   { label: 'Dashboard', to: '/dashboard' },
-  { label: 'How It Works', to: '/#how-it-works' },
+  { label: 'Jobs For You', to: '/jobs' },
+  { label: 'Chrome Extension', to: '/extension' },
   { label: 'Features', to: '/#features' },
 ]
 

@@ -11,6 +11,7 @@ import { Analysis } from './pages/Analysis'
 import { Optimize } from './pages/Optimize'
 import { Dashboard } from './pages/Dashboard'
 import { Jobs } from './pages/Jobs'
+import { Extension } from './pages/Extension'
 import { Privacy, Terms, DataSafety } from './pages/LegalPages'
 import { Contact } from './pages/Contact'
 import { Admin } from './pages/Admin'
@@ -18,6 +19,7 @@ import { Company } from './pages/Company'
 import { NotFound } from './pages/NotFound'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { ResumeCoachDrawer } from './components/coach/ResumeCoachDrawer'
+import { ExtensionBridge } from './components/layout/ExtensionBridge'
 
 function ScrollManager() {
   const location = useLocation()
@@ -85,12 +87,14 @@ export default function App() {
               }
             />
             <Route path="/jobs" element={<Jobs />} />
+            <Route path="/extension" element={<Extension />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />
         <BackToTop />
         <ResumeCoachDrawer />
+        <ExtensionBridge />
       </div>
     </SiteStatsProvider>
   )
