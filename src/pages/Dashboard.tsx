@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   listAnalyses,
   deleteAnalysis,
@@ -28,6 +28,15 @@ import { Card } from '../components/ui/Card'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Modal } from '../components/ui/Modal'
 import { LinkedInImportModal } from '../components/upload/LinkedInImportModal'
+import {
+  AwardIcon,
+  BookmarkIcon,
+  DollarSignIcon,
+  FolderIcon,
+  MessageSquareIcon,
+  SendIcon,
+  TargetIcon,
+} from '../components/ui/Icons'
 
 const MAIN_TABS = [
   { id: 'resumes', label: 'Resumes & Analyses' },
@@ -41,17 +50,33 @@ const STATUS_FILTERS = [
   { id: 'no-job', label: 'No Job Target' },
 ]
 
-const PIPELINE_COLUMNS: Array<{ status: ApplicationStatus; label: string; icon: string; color: string }> = [
-  { status: 'saved', label: 'Saved', icon: '📥', color: 'border-slate-500/30' },
-  { status: 'applied', label: 'Applied', icon: '📤', color: 'border-blue-500/30' },
-  { status: 'interviewing', label: 'Interviewing', icon: '💬', color: 'border-amber-500/30' },
-  { status: 'offer', label: 'Offer Received', icon: '🎉', color: 'border-emerald-500/30' },
-  { status: 'rejected', label: 'Archived', icon: '📁', color: 'border-rose-500/30' },
+const PIPELINE_COLUMNS: Array<{
+  status: ApplicationStatus
+  label: string
+  icon: typeof BookmarkIcon
+  color: string
+}> = [
+  { status: 'saved', label: 'Saved', icon: BookmarkIcon, color: 'border-slate-500/30' },
+  { status: 'applied', label: 'Applied', icon: SendIcon, color: 'border-blue-500/30' },
+  { status: 'interviewing', label: 'Interviewing', icon: MessageSquareIcon, color: 'border-amber-500/30' },
+  { status: 'offer', label: 'Offer Received', icon: AwardIcon, color: 'border-emerald-500/30' },
+  { status: 'rejected', label: 'Archived', icon: FolderIcon, color: 'border-rose-500/30' },
 ]
 
 export function Dashboard() {
   const navigate = useNavigate()
-  const [activeMainTab, setActiveMainTab] = useState('resumes')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialTab = searchParams.get('tab')
+  const [activeMainTab, setActiveMainTab] = useState(
+    initialTab && ['resumes', 'versions', 'progress'].includes(initialTab) ? initialTab : 'resumes',
+  )
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab')
+    if (tabParam && ['resumes', 'versions', 'progress'].includes(tabParam)) {
+      setActiveMainTab(tabParam)
+    }
+  }, [searchParams])
   
   // Analyses state
   const [allAnalyses, setAllAnalyses] = useState<AnalysisResult[]>(() => listAnalyses())
@@ -282,8 +307,8 @@ export function Dashboard() {
         {topJobAlert && (
           <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-surface to-brand-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg">
             <div className="flex items-start sm:items-center gap-3.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0 border border-amber-400/30 font-bold text-lg">
-                🎯
+              <div className="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0 border border-amber-400/30">
+                <TargetIcon className="w-5 h-5" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -335,7 +360,10 @@ export function Dashboard() {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveMainTab(tab.id)}
+                onClick={() => {
+                  setActiveMainTab(tab.id)
+                  setSearchParams({ tab: tab.id })
+                }}
                 className={`pb-3.5 transition-all flex items-center gap-2 text-sm ${
                   isActive
                     ? 'text-brand-400 border-b-2 border-brand-500 font-bold'
@@ -598,6 +626,7 @@ export function Dashboard() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3.5">
                 {PIPELINE_COLUMNS.map((col) => {
+                  const ColIcon = col.icon
                   const items = applications.filter((a) => a.status === col.status)
                   return (
                     <div
@@ -606,7 +635,8 @@ export function Dashboard() {
                     >
                       <div className="flex items-center justify-between pb-3 border-b border-line mb-3">
                         <span className="text-xs font-bold text-fg-strong flex items-center gap-1.5">
-                          <span>{col.icon}</span> {col.label}
+                          <ColIcon className="w-3.5 h-3.5 text-brand-400" />
+                          <span>{col.label}</span>
                         </span>
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface border border-line text-fg-muted">
                           {items.length}
@@ -635,7 +665,10 @@ export function Dashboard() {
                             </div>
 
                             {app.salary && (
-                              <p className="text-[10px] text-fg-muted">💰 {app.salary}</p>
+                              <p className="text-[10px] text-fg-muted inline-flex items-center gap-1">
+                                <DollarSignIcon className="w-3 h-3 text-emerald-400" />
+                                <span>{app.salary}</span>
+                              </p>
                             )}
 
                             {app.notes && (

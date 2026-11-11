@@ -4,6 +4,16 @@ import { buildSkillGapAnalysis } from '../../lib/skillRoadmaps'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 import { ScoreRing } from '../ui/ScoreRing'
+import {
+  CheckIcon,
+  ClockIcon,
+  ExternalLinkIcon,
+  FileTextIcon,
+  TargetIcon,
+  TrendingUpIcon,
+  WrenchIcon,
+  ZapIcon,
+} from '../ui/Icons'
 
 interface SkillGapRoadmapModalProps {
   open: boolean
@@ -74,8 +84,9 @@ export function SkillGapRoadmapModal({
                 {alert.opening.company} · {alert.opening.location}
               </span>
               {isNearMiss && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-                  🎯 High Potential Near-Miss
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5">
+                  <TargetIcon className="w-3.5 h-3.5" />
+                  <span>High Potential Near-Miss</span>
                 </span>
               )}
             </div>
@@ -101,8 +112,9 @@ export function SkillGapRoadmapModal({
         {/* Skill Gap Summary Badges */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-            <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <span>✓</span> Skills You Already Have ({matchingSkills.length})
+            <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <CheckIcon className="w-3.5 h-3.5" />
+              <span>Skills You Already Have ({matchingSkills.length})</span>
             </h4>
             <div className="flex flex-wrap gap-1">
               {matchingSkills.map((s) => (
@@ -114,8 +126,9 @@ export function SkillGapRoadmapModal({
           </div>
 
           <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20">
-            <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <span>⚡</span> Missing Skills to Bridge ({missingSkills.length})
+            <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <ZapIcon className="w-3.5 h-3.5" />
+              <span>Missing Skills to Bridge ({missingSkills.length})</span>
             </h4>
             <div className="flex flex-wrap gap-1">
               {missingSkills.map((s) => (
@@ -176,11 +189,13 @@ export function SkillGapRoadmapModal({
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0 text-xs">
-                    <span className="px-2.5 py-1 rounded-xl bg-surface-subtle border border-line text-fg-muted">
-                      ⏳ Est. {selectedRoadmap.timeToClose}
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-surface-subtle border border-line text-fg-muted">
+                      <ClockIcon className="w-3.5 h-3.5" />
+                      <span>Est. {selectedRoadmap.timeToClose}</span>
                     </span>
-                    <span className="px-2.5 py-1 rounded-xl bg-surface-subtle border border-line text-fg-muted">
-                      📈 {selectedRoadmap.difficulty}
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-surface-subtle border border-line text-fg-muted">
+                      <TrendingUpIcon className="w-3.5 h-3.5" />
+                      <span>{selectedRoadmap.difficulty}</span>
                     </span>
                   </div>
                 </div>
@@ -206,8 +221,9 @@ export function SkillGapRoadmapModal({
                         </p>
 
                         <div className="ml-7 p-2.5 rounded-lg bg-surface border border-line text-xs space-y-1">
-                          <p className="text-brand-400 font-semibold text-[11px]">
-                            🛠️ Action Item & Project:
+                          <p className="text-brand-400 font-semibold text-[11px] inline-flex items-center gap-1.5">
+                            <WrenchIcon className="w-3.5 h-3.5" />
+                            <span>Action Item &amp; Project:</span>
                           </p>
                           <p className="text-fg-strong font-medium text-xs">
                             {st.actionItem}
@@ -222,8 +238,9 @@ export function SkillGapRoadmapModal({
                 <div className="p-3.5 rounded-xl bg-gradient-to-r from-emerald-950/20 to-surface border border-emerald-500/30 space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                        📄 Ready-to-Paste Resume Bullet
+                      <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider inline-flex items-center gap-1.5">
+                        <FileTextIcon className="w-3.5 h-3.5" />
+                        <span>Ready-to-Paste Resume Bullet</span>
                       </span>
                       <span className="text-[10px] text-fg-muted">(Add once project is built)</span>
                     </div>
@@ -256,14 +273,13 @@ export function SkillGapRoadmapModal({
                         rel="noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-subtle hover:bg-surface border border-line hover:border-brand-500/40 text-xs font-medium text-fg-strong transition-all"
                       >
-                        <span>🔗</span>
+                        <ExternalLinkIcon className="w-3.5 h-3.5 text-brand-400" />
                         <span>{res.name}</span>
                         {res.free && (
                           <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300">
                             Free
                           </span>
                         )}
-                        <span className="text-fg-muted">↗</span>
                       </a>
                     ))}
                   </div>

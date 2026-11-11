@@ -132,7 +132,23 @@
       border: 1px dashed rgba(139,92,246,0.35); text-align: center; font-size: 12px; color: #cbd5e1;
       display: flex; flex-direction: column; gap: 9px;
     }
+    .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: 7px; font-weight: 600; }
+    .ico { width: 13px; height: 13px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: inline-block; vertical-align: middle; }
+    .hdr-row { display: inline-flex; align-items: center; gap: 5px; }
   `;
+
+  const SVG = {
+    bookmark: '<svg class="ico" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>',
+    sparkles: '<svg class="ico" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/></svg>',
+    mail: '<svg class="ico" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
+    target: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+    cpu: '<svg class="ico" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 14h3"/><path d="M1 9h3"/><path d="M1 14h3"/></svg>',
+    copy: '<svg class="ico" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+    upload: '<svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+    check: '<svg class="ico" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+    x: '<svg class="ico" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    clock: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  };
 
   function mountHost() {
     if (!document.body) return;
@@ -359,7 +375,7 @@
               Captured <strong>${prof.sectionsCount}</strong> profile sections from this page. Click below to analyze it in Hirely, get an ATS score, and download a PDF resume.
             </div>
             <button class="btn btn-primary btn-full" id="importProfileBtn">
-              📥 Import Profile to Hirely
+              ${SVG.upload}<span>Import Profile to Hirely</span>
             </button>
           </div>
         </div>
@@ -450,8 +466,8 @@
             ${
               match.matchedSkills.length
                 ? `<div>
-                     <div class="section-lbl"><span>✓ Matched Skills (${match.matchedSkills.length})</span></div>
-                     <div class="chips">${match.matchedSkills.slice(0, 8).map((s) => `<span class="chip chip-hit">✓ ${escapeHtml(s)}</span>`).join('')}</div>
+                     <div class="section-lbl"><span class="hdr-row">${SVG.check} Matched Skills (${match.matchedSkills.length})</span></div>
+                     <div class="chips">${match.matchedSkills.slice(0, 8).map((s) => `<span class="chip chip-hit">${SVG.check}${escapeHtml(s)}</span>`).join('')}</div>
                    </div>`
                 : ''
             }
@@ -460,38 +476,38 @@
               match.missingSkills.length
                 ? `<div>
                      <div class="section-lbl">
-                       <span>✕ Missing / Gaps (${match.missingSkills.length})</span>
+                       <span class="hdr-row">${SVG.x} Missing / Gaps (${match.missingSkills.length})</span>
                        <a class="link-sm" id="roadmapLink">Skill Roadmap →</a>
                      </div>
-                     <div class="chips">${match.missingSkills.slice(0, 7).map((s) => `<span class="chip chip-miss">✕ ${escapeHtml(s)}</span>`).join('')}</div>
+                     <div class="chips">${match.missingSkills.slice(0, 7).map((s) => `<span class="chip chip-miss">${SVG.x}${escapeHtml(s)}</span>`).join('')}</div>
                    </div>`
                 : ''
             }
 
             <div class="actions-grid">
               <button class="btn ${isSaved ? 'btn-success' : ''}" id="saveJobBtn">
-                ${isSaved ? '✓ Saved to Hirely' : '📌 Save to Pipeline'}
+                ${isSaved ? `${SVG.check}<span>Saved</span>` : `${SVG.bookmark}<span>Save to Pipeline</span>`}
               </button>
               <button class="btn btn-primary" id="tailorBtn">
-                ✨ Tailor Resume
+                ${SVG.sparkles}<span>Tailor Resume</span>
               </button>
               <button class="btn" id="noteBtn">
-                ✉️ Recruiter Note
+                ${SVG.mail}<span>Recruiter Note</span>
               </button>
               <button class="btn" id="interviewBtn">
-                🎯 Interview Prep
+                ${SVG.target}<span>Interview Prep</span>
               </button>
             </div>
 
             <button class="btn btn-full" id="deepAiBtn">
-              ${aiMatchState.loading ? '⏳ Running Deep AI Audit...' : '🧠 Deep AI Job Audit'}
+              ${aiMatchState.loading ? `${SVG.clock}<span>Running Deep AI Audit...</span>` : `${SVG.cpu}<span>Deep AI Job Audit</span>`}
             </button>
 
             ${
               aiMatchState.result
                 ? `<div class="sub-box">
                      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                       <strong style="color:#c4b5fd;">🧠 Deep AI Audit (${aiMatchState.result.score || scoreVal}%)</strong>
+                       <strong class="hdr-row" style="color:#c4b5fd;">${SVG.cpu}<span>Deep AI Audit (${aiMatchState.result.score || scoreVal}%)</span></strong>
                      </div>
                      ${
                        (aiMatchState.result.notes || []).length
@@ -504,23 +520,23 @@
 
             ${
               recruiterNoteState.loading
-                ? `<div class="sub-box">✍️ Crafting personalized LinkedIn outreach for ${escapeHtml(job.company)}...</div>`
+                ? `<div class="sub-box">Crafting personalized LinkedIn outreach for ${escapeHtml(job.company)}...</div>`
                 : recruiterNoteState.text
                 ? `<div class="sub-box" id="noteOutput">
                      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                       <strong style="color:#34d399;">✉️ Ready-to-Send Pitch</strong>
-                       <button class="btn" style="padding:3px 8px;font-size:10.5px;" id="copyNoteBtn">📋 Copy</button>
+                       <strong class="hdr-row" style="color:#34d399;">${SVG.mail}<span>Ready-to-Send Pitch</span></strong>
+                       <button class="btn" style="padding:3px 8px;font-size:10.5px;" id="copyNoteBtn">${SVG.copy}<span>Copy</span></button>
                      </div>${escapeHtml(recruiterNoteState.text)}</div>`
                 : ''
             }
 
             ${
               interviewState.loading
-                ? `<div class="sub-box">🎯 Generating custom interview questions for ${escapeHtml(job.title)}...</div>`
+                ? `<div class="sub-box">Generating custom interview questions for ${escapeHtml(job.title)}...</div>`
                 : interviewState.questions
                 ? `<div class="sub-box">
                      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                       <strong style="color:#fbbf24;">🎯 Top Interview Questions</strong>
+                       <strong class="hdr-row" style="color:#fbbf24;">${SVG.target}<span>Top Interview Questions</span></strong>
                        <a class="link-sm" id="fullPrepLink">Open Full Kit →</a>
                      </div>
                      ${interviewState.questions
@@ -541,8 +557,8 @@
               ? `<div class="empty-box">
                    <div><strong>Viewing:</strong> ${escapeHtml(job.title)} @ ${escapeHtml(job.company)}</div>
                    <div class="actions-grid">
-                     <button class="btn" id="saveJobBtn">📌 Save Job</button>
-                     <button class="btn btn-primary" id="noteBtn">✉️ Recruiter Note</button>
+                     <button class="btn" id="saveJobBtn">${SVG.bookmark}<span>Save Job</span></button>
+                     <button class="btn btn-primary" id="noteBtn">${SVG.mail}<span>Recruiter Note</span></button>
                    </div>
                  </div>`
               : `<div class="empty-box">
@@ -670,7 +686,7 @@
       if (recruiterNoteState.text) {
         navigator.clipboard.writeText(recruiterNoteState.text);
         const btn = shadow.getElementById('copyNoteBtn');
-        if (btn) btn.textContent = '✓ Copied!';
+        if (btn) btn.innerHTML = `${SVG.check}<span>Copied</span>`;
       }
     });
 

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useSidebar } from './SidebarContext'
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false)
+  const { isLoggedIn, desktopExpanded } = useSidebar()
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 420)
@@ -10,10 +12,16 @@ export function BackToTop() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  const sidebarOffsetClass = isLoggedIn
+    ? desktopExpanded
+      ? 'lg:!left-[262px]'
+      : 'lg:!left-[88px]'
+    : ''
+
   return (
     <button
       type="button"
-      className={`lp-to-top${visible ? ' lp-to-top-visible' : ''}`}
+      className={`lp-to-top ${sidebarOffsetClass}${visible ? ' lp-to-top-visible' : ''}`}
       aria-label="Back to top"
       title="Back to top"
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

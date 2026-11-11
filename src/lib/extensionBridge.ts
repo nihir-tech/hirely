@@ -81,7 +81,7 @@ export function processExtensionAction(
       })
       window.dispatchEvent(new Event('hirely:applications-changed'))
     }
-    onToast(`📌 Saved "${position} @ ${company}" to your Hirely pipeline`)
+    onToast(`Saved "${position} @ ${company}" to your Hirely pipeline`)
     return true
   }
 
@@ -113,7 +113,7 @@ export function processExtensionAction(
         jobUrl,
       },
     })
-    onToast(`✨ Loaded "${jobTitle} @ ${company}" into Resume Optimizer`)
+    onToast(`Loaded "${jobTitle} @ ${company}" into Resume Optimizer`)
     navigate(`/optimize/${resume.id}`)
     return true
   }
@@ -155,7 +155,7 @@ export function processExtensionAction(
     }
     sessionStorage.setItem(EXT_PENDING_PROFILE_KEY, JSON.stringify(prof))
     window.dispatchEvent(new Event('hirely:ext-import-profile'))
-    onToast(`📥 Imported LinkedIn profile for ${prof.sourceName} — ready to analyze!`)
+    onToast(`Imported LinkedIn profile for ${prof.sourceName} — ready to analyze!`)
     navigate('/upload?extImport=1')
     return true
   }

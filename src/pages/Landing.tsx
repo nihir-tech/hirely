@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import {
+  CheckIcon,
+  DownloadIcon,
+  MailIcon,
+  PuzzleIcon,
+  RocketIcon,
+  TargetIcon,
+} from '../components/ui/Icons'
 
 /* ── tiny icon set ─────────────────────────────────── */
 
@@ -643,6 +651,114 @@ export function Landing() {
               <Reveal className="lp-why-mini" delay={1}>{I.shield}<div><h4>Never fabricated</h4><p>Every recommendation comes from AI analysis of your actual content.</p></div></Reveal>
               <Reveal className="lp-why-mini" delay={2}>{I.spark}<div><h4>Job-specific</h4><p>Feedback is tuned to the exact job description you paste.</p></div></Reveal>
               <Reveal className="lp-why-mini" delay={3}>{I.timer}<div><h4>In seconds</h4><p>No waiting days for expert reviews — results are instant.</p></div></Reveal>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Chrome Extension Spotlight */}
+      <section id="extension" className="lp-section" style={{ paddingTop: 40 }}>
+        <div className="lp-container">
+          <Reveal className="glass-card p-6 sm:p-10 rounded-3xl border border-brand-500/30 bg-gradient-to-br from-brand-950/50 via-surface to-indigo-950/35 relative overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-7 space-y-4 text-left">
+                <span className="lp-page-eyebrow">
+                  <PuzzleIcon className="w-3.5 h-3.5 text-brand-400" />
+                  <span>New · Browser Extension</span>
+                </span>
+                <h2 style={{ fontFamily: 'var(--lp-display)', fontSize: 'clamp(1.7rem,3.6vw,2.5rem)', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+                  Take Hirely straight onto <span className="lp-grad-text">LinkedIn</span>
+                </h2>
+                <p className="text-sm sm:text-base text-fg-muted leading-relaxed">
+                  Install the free <strong>Hirely LinkedIn Job Copilot</strong> extension for Chrome, Edge, and Brave. Score every LinkedIn job against your resume automatically, spot missing skills, draft recruiter outreach, and save roles into your application tracker in one click.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="flex items-start gap-2.5 text-xs text-fg-muted">
+                    <TargetIcon className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>Live 0–99% match ring &amp; skill-gap alerts on every LinkedIn job post</span>
+                  </div>
+                  <div className="flex items-start gap-2.5 text-xs text-fg-muted">
+                    <RocketIcon className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+                    <span>1-click presets for Startups, Early-Bird (&lt;10 applicants), and Remote roles</span>
+                  </div>
+                  <div className="flex items-start gap-2.5 text-xs text-fg-muted">
+                    <MailIcon className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                    <span>Instant AI recruiter connection notes, cover pitches &amp; interview prep</span>
+                  </div>
+                  <div className="flex items-start gap-2.5 text-xs text-fg-muted">
+                    <CheckIcon className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>Auto-syncs resumes, saved applications &amp; 1-click LinkedIn profile import</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3 pt-3">
+                  <Link to="/extension" className="lp-btn lp-btn-primary">
+                    <PuzzleIcon className="w-4 h-4" />
+                    <span>Explore Extension</span>
+                  </Link>
+                  <a
+                    href="/hirely-linkedin-extension.zip"
+                    download="hirely-linkedin-extension.zip"
+                    className="lp-btn lp-btn-ghost inline-flex items-center gap-2"
+                  >
+                    <DownloadIcon className="w-4 h-4" />
+                    <span>Download Extension (.zip)</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Clean Live Preview Mockup of the Extension Card */}
+              <div className="lg:col-span-5">
+                <div className="rounded-2xl bg-[#0b0a12] border border-brand-500/35 p-5 shadow-2xl space-y-4 text-left">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-6 h-6 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-600 text-white text-xs font-black flex items-center justify-center">
+                        H
+                      </span>
+                      <div>
+                        <p className="text-xs font-bold text-white">Hirely Job Copilot</p>
+                        <p className="text-[10px] text-slate-400">Frontend Engineer · Linear</p>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                      92% Best Fit
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Matched Skills</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['React', 'TypeScript', 'Tailwind CSS', 'REST APIs'].map((s) => (
+                        <span key={s} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
+                          <CheckIcon className="w-3 h-3" /> {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Missing / Prepare</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                        GraphQL
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                        Docker
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-[11px] font-semibold text-slate-200 text-center">
+                      Save to Pipeline
+                    </div>
+                    <div className="px-3 py-2 rounded-xl bg-brand-600 text-[11px] font-semibold text-white text-center">
+                      Tailor Resume
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </Reveal>
         </div>

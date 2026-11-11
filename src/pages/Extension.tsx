@@ -1,34 +1,43 @@
 import { Link } from 'react-router-dom'
 import { Card } from '../components/ui/Card'
+import {
+  BookmarkIcon,
+  DownloadIcon,
+  MailIcon,
+  RocketIcon,
+  SparklesIcon,
+  TargetIcon,
+  UploadIcon,
+} from '../components/ui/Icons'
 
 const FEATURES = [
   {
-    icon: '🎯',
+    icon: TargetIcon,
     title: 'Live LinkedIn Job Match Score',
     desc: 'Browse any job post on LinkedIn and see an instant 0–99% match ring, matched skills, and exact missing skills compared to your Hirely resume.',
   },
   {
-    icon: '🚀',
+    icon: RocketIcon,
     title: 'Smart Job Finder Presets',
     desc: 'One-click LinkedIn searches pre-configured for Startups & Small Teams, Early-Bird (<10 applicants), Fresh Last 24h, and Remote + Easy Apply.',
   },
   {
-    icon: '✉️',
+    icon: MailIcon,
     title: 'AI Recruiter Pitch & Cover Note',
     desc: 'Generate a personalized 290-character LinkedIn connection note and tailored hiring manager InMail on any job post in one click.',
   },
   {
-    icon: '✨',
+    icon: SparklesIcon,
     title: 'Tailor Resume & Interview Prep',
     desc: 'Send any LinkedIn job directly into Hirely’s Resume Optimizer, Skill-Gap Roadmap, or Mock Interview Generator.',
   },
   {
-    icon: '📥',
+    icon: UploadIcon,
     title: '1-Click LinkedIn Profile Import',
     desc: 'Open your LinkedIn profile page and import Experience, Education, Skills, and About sections straight into Hirely for ATS scoring.',
   },
   {
-    icon: '📌',
+    icon: BookmarkIcon,
     title: 'Auto-Syncing Application Pipeline',
     desc: 'Save jobs while browsing LinkedIn and sync them straight to your Hirely Dashboard tracker alongside your active resume versions.',
   },
@@ -76,7 +85,8 @@ export function Extension() {
               download="hirely-linkedin-extension.zip"
               className="lp-btn lp-btn-primary lp-btn-lg inline-flex items-center gap-2"
             >
-              <span>⬇️ Download Extension (.zip)</span>
+              <DownloadIcon className="w-4 h-4" />
+              <span>Download Extension (.zip)</span>
             </a>
             <Link to="/jobs" className="lp-btn lp-btn-ghost lp-btn-lg">
               Browse Jobs Feed →
@@ -86,15 +96,18 @@ export function Extension() {
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-          {FEATURES.map((f) => (
-            <Card key={f.title} className="p-5 space-y-2.5 border-line">
-              <div className="w-10 h-10 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-xl">
-                {f.icon}
-              </div>
-              <h3 className="text-sm font-bold text-fg-strong">{f.title}</h3>
-              <p className="text-xs text-fg-muted leading-relaxed">{f.desc}</p>
-            </Card>
-          ))}
+          {FEATURES.map((f) => {
+            const Icon = f.icon
+            return (
+              <Card key={f.title} className="p-5 space-y-2.5 border-line">
+                <div className="w-10 h-10 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <h3 className="text-sm font-bold text-fg-strong">{f.title}</h3>
+                <p className="text-xs text-fg-muted leading-relaxed">{f.desc}</p>
+              </Card>
+            )
+          })}
         </div>
 
         {/* Install Guide */}
@@ -130,4 +143,3 @@ export function Extension() {
     </div>
   )
 }
-

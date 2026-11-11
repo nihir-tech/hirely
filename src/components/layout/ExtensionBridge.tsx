@@ -54,7 +54,7 @@ export function ExtensionBridge() {
   if (!toast) return null
 
   return (
-    <div className="fixed bottom-20 left-4 sm:left-6 z-50 max-w-sm px-4 py-3 rounded-2xl bg-surface/95 backdrop-blur-xl border border-brand-500/40 shadow-2xl text-xs font-medium text-fg-strong flex items-center gap-2.5 animate-fade-in">
+    <div className="fixed top-24 right-4 sm:right-6 z-[1150] max-w-sm px-4 py-3 rounded-2xl bg-surface/95 backdrop-blur-xl border border-brand-500/40 shadow-2xl text-xs font-medium text-fg-strong flex items-center gap-2.5 animate-fade-in">
       <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
       <span>{toast}</span>
     </div>

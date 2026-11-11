@@ -3,6 +3,7 @@ import type { AnalysisResult, InterviewQuestion, JobMatchAlert } from '../../typ
 import { generateInterviewQuestions, fetchAiInterviewQuestions } from '../../lib/interviewGenerator'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
+import { CheckIcon, ClipboardIcon, LightbulbIcon, ZapIcon } from '../ui/Icons'
 
 interface InterviewPrepModalProps {
   open: boolean
@@ -94,9 +95,19 @@ export function InterviewPrepModal({
             <Button
               variant="secondary"
               onClick={handleCopyAllCheatSheet}
-              className={copiedAll ? 'text-emerald-400 border-emerald-500/40' : ''}
+              className={`inline-flex items-center gap-1.5 ${copiedAll ? 'text-emerald-400 border-emerald-500/40' : ''}`}
             >
-              {copiedAll ? '✓ Cheat Sheet Copied!' : '📋 Copy All as Cheat Sheet'}
+              {copiedAll ? (
+                <>
+                  <CheckIcon className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Cheat Sheet Copied!</span>
+                </>
+              ) : (
+                <>
+                  <ClipboardIcon className="w-3.5 h-3.5" />
+                  <span>Copy All as Cheat Sheet</span>
+                </>
+              )}
             </Button>
 
             <Button
@@ -110,7 +121,10 @@ export function InterviewPrepModal({
                   Generating Fresh Questions...
                 </>
               ) : (
-                <>⚡ Regenerate with AI</>
+                <>
+                  <ZapIcon className="w-3.5 h-3.5" />
+                  <span>Regenerate with AI</span>
+                </>
               )}
             </Button>
           </div>
@@ -219,7 +233,8 @@ export function InterviewPrepModal({
                 {/* Recruiter Insight Box */}
                 <div className="p-3 rounded-xl bg-surface-subtle border border-line/60 text-xs text-fg-muted space-y-1">
                   <span className="font-semibold text-fg-strong text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-                    💡 Why They Ask This:
+                    <LightbulbIcon className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Why They Ask This:</span>
                   </span>
                   <p className="leading-relaxed pl-1">{q.whyTheyAsk}</p>
                 </div>
@@ -232,7 +247,7 @@ export function InterviewPrepModal({
                   <ul className="space-y-1 text-xs text-fg-muted pl-1">
                     {q.keyPointsToHit.map((point, pIdx) => (
                       <li key={pIdx} className="flex items-start gap-2">
-                        <span className="text-brand-400 shrink-0 font-bold">✓</span>
+                        <CheckIcon className="w-3.5 h-3.5 text-brand-400 shrink-0 mt-0.5" />
                         <span>{point}</span>
                       </li>
                     ))}

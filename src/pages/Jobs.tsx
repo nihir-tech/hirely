@@ -17,6 +17,25 @@ import { ScoreRing } from '../components/ui/ScoreRing'
 import { Modal } from '../components/ui/Modal'
 import { SkillGapRoadmapModal } from '../components/jobs/SkillGapRoadmapModal'
 import { InterviewPrepModal } from '../components/jobs/InterviewPrepModal'
+import {
+  BellIcon,
+  BookOpenIcon,
+  BriefcaseIcon,
+  BuildingIcon,
+  CheckIcon,
+  ClockIcon,
+  DollarSignIcon,
+  MapPinIcon,
+  PuzzleIcon,
+  RefreshCwIcon,
+  RocketIcon,
+  SearchIcon,
+  SparklesIcon,
+  StarIcon,
+  TargetIcon,
+  UsersIcon,
+  ZapIcon,
+} from '../components/ui/Icons'
 
 export function Jobs() {
   const navigate = useNavigate()
@@ -57,7 +76,7 @@ export function Jobs() {
       if (nextUnadded) {
         injectFeedOpening(nextUnadded)
         setOpeningsPool((prev) => [nextUnadded, ...prev])
-        setNewJobNotification(`🔔 New match surfaced: ${nextUnadded.title} @ ${nextUnadded.company}`)
+        setNewJobNotification(`New match surfaced: ${nextUnadded.title} @ ${nextUnadded.company}`)
         setTimeout(() => setNewJobNotification(null), 5000)
       }
     }, 45000) // every 45s
@@ -195,9 +214,9 @@ export function Jobs() {
     if (nextUnadded) {
       injectFeedOpening(nextUnadded)
       setOpeningsPool((prev) => [nextUnadded, ...prev])
-      setNewJobNotification(`✨ Successfully surfaced: ${nextUnadded.title} @ ${nextUnadded.company}!`)
+      setNewJobNotification(`Successfully surfaced: ${nextUnadded.title} @ ${nextUnadded.company}!`)
     } else {
-      setNewJobNotification(`✓ Your continuous feed is already up to date with all live openings.`)
+      setNewJobNotification(`Your continuous feed is already up to date with all live openings.`)
     }
     setTimeout(() => setNewJobNotification(null), 4000)
   }
@@ -312,16 +331,16 @@ export function Jobs() {
                 title="Refresh rankings & feed"
                 className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-surface-subtle hover:bg-surface border border-line text-fg-strong transition-all flex items-center gap-1.5"
               >
-                <span className={isRefreshing ? 'animate-spin inline-block' : ''}>⚡</span>
+                <RefreshCwIcon className={`w-3.5 h-3.5 text-brand-400 ${isRefreshing ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleSurfaceNewJobs}
-                className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-brand-600/15 hover:bg-brand-600/25 text-brand-300 border border-brand-500/30 transition-all flex items-center gap-1"
+                className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-brand-600/15 hover:bg-brand-600/25 text-brand-300 border border-brand-500/30 transition-all flex items-center gap-1.5"
               >
-                <span>✨</span>
+                <SparklesIcon className="w-3.5 h-3.5" />
                 <span>Surface New</span>
               </button>
 
@@ -339,10 +358,10 @@ export function Jobs() {
 
               <Link
                 to="/extension"
-                className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-[#0A66C2]/15 hover:bg-[#0A66C2]/25 text-[#70b5f9] border border-[#0A66C2]/30 transition-all flex items-center gap-1"
+                className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-[#0A66C2]/15 hover:bg-[#0A66C2]/25 text-[#70b5f9] border border-[#0A66C2]/30 transition-all flex items-center gap-1.5"
                 title="Install the Hirely Chrome Extension for LinkedIn"
               >
-                <span>🧩</span>
+                <PuzzleIcon className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Chrome Extension</span>
               </Link>
             </div>
@@ -353,7 +372,7 @@ export function Jobs() {
         {newJobNotification && (
           <div className="mb-6 p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-medium flex items-center justify-between animate-fade-in shadow-lg">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <BellIcon className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{newJobNotification}</span>
             </div>
             <span className="text-[10px] text-emerald-400/80">Refreshed live</span>
@@ -367,19 +386,22 @@ export function Jobs() {
             <div className="relative z-1 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2 max-w-2xl">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30 flex items-center gap-1.5">
-                    ⭐ TOP OPENING RECOMMENDED FOR YOU
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30 inline-flex items-center gap-1.5">
+                    <StarIcon className="w-3.5 h-3.5" />
+                    <span>TOP OPENING RECOMMENDED FOR YOU</span>
                   </span>
                   {topBestFit.opening.companyType && (
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1 ${
                         topBestFit.opening.companyType === 'Startup / Small Team'
                           ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                           : 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
                       }`}
                     >
-                      {topBestFit.opening.companyType === 'Startup / Small Team' ? '🌱 ' : ''}
-                      {topBestFit.opening.companyType}
+                      {topBestFit.opening.companyType === 'Startup / Small Team' && (
+                        <RocketIcon className="w-3 h-3" />
+                      )}
+                      <span>{topBestFit.opening.companyType}</span>
                     </span>
                   )}
                   {topBestFit.opening.source === 'LinkedIn' && (
@@ -391,8 +413,9 @@ export function Jobs() {
                     </span>
                   )}
                   {topBestFit.opening.hasEasyApply && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      ⚡ Easy Apply
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 inline-flex items-center gap-1">
+                      <ZapIcon className="w-3 h-3" />
+                      <span>Easy Apply</span>
                     </span>
                   )}
                   <span className="text-xs text-fg-muted">Posted {topBestFit.opening.postedDate}</span>
@@ -408,30 +431,35 @@ export function Jobs() {
 
                 <div className="flex flex-wrap items-center gap-3 text-xs">
                   {topBestFit.opening.applicantCount && (
-                    <span className="text-[#70b5f9] font-medium">
-                      👥 {topBestFit.opening.applicantCount}
+                    <span className="text-[#70b5f9] font-medium inline-flex items-center gap-1">
+                      <UsersIcon className="w-3.5 h-3.5" />
+                      <span>{topBestFit.opening.applicantCount}</span>
                     </span>
                   )}
                   {topBestFit.opening.teamSize && (
-                    <span className="text-fg-muted">
-                      🏢 Team: {topBestFit.opening.teamSize}
+                    <span className="text-fg-muted inline-flex items-center gap-1">
+                      <BuildingIcon className="w-3.5 h-3.5" />
+                      <span>Team: {topBestFit.opening.teamSize}</span>
                     </span>
                   )}
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-2">
                   {topBestFit.matchingSkills.slice(0, 5).map((s) => (
-                    <span key={s} className="px-2.5 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-xs font-medium">
-                      ✓ {s}
+                    <span key={s} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-xs font-medium">
+                      <CheckIcon className="w-3 h-3" />
+                      <span>{s}</span>
                     </span>
                   ))}
                   {topBestFit.opening.salaryRange && (
-                    <span className="px-2.5 py-0.5 rounded-lg bg-surface text-fg-muted text-xs border border-line">
-                      💰 {topBestFit.opening.salaryRange}
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-surface text-fg-muted text-xs border border-line">
+                      <DollarSignIcon className="w-3 h-3 text-emerald-400" />
+                      <span>{topBestFit.opening.salaryRange}</span>
                     </span>
                   )}
-                  <span className="px-2.5 py-0.5 rounded-lg bg-surface text-fg-muted text-xs border border-line">
-                    📍 {topBestFit.opening.location}
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-surface text-fg-muted text-xs border border-line">
+                    <MapPinIcon className="w-3 h-3 text-brand-400" />
+                    <span>{topBestFit.opening.location}</span>
                   </span>
                 </div>
               </div>
@@ -448,9 +476,10 @@ export function Jobs() {
                     variant="secondary"
                     size="sm"
                     onClick={() => setInterviewAlert(topBestFit)}
-                    className="w-full text-xs"
+                    className="w-full text-xs inline-flex items-center justify-center gap-1.5"
                   >
-                    🎯 Mock Interview Prep
+                    <TargetIcon className="w-3.5 h-3.5 text-brand-400" />
+                    <span>Mock Interview Prep</span>
                   </Button>
 
                   {topBestFit.opening.linkedInUrl && (
@@ -497,14 +526,16 @@ export function Jobs() {
                 onClick={() => handleTriggerLinkedInSearch(detectedRole)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-subtle hover:bg-surface border border-line text-xs font-medium text-fg-strong transition-all hover:border-[#0A66C2]/40"
               >
-                🔎 Search "{detectedRole}" on LinkedIn ↗
+                <SearchIcon className="w-3.5 h-3.5 text-[#70b5f9]" />
+                <span>Search "{detectedRole}" on LinkedIn ↗</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleTriggerLinkedInSearch(`${topSkill} Developer Remote`)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-subtle hover:bg-surface border border-line text-xs font-medium text-fg-strong transition-all hover:border-[#0A66C2]/40"
               >
-                ⚡ Remote {topSkill} Jobs ↗
+                <ZapIcon className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Remote {topSkill} Jobs ↗</span>
               </button>
             </div>
           </div>
@@ -578,13 +609,14 @@ export function Jobs() {
             <button
               type="button"
               onClick={() => setCategoryFilter('best-fit')}
-              className={`px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap ${
+              className={`px-2.5 py-1 rounded-lg inline-flex items-center gap-1 transition-colors whitespace-nowrap ${
                 categoryFilter === 'best-fit'
                   ? 'bg-amber-600 text-white font-semibold'
                   : 'text-amber-400 hover:bg-amber-500/15'
               }`}
             >
-              ⭐ Best Fit ({bestFitCount})
+              <StarIcon className="w-3.5 h-3.5" />
+              <span>Best Fit ({bestFitCount})</span>
             </button>
 
             {/* Near-Miss & Roadmaps Filter Tab */}
@@ -597,7 +629,7 @@ export function Jobs() {
                   : 'text-amber-300 hover:bg-amber-500/15'
               }`}
             >
-              <span>🎯</span>
+              <TargetIcon className="w-3.5 h-3.5" />
               <span>Near-Miss & Roadmaps ({nearMissCount})</span>
             </button>
 
@@ -611,7 +643,7 @@ export function Jobs() {
                   : 'text-emerald-400 hover:bg-emerald-500/15'
               }`}
             >
-              <span>🌱</span>
+              <RocketIcon className="w-3.5 h-3.5" />
               <span>Startups ({startupsCount})</span>
             </button>
 
@@ -648,8 +680,8 @@ export function Jobs() {
         {/* Near-Miss Specific Banner */}
         {categoryFilter === 'near-miss' && (
           <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs text-fg-muted animate-fade-in">
-            <div className="flex items-center gap-2">
-              <span className="text-base">🎯</span>
+            <div className="flex items-center gap-2.5">
+              <TargetIcon className="w-4 h-4 text-amber-400 shrink-0" />
               <span>
                 Showing <strong>{filteredAlerts.length} Near-Miss Opportunities (60–84% match)</strong>. You meet the primary core requirements! Click <strong>"Skill Gap & Roadmap"</strong> on any opening to see your exact 1–2 week action plan to close the gap.
               </span>
@@ -667,8 +699,8 @@ export function Jobs() {
         {/* Startups Specific Banner */}
         {categoryFilter === 'startups' && (
           <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs text-fg-muted animate-fade-in">
-            <div className="flex items-center gap-2">
-              <span className="text-base">🌱</span>
+            <div className="flex items-center gap-2.5">
+              <RocketIcon className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>
                 Showing <strong>{filteredAlerts.length} openings at early-stage startups & boutique small teams</strong>.
                 These roles feature direct founder contact, high ownership, fast interview loops, and lower competition on LinkedIn.
@@ -687,8 +719,8 @@ export function Jobs() {
         {/* LinkedIn Specific Banner */}
         {categoryFilter === 'linkedin' && (
           <div className="mb-6 p-4 rounded-2xl bg-[#0A66C2]/10 border border-[#0A66C2]/30 flex items-center justify-between text-xs text-fg-muted animate-fade-in">
-            <div className="flex items-center gap-2">
-              <span className="text-base">💼</span>
+            <div className="flex items-center gap-2.5">
+              <BriefcaseIcon className="w-4 h-4 text-[#70b5f9] shrink-0" />
               <span>
                 Showing <strong>{filteredAlerts.length} active openings available on LinkedIn</strong> with direct apply links, Easy Apply indicators, and applicant insights.
               </span>
@@ -769,7 +801,7 @@ export function Jobs() {
 
                         {alert.opening.companyType && (
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border inline-flex items-center gap-1 ${
                               alert.opening.companyType === 'Startup / Small Team'
                                 ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                                 : alert.opening.companyType === 'Mid-Size'
@@ -777,8 +809,10 @@ export function Jobs() {
                                 : 'bg-surface text-fg-muted border-line'
                             }`}
                           >
-                            {alert.opening.companyType === 'Startup / Small Team' ? '🌱 ' : ''}
-                            {alert.opening.companyType}
+                            {alert.opening.companyType === 'Startup / Small Team' && (
+                              <RocketIcon className="w-3 h-3" />
+                            )}
+                            <span>{alert.opening.companyType}</span>
                           </span>
                         )}
 
@@ -792,8 +826,9 @@ export function Jobs() {
                         )}
 
                         {alert.opening.hasEasyApply && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                            ⚡ Easy Apply
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                            <ZapIcon className="w-3 h-3" />
+                            <span>Easy Apply</span>
                           </span>
                         )}
                       </div>
@@ -809,28 +844,50 @@ export function Jobs() {
                           return (
                             <span
                               key={skill}
-                              className={`px-2 py-0.5 rounded-md text-[11px] font-medium border ${
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border ${
                                 matched
                                   ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                                   : 'bg-amber-500/10 text-amber-300/90 border-amber-500/20'
                               }`}
                             >
-                              {matched ? '✓ ' : '⚡ '}{skill}
+                              {matched ? (
+                                <CheckIcon className="w-3 h-3" />
+                              ) : (
+                                <ZapIcon className="w-3 h-3" />
+                              )}
+                              <span>{skill}</span>
                             </span>
                           )
                         })}
                       </div>
 
                       <div className="flex flex-wrap gap-3 text-xs text-fg-muted pt-1 items-center">
-                        <span>📍 {alert.opening.location}</span>
-                        {alert.opening.salaryRange && <span>💰 {alert.opening.salaryRange}</span>}
+                        <span className="inline-flex items-center gap-1">
+                          <MapPinIcon className="w-3.5 h-3.5 text-brand-400" />
+                          <span>{alert.opening.location}</span>
+                        </span>
+                        {alert.opening.salaryRange && (
+                          <span className="inline-flex items-center gap-1">
+                            <DollarSignIcon className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>{alert.opening.salaryRange}</span>
+                          </span>
+                        )}
                         {alert.opening.teamSize && (
-                          <span className="text-fg-muted">👥 Team: {alert.opening.teamSize}</span>
+                          <span className="text-fg-muted inline-flex items-center gap-1">
+                            <BuildingIcon className="w-3.5 h-3.5" />
+                            <span>Team: {alert.opening.teamSize}</span>
+                          </span>
                         )}
                         {alert.opening.applicantCount && (
-                          <span className="text-[#70b5f9] font-medium">👥 {alert.opening.applicantCount}</span>
+                          <span className="text-[#70b5f9] font-medium inline-flex items-center gap-1">
+                            <UsersIcon className="w-3.5 h-3.5" />
+                            <span>{alert.opening.applicantCount}</span>
+                          </span>
                         )}
-                        <span>🕒 {alert.opening.type}</span>
+                        <span className="inline-flex items-center gap-1">
+                          <ClockIcon className="w-3.5 h-3.5" />
+                          <span>{alert.opening.type}</span>
+                        </span>
                       </div>
                     </div>
 
@@ -851,9 +908,10 @@ export function Jobs() {
                           variant="secondary"
                           size="sm"
                           onClick={() => setRoadmapAlert(alert)}
-                          className="text-xs text-amber-300 border-amber-500/30 hover:border-amber-500/50"
+                          className="text-xs text-amber-300 border-amber-500/30 hover:border-amber-500/50 inline-flex items-center gap-1.5"
                         >
-                          📚 Skill Gap & Roadmap
+                          <BookOpenIcon className="w-3.5 h-3.5" />
+                          <span>Skill Gap & Roadmap</span>
                         </Button>
 
                         {/* 2. Interview Prep Generator Action */}
@@ -861,9 +919,10 @@ export function Jobs() {
                           variant="secondary"
                           size="sm"
                           onClick={() => setInterviewAlert(alert)}
-                          className="text-xs text-brand-300 border-brand-500/30 hover:border-brand-500/50"
+                          className="text-xs text-brand-300 border-brand-500/30 hover:border-brand-500/50 inline-flex items-center gap-1.5"
                         >
-                          🎯 Interview Prep
+                          <TargetIcon className="w-3.5 h-3.5" />
+                          <span>Interview Prep</span>
                         </Button>
 
                         {/* 3. Track Job in Pipeline */}
@@ -871,9 +930,16 @@ export function Jobs() {
                           variant="secondary"
                           size="sm"
                           onClick={() => handleAddToTracker(alert)}
-                          className={wasAdded ? 'text-emerald-400 border-emerald-500/40 text-xs' : 'text-xs'}
+                          className={`text-xs inline-flex items-center gap-1 ${wasAdded ? 'text-emerald-400 border-emerald-500/40' : ''}`}
                         >
-                          {wasAdded ? '✓ Saved' : '+ Track'}
+                          {wasAdded ? (
+                            <>
+                              <CheckIcon className="w-3.5 h-3.5" />
+                              <span>Saved</span>
+                            </>
+                          ) : (
+                            '+ Track'
+                          )}
                         </Button>
 
                         {/* 4. Tailor Resume */}
@@ -1026,9 +1092,11 @@ export function Jobs() {
                 <div className="flex flex-wrap items-center gap-2 mt-1">
                   <p className="text-xs text-brand-400 font-semibold">{selectedJobAlert.fitBadge}</p>
                   {selectedJobAlert.opening.companyType && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                      {selectedJobAlert.opening.companyType === 'Startup / Small Team' ? '🌱 ' : ''}
-                      {selectedJobAlert.opening.companyType}
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                      {selectedJobAlert.opening.companyType === 'Startup / Small Team' && (
+                        <RocketIcon className="w-3 h-3" />
+                      )}
+                      <span>{selectedJobAlert.opening.companyType}</span>
                     </span>
                   )}
                   {selectedJobAlert.opening.source === 'LinkedIn' && (
@@ -1037,8 +1105,9 @@ export function Jobs() {
                     </span>
                   )}
                   {selectedJobAlert.opening.hasEasyApply && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300">
-                      ⚡ Easy Apply Available
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300">
+                      <ZapIcon className="w-3 h-3" />
+                      <span>Easy Apply Available</span>
                     </span>
                   )}
                 </div>
@@ -1048,14 +1117,14 @@ export function Jobs() {
 
             {selectedJobAlert.opening.teamSize && (
               <div className="p-3 rounded-xl bg-surface border border-line text-xs text-fg-muted flex items-center gap-2">
-                <span>🏢</span>
+                <BuildingIcon className="w-4 h-4 text-brand-400 shrink-0" />
                 <span>Company Structure: <strong className="text-fg-strong">{selectedJobAlert.opening.teamSize}</strong></span>
               </div>
             )}
 
             {selectedJobAlert.opening.applicantCount && (
               <div className="p-3 rounded-xl bg-[#0A66C2]/10 border border-[#0A66C2]/20 text-xs text-[#70b5f9] flex items-center gap-2">
-                <span>👥</span>
+                <UsersIcon className="w-4 h-4 shrink-0" />
                 <span>{selectedJobAlert.opening.applicantCount}</span>
               </div>
             )}

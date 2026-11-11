@@ -5,6 +5,8 @@ import { SiteStatsProvider } from './hooks/useSiteStats'
 import { Navbar } from './components/layout/Navbar'
 import { Footer } from './components/layout/Footer'
 import { BackToTop } from './components/layout/BackToTop'
+import { SidebarProvider, useSidebar } from './components/layout/SidebarContext'
+import { WorkspaceSidebar } from './components/layout/WorkspaceSidebar'
 import { Landing } from './pages/Landing'
 import { Upload } from './pages/Upload'
 import { Analysis } from './pages/Analysis'
@@ -38,13 +40,21 @@ function ScrollManager() {
   return null
 }
 
-export default function App() {
+function AppShell() {
+  const { isLoggedIn, desktopExpanded } = useSidebar()
+  const sidebarPad = isLoggedIn
+    ? desktopExpanded
+      ? 'lg:pl-60'
+      : 'lg:pl-[68px]'
+    : ''
+
   return (
-    <SiteStatsProvider>
-      <div className="lp-app min-h-screen flex flex-col bg-canvas">
-        <ScrollManager />
-        <Ambient />
-        <Navbar />
+    <div className="lp-app min-h-screen flex flex-col bg-canvas">
+      <ScrollManager />
+      <Ambient />
+      <Navbar />
+      <WorkspaceSidebar />
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ${sidebarPad}`}>
         <main className="flex-1 relative z-[1]">
           <Routes>
             <Route path="/" element={<Landing />} />
@@ -92,10 +102,20 @@ export default function App() {
           </Routes>
         </main>
         <Footer />
-        <BackToTop />
-        <ResumeCoachDrawer />
-        <ExtensionBridge />
       </div>
+      <BackToTop />
+      <ResumeCoachDrawer />
+      <ExtensionBridge />
+    </div>
+  )
+}
+
+export default function App() {
+  return (
+    <SiteStatsProvider>
+      <SidebarProvider>
+        <AppShell />
+      </SidebarProvider>
     </SiteStatsProvider>
   )
 }

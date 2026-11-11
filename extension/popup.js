@@ -157,8 +157,14 @@
             </div>
             <div style="color:#cbd5e1;font-size:11.5px;">${escapeHtml(res.job.title)} @ ${escapeHtml(res.job.company)}</div>
             <div class="btn-row" style="margin-top:4px;">
-              <button class="btn btn-secondary btn-sm" id="popSaveJobBtn">📌 Save Job</button>
-              <button class="btn btn-primary btn-sm" id="popTailorBtn">✨ Tailor Resume</button>
+              <button class="btn btn-secondary btn-sm" id="popSaveJobBtn">
+                <svg class="ico" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                <span>Save Job</span>
+              </button>
+              <button class="btn btn-primary btn-sm" id="popTailorBtn">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/></svg>
+                <span>Tailor Resume</span>
+              </button>
             </div>
           `;
 
@@ -197,7 +203,10 @@
           els.activeLinkedInCard.innerHTML = `
             <strong style="color:#fff;">LinkedIn Profile Detected</strong>
             <div style="color:#cbd5e1;font-size:11.5px;">${escapeHtml(res.profile.name)} (${res.profile.sectionsCount} sections)</div>
-            <button class="btn btn-primary btn-sm btn-full" id="popImportProfBtn">📥 Import Profile to Hirely</button>
+            <button class="btn btn-primary btn-sm btn-full" id="popImportProfBtn">
+              <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Import Profile to Hirely</span>
+            </button>
           `;
           document.getElementById('popImportProfBtn')?.addEventListener('click', () => {
             chrome.runtime.sendMessage({
@@ -278,7 +287,7 @@
     }
     chrome.runtime.sendMessage({ type: 'SAVE_MANUAL_RESUME', resumeText: text }, (res) => {
       if (res?.ok) {
-        els.manualSaveMsg.textContent = '✓ Resume activated! LinkedIn pages will now auto-score against it.';
+        els.manualSaveMsg.textContent = 'Resume activated! LinkedIn pages will now auto-score against it.';
         els.manualSaveMsg.style.color = '#34d399';
         els.manualSaveMsg.classList.remove('hidden');
         loadState();
