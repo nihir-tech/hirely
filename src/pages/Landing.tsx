@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
   CheckIcon,
   DownloadIcon,
@@ -8,6 +10,14 @@ import {
   RocketIcon,
   TargetIcon,
 } from '../components/ui/Icons'
+import {
+  SplitScrollText,
+  attachLandingSpotlights,
+  handleExplodePointer,
+} from '../components/motion/ScrollPrimitives'
+import { prefersReducedMotion, smoothScrollTo } from '../lib/smoothScroll'
+
+gsap.registerPlugin(ScrollTrigger)
 
 /* ── tiny icon set ─────────────────────────────────── */
 
@@ -522,8 +532,27 @@ function Hero() {
           Upload your resume, discover what's holding it back, and optimize it for the job you actually want — <strong>in seconds</strong>.
         </p>
         <div className={`lp-hero-actions ${fade('2')}`}>
-          <Link to="/upload" className="lp-btn lp-btn-primary lp-btn-lg">{I.upload} Analyze My Resume — Free</Link>
-          <a href="#how-it-works" className="lp-btn lp-btn-ghost lp-btn-lg">See How It Works</a>
+          <Link
+            to="/upload"
+            className="lp-btn lp-btn-primary lp-btn-lg lp-btn-explode"
+            onMouseEnter={(e) => handleExplodePointer(e, true)}
+            onMouseMove={(e) => handleExplodePointer(e, true)}
+            onMouseLeave={(e) => handleExplodePointer(e, false)}
+          >
+            <span className="lp-explode" aria-hidden="true" />
+            {I.upload}
+            <span>Analyze My Resume — Free</span>
+          </Link>
+          <a
+            href="#how-it-works"
+            className="lp-btn lp-btn-ghost lp-btn-lg"
+            onClick={(e) => {
+              e.preventDefault()
+              smoothScrollTo('#how-it-works', { offset: -86 })
+            }}
+          >
+            See How It Works
+          </a>
         </div>
         <div className={`lp-hero-note ${fade('3')}`}>
           <span>{I.shield} No credit card required</span>
@@ -539,65 +568,372 @@ function Hero() {
   )
 }
 
+/* ── Sticky How It Works showcase ──────────────────── */
+
+const HIW_META = [
+  { tag: 'Step 01 · Intake', metric: 'Parsed in 1.2s', sub: 'Zero layout loss', to: '/upload', cta: 'Upload your resume' },
+  { tag: 'Step 02 · Diagnostics', metric: '84 / 100 ATS', sub: 'Line-by-line review', to: '/upload', cta: 'Run free review' },
+  { tag: 'Step 03 · Alignment', metric: '+38% Keyword Match', sub: 'JD gap detection', to: '/jobs', cta: 'Match a job description' },
+  { tag: 'Step 04 · Polish', metric: 'Hire-Ready PDF', sub: 'One-click rewrites', to: '/upload', cta: 'Optimize now' },
+]
+
+function HowItWorksSection({
+  activeStep,
+  onSelectStep,
+}: {
+  activeStep: number
+  onSelectStep: (idx: number) => void
+}) {
+  const meta = HIW_META[activeStep] ?? HIW_META[0]
+  const step = STEPS[activeStep] ?? STEPS[0]
+
+  return (
+    <section id="how-it-works" className="lp-section">
+      <div className="lp-container">
+        <div className="lp-section-head">
+          <span className="lp-eyebrow">How it works</span>
+          <h2>
+            <SplitScrollText segments={[{ text: 'Four steps to a ' }, { text: 'stronger resume', grad: true }]} />
+          </h2>
+          <p>No guesswork. Just a clear path from “okay” to “hire-ready”.</p>
+          <div className="lp-underline" />
+        </div>
+
+        <div className="lp-hiw-grid">
+          <div className="lp-hiw-track">
+            {STEPS.map((s, i) => (
+              <button
+                key={s.num}
+                type="button"
+                data-hiw-step={i}
+                onClick={(e) => {
+                  onSelectStep(i)
+                  smoothScrollTo(e.currentTarget, { offset: -140 })
+                }}
+                className={`lp-hiw-step lp-spotlight-card ${activeStep === i ? 'is-active' : ''}`}
+              >
+                <span className="lp-spotlight-glow" aria-hidden="true" />
+                <div className="lp-hiw-step-top">
+                  <span className="lp-hiw-step-num">0{s.num}</span>
+                  <span className="lp-hiw-step-tag">{HIW_META[i]?.tag}</span>
+                </div>
+                <h3>{s.title}</h3>
+                <p>{s.desc}</p>
+              </button>
+            ))}
+          </div>
+
+          <div className="lp-hiw-sticky">
+            <div className="lp-hiw-stage">
+              <div
+                className="lp-hiw-dial"
+                aria-hidden="true"
+                style={{ transform: `rotate(${activeStep * 78}deg)` }}
+              />
+              <div className="lp-hiw-stage-head">
+                <span className="lp-hiw-counter">STEP 0{activeStep + 1} / 04</span>
+                <div className="lp-hiw-dots" role="tablist" aria-label="How it works steps">
+                  {STEPS.map((s, i) => (
+                    <button
+                      key={s.num}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeStep === i}
+                      aria-label={`View step ${i + 1}: ${s.title}`}
+                      className={`lp-hiw-dot ${activeStep === i ? 'is-active' : ''}`}
+                      onClick={() => onSelectStep(i)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div key={activeStep} className="lp-hiw-stage-body">
+                <div className="mb-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-brand-300 mb-1">
+                    {meta.tag}
+                  </p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white">{step.title}</h3>
+                </div>
+
+                {activeStep === 0 && (
+                  <div className="lp-hiw-stage-card space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-xl bg-brand-600/25 border border-brand-400/40 flex items-center justify-center text-brand-300">
+                          {I.doc}
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-white">Frontend_Resume_2026.pdf</p>
+                          <p className="text-xs text-slate-400">214 KB · Single-column layout detected</p>
+                        </div>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                        Ready
+                      </span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                      <div className="h-full w-[94%] rounded-full bg-gradient-to-r from-brand-500 to-indigo-400" />
+                    </div>
+                  </div>
+                )}
+
+                {activeStep === 1 && (
+                  <div className="lp-hiw-stage-card space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-300">ATS &amp; Impact Breakdown</span>
+                      <span className="text-sm font-bold text-emerald-300">84 / 100</span>
+                    </div>
+                    {[
+                      { label: 'Structure & Parsing', pct: 94 },
+                      { label: 'Quantified Impact', pct: 76 },
+                      { label: 'Action Verbs', pct: 88 },
+                    ].map((row) => (
+                      <div key={row.label} className="space-y-1">
+                        <div className="flex justify-between text-[11px] text-slate-300">
+                          <span>{row.label}</span>
+                          <span>{row.pct}%</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-emerald-400"
+                            style={{ width: `${row.pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeStep === 2 && (
+                  <div className="lp-hiw-stage-card space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-semibold text-white">Senior React Engineer · Target JD</span>
+                      <span className="text-xs font-bold text-brand-300">+38% fit gain</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['React', 'TypeScript', 'Next.js', 'REST APIs'].map((kw) => (
+                        <span
+                          key={kw}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                        >
+                          <CheckIcon className="w-3 h-3" /> {kw}
+                        </span>
+                      ))}
+                      {['GraphQL', 'CI/CD'].map((kw) => (
+                        <span
+                          key={kw}
+                          className="px-2 py-0.5 rounded-md text-[11px] bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                        >
+                          + Add {kw}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeStep === 3 && (
+                  <div className="lp-hiw-stage-card space-y-2.5">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                      AI Bullet Rewrite Applied
+                    </p>
+                    <p className="text-xs text-slate-400 line-through">
+                      Worked on checkout flow bugs and improved load time.
+                    </p>
+                    <p className="text-xs font-medium text-emerald-300 leading-relaxed">
+                      Cut checkout latency by 38% across 120k monthly orders by refactoring React state &amp; API caching.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="lp-hiw-stage-foot">
+                <span>
+                  <strong className="text-white">{meta.metric}</strong> · {meta.sub}
+                </span>
+                <Link
+                  to={meta.to}
+                  className="inline-flex items-center gap-1.5 font-semibold text-brand-300 hover:text-white transition-colors"
+                >
+                  <span>{meta.cta}</span>
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6l6 6-6 6" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ── Main landing ──────────────────────────────────── */
 
 export function Landing() {
   const [faqOpen, setFaqOpen] = useState<number | null>(0)
+  const [activeStep, setActiveStep] = useState(0)
+  const landingRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const fx = document.querySelectorAll<HTMLElement>('.landing .fx')
-    const onScroll = () => {
-      const y = window.scrollY || document.documentElement.scrollTop
-      fx.forEach((f) => {
-        const s = parseFloat(f.getAttribute('data-lp-para') || '0') || 0
-        f.style.translate = `0 ${y * s}px`
-      })
+    const root = landingRef.current
+    if (!root) return
+
+    const stopSpotlights = attachLandingSpotlights(root)
+
+    if (prefersReducedMotion()) {
+      return () => {
+        stopSpotlights()
+      }
     }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
+
+    const ctx = gsap.context(() => {
+      // Background gradient orbs subtle scrubbed parallax
+      gsap.utils.toArray<HTMLElement>('.fx').forEach((orb) => {
+        const speed = parseFloat(orb.getAttribute('data-lp-para') || '0.18') || 0.18
+        gsap.to(orb, {
+          y: () => speed * 260,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: root,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.6,
+          },
+        })
+      })
+
+      // Hero showcase gentle expansion & floating chip parallax
+      const heroWrap = root.querySelector<HTMLElement>('.lp-hero .lp-anchor-wrap')
+      if (heroWrap) {
+        gsap.fromTo(
+          heroWrap,
+          { scale: 0.91, y: 26 },
+          {
+            scale: 1,
+            y: 0,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: '.lp-hero',
+              start: 'top top',
+              end: 'bottom 42%',
+              scrub: 0.65,
+            },
+          }
+        )
+      }
+
+      const chipParallax: [string, number][] = [
+        ['.lp-chip-c1', -26],
+        ['.lp-chip-c2', -44],
+        ['.lp-chip-c3', -18],
+      ]
+      chipParallax.forEach(([sel, yOffset]) => {
+        const chip = root.querySelector<HTMLElement>(sel)
+        if (!chip) return
+        gsap.to(chip, {
+          y: yOffset,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.lp-hero',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.5,
+          },
+        })
+      })
+
+      // Scrubbed character illumination on section headlines
+      gsap.utils.toArray<HTMLElement>('.lp-scrub-text').forEach((heading) => {
+        const chars = heading.querySelectorAll<HTMLElement>('.lp-scrub-ch')
+        if (!chars.length) return
+        gsap.fromTo(
+          chars,
+          { opacity: 0.16 },
+          {
+            opacity: 1,
+            stagger: 0.03,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: heading,
+              start: 'top 88%',
+              end: 'top 50%',
+              scrub: true,
+            },
+          }
+        )
+      })
+
+      // Sticky "How It Works" step activation on scroll
+      gsap.utils.toArray<HTMLElement>('[data-hiw-step]').forEach((stepEl, idx) => {
+        ScrollTrigger.create({
+          trigger: stepEl,
+          start: 'top 58%',
+          end: 'bottom 42%',
+          onEnter: () => setActiveStep(idx),
+          onEnterBack: () => setActiveStep(idx),
+        })
+      })
+
+      const staggerSection = (triggerSel: string, itemSel: string, stagger = 0.08, y = 36, scale = 0.95) => {
+        const items = root.querySelectorAll<HTMLElement>(itemSel)
+        if (!items.length) return
+        gsap.fromTo(
+          items,
+          { opacity: 0, y, scale },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.75,
+            stagger,
+            ease: 'power3.out',
+            clearProps: 'transform,opacity',
+            scrollTrigger: {
+              trigger: triggerSel,
+              start: 'top 84%',
+              once: true,
+            },
+          }
+        )
+      }
+
+      staggerSection('.lp-bento', '.lp-bento-card', 0.07, 40, 0.94)
+      staggerSection('.lp-why-cards', '.lp-why-mini', 0.09, 28, 0.95)
+      staggerSection('#extension', '.lp-ext-reveal', 0.1, 34, 0.96)
+      staggerSection('.lp-tst-slot', '.lp-tst', 0.09, 36, 0.95)
+      staggerSection('.lp-faq-wrap', '.lp-faq-item', 0.06, 24, 0.98)
+      staggerSection('#cta', '.lp-cta-box', 0, 32, 0.95)
+    }, landingRef)
+
+    return () => {
+      stopSpotlights()
+      ctx.revert()
+    }
   }, [])
 
   return (
-    <div className="landing">
+    <div ref={landingRef} className="landing">
       <Hero />
 
-      {/* How It Works */}
-      <section id="how-it-works" className="lp-section">
-        <div className="lp-container">
-          <Reveal className="lp-section-head">
-            <span className="lp-eyebrow">How it works</span>
-            <h2>Four steps to a <span className="lp-grad-text">stronger resume</span></h2>
-            <p>No guesswork. Just a clear path from “okay” to “hire-ready”.</p>
-            <div className="lp-underline" />
-          </Reveal>
-          <div className="lp-steps">
-            {STEPS.map((s, i) => (
-              <Reveal key={s.num} className="lp-step" delay={(i + 1) as 1 | 2 | 3 | 4}>
-                {i < 3 && (
-                  <svg className="lp-step-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5-5 5M6 12h12" /></svg>
-                )}
-                <div className="lp-step-num">{s.num}</div>
-                <h3>{s.title}</h3>
-                <p>{s.desc}</p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* How It Works (Sticky Split Progression) */}
+      <HowItWorksSection activeStep={activeStep} onSelectStep={setActiveStep} />
 
       {/* Features (bento) */}
       <section id="features" className="lp-section" style={{ paddingTop: 40 }}>
         <div className="lp-container">
-          <Reveal className="lp-section-head">
+          <div className="lp-section-head">
             <span className="lp-eyebrow">Features</span>
-            <h2>Everything you need to <span className="lp-grad-text">get hired</span></h2>
+            <h2>
+              <SplitScrollText segments={[{ text: 'Everything you need to ' }, { text: 'get hired', grad: true }]} />
+            </h2>
             <p>Comprehensive analysis, actionable insights — nothing generic.</p>
             <div className="lp-underline" />
-          </Reveal>
+          </div>
           <div className="lp-bento">
-            {FEATURES.map((f, i) => (
-              <Reveal key={f.title} className={`lp-bento-card ${f.big ? 'big' : ''} ${f.wide ? 'wide' : ''}`} delay={((i % 3) + 1) as 1 | 2 | 3}>
+            {FEATURES.map((f) => (
+              <div key={f.title} className={`lp-bento-card lp-spotlight-card ${f.big ? 'big' : ''} ${f.wide ? 'wide' : ''}`}>
+                <span className="lp-spotlight-glow" aria-hidden="true" />
                 <span className="lp-bg-ring" />
                 <div className="lp-bento-icon">{f.icon}</div>
                 <h3>{f.title}</h3>
@@ -616,7 +952,7 @@ export function Landing() {
                   </div>
                 )}
                 <svg className="lp-spark-mini" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-              </Reveal>
+              </div>
             ))}
           </div>
         </div>
@@ -625,12 +961,14 @@ export function Landing() {
       {/* Compare */}
       <section className="lp-section" style={{ padding: '60px 0 110px' }}>
         <div className="lp-container">
-          <Reveal className="lp-section-head">
+          <div className="lp-section-head">
             <span className="lp-eyebrow">Proof</span>
-            <h2>Drag to see the <span className="lp-grad-text">difference</span></h2>
+            <h2>
+              <SplitScrollText segments={[{ text: 'Drag to see the ' }, { text: 'difference', grad: true }]} />
+            </h2>
             <p>Same resume. Same facts. One AI pass through Hirely — across three roles.</p>
             <div className="lp-underline" />
-          </Reveal>
+          </div>
           <Reveal style={{ display: 'block' }}>
             <CompareSlider />
           </Reveal>
@@ -640,26 +978,26 @@ export function Landing() {
       {/* Why */}
       <section className="lp-section" style={{ paddingTop: 10 }}>
         <div className="lp-container">
-          <Reveal className="lp-why" style={{ margin: '0 auto', maxWidth: 780, textAlign: 'center' }}>
+          <div className="lp-why" style={{ margin: '0 auto', maxWidth: 780, textAlign: 'center' }}>
             <span className="lp-eyebrow">Why Hirely</span>
             <h2 style={{ fontFamily: 'var(--lp-display)', fontSize: 'clamp(1.9rem,4.6vw,3rem)', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.13, marginBottom: 18 }}>
-              Generic advice <span className="lp-grad-text">isn't enough</span>
+              <SplitScrollText segments={[{ text: 'Generic advice ' }, { text: "isn't enough", grad: true }]} />
             </h2>
             <p>A resume for a software engineer at Google is different from one for a product manager at a startup. The same document won't work everywhere.</p>
             <p>Hirely analyzes your resume <strong>and</strong> compares it against the specific role you're applying for — so you know exactly what to change, what to keep, and what's missing.</p>
             <div className="lp-why-cards" style={{ textAlign: 'left' }}>
-              <Reveal className="lp-why-mini" delay={1}>{I.shield}<div><h4>Never fabricated</h4><p>Every recommendation comes from AI analysis of your actual content.</p></div></Reveal>
-              <Reveal className="lp-why-mini" delay={2}>{I.spark}<div><h4>Job-specific</h4><p>Feedback is tuned to the exact job description you paste.</p></div></Reveal>
-              <Reveal className="lp-why-mini" delay={3}>{I.timer}<div><h4>In seconds</h4><p>No waiting days for expert reviews — results are instant.</p></div></Reveal>
+              <div className="lp-why-mini lp-spotlight-card"><span className="lp-spotlight-glow" aria-hidden="true" />{I.shield}<div><h4>Never fabricated</h4><p>Every recommendation comes from AI analysis of your actual content.</p></div></div>
+              <div className="lp-why-mini lp-spotlight-card"><span className="lp-spotlight-glow" aria-hidden="true" />{I.spark}<div><h4>Job-specific</h4><p>Feedback is tuned to the exact job description you paste.</p></div></div>
+              <div className="lp-why-mini lp-spotlight-card"><span className="lp-spotlight-glow" aria-hidden="true" />{I.timer}<div><h4>In seconds</h4><p>No waiting days for expert reviews — results are instant.</p></div></div>
             </div>
-          </Reveal>
+          </div>
         </div>
       </section>
 
       {/* Chrome Extension Spotlight */}
       <section id="extension" className="lp-section" style={{ paddingTop: 40 }}>
         <div className="lp-container">
-          <Reveal className="glass-card p-6 sm:p-10 rounded-3xl border border-brand-500/30 bg-gradient-to-br from-brand-950/50 via-surface to-indigo-950/35 relative overflow-hidden">
+          <div className="lp-ext-reveal glass-card p-6 sm:p-10 rounded-3xl border border-brand-500/30 bg-gradient-to-br from-brand-950/50 via-surface to-indigo-950/35 relative overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-7 space-y-4 text-left">
                 <span className="lp-page-eyebrow">
@@ -667,7 +1005,7 @@ export function Landing() {
                   <span>New · Browser Extension</span>
                 </span>
                 <h2 style={{ fontFamily: 'var(--lp-display)', fontSize: 'clamp(1.7rem,3.6vw,2.5rem)', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-                  Take Hirely straight onto <span className="lp-grad-text">LinkedIn</span>
+                  <SplitScrollText segments={[{ text: 'Take Hirely straight onto ' }, { text: 'LinkedIn', grad: true }]} />
                 </h2>
                 <p className="text-sm sm:text-base text-fg-muted leading-relaxed">
                   Install the free <strong>Hirely LinkedIn Job Copilot</strong> extension for Chrome, Edge, and Brave. Score every LinkedIn job against your resume automatically, spot missing skills, draft recruiter outreach, and save roles into your application tracker in one click.
@@ -693,7 +1031,14 @@ export function Landing() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 pt-3">
-                  <Link to="/extension" className="lp-btn lp-btn-primary">
+                  <Link
+                    to="/extension"
+                    className="lp-btn lp-btn-primary lp-btn-explode"
+                    onMouseEnter={(e) => handleExplodePointer(e, true)}
+                    onMouseMove={(e) => handleExplodePointer(e, true)}
+                    onMouseLeave={(e) => handleExplodePointer(e, false)}
+                  >
+                    <span className="lp-explode" aria-hidden="true" />
                     <PuzzleIcon className="w-4 h-4" />
                     <span>Explore Extension</span>
                   </Link>
@@ -710,7 +1055,8 @@ export function Landing() {
 
               {/* Clean Live Preview Mockup of the Extension Card */}
               <div className="lg:col-span-5">
-                <div className="rounded-2xl bg-[#0b0a12] border border-brand-500/35 p-5 shadow-2xl space-y-4 text-left">
+                <div className="lp-spotlight-card rounded-2xl bg-[#0b0a12] border border-brand-500/35 p-5 shadow-2xl space-y-4 text-left">
+                  <span className="lp-spotlight-glow" aria-hidden="true" />
                   <div className="flex items-center justify-between border-b border-white/10 pb-3">
                     <div className="flex items-center gap-2.5">
                       <span className="w-6 h-6 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-600 text-white text-xs font-black flex items-center justify-center">
@@ -760,22 +1106,25 @@ export function Landing() {
                 </div>
               </div>
             </div>
-          </Reveal>
+          </div>
         </div>
       </section>
 
       {/* Testimonials */}
       <section className="lp-section" style={{ paddingTop: 40 }}>
         <div className="lp-container">
-          <Reveal className="lp-section-head">
+          <div className="lp-section-head">
             <span className="lp-eyebrow">Loved by job seekers</span>
-            <h2>They got <span className="lp-grad-text">interviews</span></h2>
+            <h2>
+              <SplitScrollText segments={[{ text: 'They got ' }, { text: 'interviews', grad: true }]} />
+            </h2>
             <p>Real people, real hire-ready resumes.</p>
             <div className="lp-underline" />
-          </Reveal>
+          </div>
           <div className="lp-tst-slot">
-            {TESTIMONIALS.map((t, i) => (
-              <Reveal key={t.name} className="lp-tst" delay={(i + 1) as 1 | 2 | 3}>
+            {TESTIMONIALS.map((t) => (
+              <div key={t.name} className="lp-tst lp-spotlight-card">
+                <span className="lp-spotlight-glow" aria-hidden="true" />
                 <div className="lp-stars">★★★★★</div>
                 <p className="lp-quote">{t.quote}</p>
                 <div className="lp-who">
@@ -783,7 +1132,7 @@ export function Landing() {
                   <div><b>{t.name}</b><span>{t.role}</span></div>
                 </div>
                 <span className="lp-role">{t.outcome}</span>
-              </Reveal>
+              </div>
             ))}
           </div>
         </div>
@@ -792,20 +1141,22 @@ export function Landing() {
       {/* FAQ */}
       <section id="faq" className="lp-section" style={{ paddingTop: 40 }}>
         <div className="lp-container">
-          <Reveal className="lp-section-head">
+          <div className="lp-section-head">
             <span className="lp-eyebrow">FAQ</span>
-            <h2>Questions, <span className="lp-grad-text">answered</span></h2>
+            <h2>
+              <SplitScrollText segments={[{ text: 'Questions, ' }, { text: 'answered', grad: true }]} />
+            </h2>
             <div className="lp-underline" />
-          </Reveal>
+          </div>
           <div className="lp-faq-wrap">
             {FAQS.map((f, i) => (
-              <Reveal key={f.q} className={`lp-faq-item ${faqOpen === i ? 'open' : ''}`}>
+              <div key={f.q} className={`lp-faq-item ${faqOpen === i ? 'open' : ''}`}>
                 <button className="lp-faq-q" onClick={() => setFaqOpen(faqOpen === i ? null : i)}>
                   {f.q}
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
                 </button>
                 <div className="lp-faq-a" style={{ maxHeight: faqOpen === i ? 300 : 0 }}><p>{f.a}</p></div>
-              </Reveal>
+              </div>
             ))}
           </div>
         </div>
@@ -814,16 +1165,29 @@ export function Landing() {
       {/* CTA */}
       <section id="cta" className="lp-section" style={{ paddingTop: 20 }}>
         <div className="lp-container">
-          <Reveal className="lp-cta-box">
+          <div className="lp-cta-box">
+            <div className="lp-cta-orbit" aria-hidden="true" />
             <div className="lp-cta-bg" />
             <div className="lp-cta-orb" />
-            <h2>Ready to improve your resume?</h2>
+            <h2>
+              <SplitScrollText segments={[{ text: 'Ready to improve your ' }, { text: 'resume?' }]} />
+            </h2>
             <p>Get detailed feedback and job-specific optimization in seconds. Free to start.</p>
             <div className="lp-cta-actions">
-              <Link to="/upload" className="lp-btn lp-btn-primary lp-btn-lg">{I.upload} Analyze My Resume</Link>
+              <Link
+                to="/upload"
+                className="lp-btn lp-btn-primary lp-btn-lg lp-btn-explode"
+                onMouseEnter={(e) => handleExplodePointer(e, true)}
+                onMouseMove={(e) => handleExplodePointer(e, true)}
+                onMouseLeave={(e) => handleExplodePointer(e, false)}
+              >
+                <span className="lp-explode" aria-hidden="true" />
+                {I.upload}
+                <span>Analyze My Resume</span>
+              </Link>
             </div>
             <p className="lp-cta-note">No credit card required · Results in under 30 seconds · Private &amp; secure</p>
-          </Reveal>
+          </div>
         </div>
       </section>
     </div>

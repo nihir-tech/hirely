@@ -40,7 +40,7 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }: P
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+    <div className="fixed inset-0 z-[1150] flex items-center justify-center p-3 sm:p-4" data-lenis-prevent>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div
         className={`relative glass-strong rounded-2xl shadow-2xl w-full ${sizes[size]} max-h-[92vh] flex flex-col animate-fade-in`}

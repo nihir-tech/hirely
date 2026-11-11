@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSidebar } from './SidebarContext'
+import { smoothScrollTo } from '../../lib/smoothScroll'
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false)
@@ -24,7 +25,7 @@ export function BackToTop() {
       className={`lp-to-top ${sidebarOffsetClass}${visible ? ' lp-to-top-visible' : ''}`}
       aria-label="Back to top"
       title="Back to top"
-      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      onClick={() => smoothScrollTo(0, { offset: 0 })}
     >
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />

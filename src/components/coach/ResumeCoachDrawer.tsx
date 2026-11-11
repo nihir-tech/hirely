@@ -169,7 +169,7 @@ export function ResumeCoachDrawer({ activeResume }: ResumeCoachDrawerProps) {
 
       {/* Slide-out Chat Drawer — z-[1200] renders cleanly above global fixed Navbar (z-900) */}
       {isOpen && (
-        <div className="fixed inset-0 z-[1200] overflow-hidden">
+        <div className="fixed inset-0 z-[1200] overflow-hidden" data-lenis-prevent>
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity"

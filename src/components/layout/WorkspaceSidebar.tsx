@@ -233,6 +233,7 @@ export function WorkspaceSidebar() {
       {/* Desktop Docked Collapsible Sidebar */}
       <aside
         aria-label="Workspace Sidebar"
+        data-lenis-prevent
         className={`hidden lg:flex flex-col fixed left-0 top-[78px] bottom-0 z-[780] bg-canvas/90 backdrop-blur-xl border-r border-line transition-all duration-200 ${
           desktopExpanded ? 'w-60' : 'w-[68px]'
         }`}
@@ -276,3 +277,4 @@ export function WorkspaceSidebar() {
     </>
   )
 }
+

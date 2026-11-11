@@ -22,19 +22,22 @@ import { NotFound } from './pages/NotFound'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { ResumeCoachDrawer } from './components/coach/ResumeCoachDrawer'
 import { ExtensionBridge } from './components/layout/ExtensionBridge'
+import { initSmoothScroll, refreshScrollTriggers, smoothScrollTo } from './lib/smoothScroll'
 
 function ScrollManager() {
   const location = useLocation()
   useEffect(() => {
     if (!location.hash) {
-      window.scrollTo({ top: 0 })
-      return
+      smoothScrollTo(0, { immediate: true, offset: 0 })
+      const t = setTimeout(refreshScrollTriggers, 120)
+      return () => clearTimeout(t)
     }
     const id = location.hash.slice(1)
     const timer = setTimeout(() => {
       const el = document.getElementById(id)
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 80)
+      if (el) smoothScrollTo(el, { offset: -86 })
+      refreshScrollTriggers()
+    }, 100)
     return () => clearTimeout(timer)
   }, [location.pathname, location.hash])
   return null
@@ -42,6 +45,10 @@ function ScrollManager() {
 
 function AppShell() {
   const { isLoggedIn, desktopExpanded } = useSidebar()
+
+  useEffect(() => {
+    return initSmoothScroll()
+  }, [])
   const sidebarPad = isLoggedIn
     ? desktopExpanded
       ? 'lg:pl-60'

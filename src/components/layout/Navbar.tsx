@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { smoothScrollTo } from '../../lib/smoothScroll'
 import { APP_NAME } from '../../config'
 import { useSiteStats } from '../../hooks/useSiteStats'
 import { useAuth } from '../../lib/auth'
@@ -101,16 +102,30 @@ function AuthArea() {
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const [condensed, setCondensed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const lastScrollY = useRef(0)
   const location = useLocation()
   const { user, loading, isOwner, isCompany } = useAuth()
   const { toggleSidebar, openCoachAgent } = useSidebar()
   const onLanding = location.pathname === '/'
   const loggedIn = Boolean(!loading && user)
+  const isCondensed = onLanding && !loggedIn && condensed && !mobileOpen
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 24)
+    const handler = () => {
+      const y = window.scrollY || document.documentElement.scrollTop || 0
+      setScrolled(y > 24)
+      const prev = lastScrollY.current
+      if (y > 120 && y > prev + 4) {
+        setCondensed(true)
+      } else if (y < prev - 4 || y <= 80) {
+        setCondensed(false)
+      }
+      lastScrollY.current = y
+    }
     window.addEventListener('scroll', handler, { passive: true })
+    handler()
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
@@ -127,7 +142,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className={`lp-nav ${scrolled || mobileOpen || loggedIn ? 'scrolled' : ''}`}>
+      <header className={`lp-nav ${scrolled || mobileOpen || loggedIn ? 'scrolled' : ''} ${isCondensed ? 'lp-nav-condensed' : ''}`}>
         <div className="lp-nav-inner">
           <div className="flex items-center gap-2.5 min-w-0">
             {loggedIn && (
@@ -196,20 +211,21 @@ export function Navbar() {
                   <a
                     key={l.label}
                     href={l.to}
+                    className="lp-nav-mid"
                     onClick={(e) => {
                       if (onLanding) {
                         e.preventDefault()
-                        document.querySelector(l.to.slice(1))?.scrollIntoView({ behavior: 'smooth' })
+                        smoothScrollTo(l.to.slice(1), { offset: -86 })
                       }
                     }}
                   >
                     {l.label}
                   </a>
                 ))}
-                <Link to="/jobs" className={location.pathname === '/jobs' ? 'active' : ''}>
+                <Link to="/jobs" className={`lp-nav-mid ${location.pathname === '/jobs' ? 'active' : ''}`}>
                   Jobs
                 </Link>
-                <Link to="/extension" className={location.pathname === '/extension' ? 'active' : ''}>
+                <Link to="/extension" className={`lp-nav-mid ${location.pathname === '/extension' ? 'active' : ''}`}>
                   Extension
                 </Link>
                 <Link
@@ -266,7 +282,19 @@ export function Navbar() {
         ) : (
           <>
             {PUBLIC_LINKS.map((l) => (
-              <a key={l.label} href={l.to} onClick={() => setMobileOpen(false)}>{l.label}</a>
+              <a
+                key={l.label}
+                href={l.to}
+                onClick={(e) => {
+                  setMobileOpen(false)
+                  if (onLanding) {
+                    e.preventDefault()
+                    smoothScrollTo(l.to.slice(1), { offset: -76 })
+                  }
+                }}
+              >
+                {l.label}
+              </a>
             ))}
             <Link to="/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</Link>
             <Link to="/jobs" onClick={() => setMobileOpen(false)}>Matched Jobs</Link>
