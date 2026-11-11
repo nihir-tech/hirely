@@ -248,12 +248,12 @@ export function WorkspaceSidebar() {
 
       {/* Mobile / Tablet Slide-Over Sidebar */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[1100] lg:hidden flex">
+        <div className="fixed inset-0 z-[1100] lg:hidden flex" data-lenis-prevent>
           <div
             className="fixed inset-0 bg-black/60 backdrop-blur-xs"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="relative w-72 max-w-[85vw] h-full bg-canvas border-r border-line shadow-2xl flex flex-col z-10">
+          <aside className="relative w-72 max-w-[86vw] h-[100dvh] bg-canvas border-r border-line shadow-2xl flex flex-col z-10 pb-[env(safe-area-inset-bottom,0px)]">
             <div className="px-4 py-3.5 border-b border-line flex items-center justify-between bg-surface/60">
               <span className="text-sm font-bold text-fg-strong">Workspace Menu</span>
               <button

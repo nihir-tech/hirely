@@ -6,9 +6,9 @@ import type { AnalysisResult, SectionReviewItem } from '../../types'
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between">
-      <dt className="text-fg-muted">{label}</dt>
-      <dd className="text-fg-strong font-medium truncate ml-4">{value}</dd>
+    <div className="flex items-baseline justify-between gap-3">
+      <dt className="text-fg-muted shrink-0">{label}</dt>
+      <dd className="text-fg-strong font-medium truncate text-right">{value}</dd>
     </div>
   )
 }

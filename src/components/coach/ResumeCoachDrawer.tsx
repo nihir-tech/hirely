@@ -156,7 +156,7 @@ export function ResumeCoachDrawer({ activeResume }: ResumeCoachDrawerProps) {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[950] flex items-center gap-2 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full shadow-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-medium text-xs sm:text-sm transition-all transform hover:scale-105 active:scale-95 border border-white/20"
+          className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-3.5 sm:bottom-6 sm:right-6 z-[950] flex items-center gap-2 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full shadow-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-medium text-xs sm:text-sm transition-all transform hover:scale-105 active:scale-95 border border-white/20"
           title="Open AI Resume Coach"
         >
           <div className="relative">
@@ -178,18 +178,18 @@ export function ResumeCoachDrawer({ activeResume }: ResumeCoachDrawerProps) {
           />
 
           <div className="absolute inset-y-0 right-0 max-w-full flex pl-0 sm:pl-6 pointer-events-none">
-            <div className="w-screen max-w-full sm:max-w-md bg-canvas border-l border-line shadow-2xl flex flex-col h-full pointer-events-auto">
+            <div className="w-screen max-w-full sm:max-w-md bg-canvas border-l border-line shadow-2xl flex flex-col h-[100dvh] pointer-events-auto">
               
               {/* Header with explicit Exit Chat button */}
-              <div className="p-3.5 sm:p-4 border-b border-line flex items-center justify-between gap-2 bg-surface/90">
-                <div className="flex items-center gap-2.5 min-w-0">
+              <div className="p-3 sm:p-4 border-b border-line flex items-center justify-between gap-2 bg-surface/90">
+                <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
                   <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-500 flex items-center justify-center text-white shrink-0 shadow-md">
                     <SparklesIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <h3 className="text-sm font-bold text-fg-strong truncate">Hirely Coach</h3>
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                      <span className="hidden xs:inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
                         Online
                       </span>
                     </div>
@@ -199,19 +199,19 @@ export function ResumeCoachDrawer({ activeResume }: ResumeCoachDrawerProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                   <button
                     type="button"
                     onClick={handleClear}
                     title="Clear Chat History"
-                    className="px-2.5 py-1.5 rounded-xl text-fg-muted hover:text-fg-strong hover:bg-surface-subtle transition-colors text-xs font-medium border border-transparent hover:border-line"
+                    className="px-2 sm:px-2.5 py-1.5 rounded-xl text-fg-muted hover:text-fg-strong hover:bg-surface-subtle transition-colors text-xs font-medium border border-transparent hover:border-line"
                   >
                     Clear
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors shadow-xs whitespace-nowrap"
+                    className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors shadow-xs whitespace-nowrap"
                     title="Exit Chat"
                   >
                     <LogOutIcon className="w-3.5 h-3.5" />
@@ -222,7 +222,7 @@ export function ResumeCoachDrawer({ activeResume }: ResumeCoachDrawerProps) {
 
               {/* Resume Context Bar */}
               {resumes.length > 0 && (
-                <div className="px-4 py-2 border-b border-line bg-surface-subtle/70 flex items-center gap-2 text-xs">
+                <div className="px-3 sm:px-4 py-2 border-b border-line bg-surface-subtle/70 flex items-center gap-2 text-xs">
                   <span className="text-fg-muted shrink-0 font-medium">Context:</span>
                   <select
                     value={selectedResumeId}
@@ -239,7 +239,7 @@ export function ResumeCoachDrawer({ activeResume }: ResumeCoachDrawerProps) {
               )}
 
               {/* Chat Messages */}
-              <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4">
                 {messages.map((m) => {
                   const isUser = m.sender === 'user'
                   return (
@@ -318,19 +318,19 @@ export function ResumeCoachDrawer({ activeResume }: ResumeCoachDrawerProps) {
                   e.preventDefault()
                   void handleSend()
                 }}
-                className="p-3 border-t border-line bg-surface/90 flex items-center gap-2"
+                className="p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-line bg-surface/90 flex items-center gap-2"
               >
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask anything (resume, coding, salary, interview)..."
-                  className="flex-1 bg-surface border border-line rounded-xl px-3.5 py-2.5 text-xs text-fg-strong focus:outline-none focus:ring-2 focus:ring-brand-500/40"
+                  className="flex-1 min-w-0 bg-surface border border-line rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-fg-strong focus:outline-none focus:ring-2 focus:ring-brand-500/40"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || loading}
-                  className="px-3.5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 disabled:opacity-40 text-white font-semibold text-xs transition-colors shrink-0"
+                  className="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 disabled:opacity-40 text-white font-semibold text-xs transition-colors shrink-0 min-h-[42px]"
                 >
                   Send
                 </button>

@@ -56,9 +56,15 @@ function PriorityBadge({ priority }: { priority: number }) {
 function CandidateCard({ rank }: { rank: CandidateRank }) {
   return (
     <Card className="p-4 sm:p-5">
-      <div className="flex items-start gap-4">
-        <PriorityBadge priority={rank.priority} />
-        <div className="flex-1 min-w-0">
+      <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+        <div className="flex items-center justify-between w-full sm:w-auto">
+          <PriorityBadge priority={rank.priority} />
+          <div className="flex sm:hidden flex-col items-end">
+            <span className="text-xl font-bold text-fg-strong leading-none">{rank.score}</span>
+            <span className="text-[10px] uppercase tracking-widest text-fg-muted mt-0.5">match</span>
+          </div>
+        </div>
+        <div className="flex-1 min-w-0 w-full">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1">
             <h3 className="text-base font-semibold text-fg-strong truncate">{rank.name || rank.fileName || 'Candidate'}</h3>
             {rank.yearsExperience && (
@@ -114,7 +120,7 @@ function CandidateCard({ rank }: { rank: CandidateRank }) {
             </div>
           )}
         </div>
-        <div className="shrink-0 flex flex-col items-center gap-1">
+        <div className="hidden sm:flex shrink-0 flex-col items-center gap-1">
           <span className="text-xl font-bold text-fg-strong">{rank.score}</span>
           <span className="text-[10px] uppercase tracking-widest text-fg-muted">match</span>
         </div>
@@ -360,7 +366,7 @@ export function Company() {
   const canRank = !busy && files.length > 0 && jobDescription.trim().length >= 50
 
   return (
-    <div className="min-h-[80vh] relative">
+    <div className="min-h-[80vh] relative pt-20">
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
         {authLoading ? (
           <div className="flex justify-center py-24">
@@ -597,7 +603,7 @@ export function Company() {
                                     </p>
                                     <button
                                       onClick={(e) => handleDeleteJob(job.id, e)}
-                                      className="p-1 rounded-md text-fg-faint opacity-0 group-hover:opacity-100 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0"
+                                      className="p-1 rounded-md text-fg-faint opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0"
                                       aria-label="Delete shortlist"
                                     >
                                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

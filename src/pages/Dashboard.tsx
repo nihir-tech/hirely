@@ -35,6 +35,7 @@ import {
   FolderIcon,
   MessageSquareIcon,
   SendIcon,
+  StarIcon,
   TargetIcon,
 } from '../components/ui/Icons'
 
@@ -289,7 +290,8 @@ export function Dashboard() {
               to="/jobs"
               className="glass-button inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-fg-strong rounded-xl hover:text-brand-300"
             >
-              <span className="text-amber-400">⭐</span> Matched Jobs
+              <StarIcon className="w-3.5 h-3.5 text-amber-400" />
+              <span>Matched Jobs</span>
             </Link>
             <Link
               to="/upload"
@@ -311,7 +313,7 @@ export function Dashboard() {
                 <TargetIcon className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs font-bold text-amber-300 uppercase tracking-wide">
                     New Opening Alert · Best Fit For You
                   </span>
@@ -429,9 +431,9 @@ export function Dashboard() {
                 <div key={r.id} className="group">
                   <div className="glass-card p-4 sm:p-5 hover:border-brand-500/30 transition-all">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <Link to={`/analyze/${r.id}`} className="flex items-center gap-4 min-w-0 flex-1">
-                        <div className="hidden sm:flex shrink-0">
-                          <ScoreRing value={r.scores.overall} size={56} strokeWidth={5} />
+                      <Link to={`/analyze/${r.id}`} className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
+                        <div className="shrink-0">
+                          <ScoreRing value={r.scores.overall} size={48} strokeWidth={5} />
                         </div>
                         <div className="min-w-0">
                           <h3 className="text-base font-semibold text-fg-strong truncate group-hover:text-brand-400 transition-colors">
@@ -451,7 +453,7 @@ export function Dashboard() {
                         </div>
                       </Link>
 
-                      <div className="flex items-center gap-3 shrink-0">
+                      <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-line">
                         {r.jobMatch && (
                           <div className="text-right hidden md:block">
                             <p className="text-[10px] text-fg-muted">Job Match</p>
@@ -612,14 +614,14 @@ export function Dashboard() {
 
             {/* Application Pipeline Kanban */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-base font-bold text-fg-strong">Job Application Pipeline</h3>
                   <p className="text-xs text-fg-muted">
                     Track your submissions across stages from Saved to Interview and Offer.
                   </p>
                 </div>
-                <Button size="sm" onClick={() => setAppModalOpen(true)}>
+                <Button size="sm" onClick={() => setAppModalOpen(true)} className="w-fit shrink-0">
                   + Track Application
                 </Button>
               </div>
@@ -631,7 +633,7 @@ export function Dashboard() {
                   return (
                     <div
                       key={col.status}
-                      className={`p-3.5 rounded-2xl bg-surface/60 border ${col.color} flex flex-col min-h-[320px]`}
+                      className={`p-3.5 rounded-2xl bg-surface/60 border ${col.color} flex flex-col min-h-[160px] sm:min-h-[260px] xl:min-h-[320px]`}
                     >
                       <div className="flex items-center justify-between pb-3 border-b border-line mb-3">
                         <span className="text-xs font-bold text-fg-strong flex items-center gap-1.5">
@@ -744,11 +746,11 @@ export function Dashboard() {
         title={editingVersion ? `Edit: ${editingVersion.name}` : 'Create New Resume Version'}
         size="xl"
         footer={
-          <div className="flex items-center justify-between w-full">
+          <div className="flex flex-wrap items-center justify-between gap-2 w-full">
             <Button variant="secondary" onClick={() => setVersionModalOpen(false)}>
               Cancel
             </Button>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant="secondary"
                 onClick={() => printResumePreview(versionFormMarkdown, versionFormName)}
@@ -829,7 +831,7 @@ export function Dashboard() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-fg-strong mb-1">Location</label>
               <input

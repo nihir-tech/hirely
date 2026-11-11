@@ -244,20 +244,32 @@ export function Navbar() {
             )}
           </div>
 
-          <button className="lp-burger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              {mobileOpen ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />}
-            </svg>
-          </button>
+          <div className="lp-mobile-controls">
+            <ThemeToggle />
+            {loggedIn && (
+              <Link
+                to="/upload"
+                className="lp-mobile-quick-cta"
+                aria-label="Upload Resume"
+                title="Upload Resume"
+              >
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+              </Link>
+            )}
+            <button className="lp-burger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                {mobileOpen ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />}
+              </svg>
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className={`lp-mobile-menu ${mobileOpen ? 'open' : ''}`}>
+      <div className={`lp-mobile-menu ${mobileOpen ? 'open' : ''}`} data-lenis-prevent>
         <div className="lp-mobile-live">
           <LivePill />
-        </div>
-        <div className="lp-mobile-theme">
-          <ThemeToggle />
         </div>
         {loggedIn ? (
           <>
@@ -270,7 +282,7 @@ export function Navbar() {
                 setMobileOpen(false)
                 openCoachAgent()
               }}
-              className="text-left px-3 py-4 rounded-xl text-lg font-semibold text-brand-300 border-b border-white/10"
+              className="text-left px-3 py-4 rounded-xl text-lg font-semibold text-brand-500 dark:text-brand-300 border-b border-line"
             >
               AI Coach Agent
             </button>
@@ -289,7 +301,7 @@ export function Navbar() {
                   setMobileOpen(false)
                   if (onLanding) {
                     e.preventDefault()
-                    smoothScrollTo(l.to.slice(1), { offset: -76 })
+                    smoothScrollTo(l.to.slice(1), { offset: -70 })
                   }
                 }}
               >
@@ -302,7 +314,9 @@ export function Navbar() {
             <Link to="/upload" className="lp-nav-cta" onClick={() => setMobileOpen(false)}>Get Started</Link>
           </>
         )}
-        <MobileAuthInfo closeMenu={() => setMobileOpen(false)} />
+        <div className="mt-2 flex justify-stretch">
+          <MobileAuthInfo closeMenu={() => setMobileOpen(false)} />
+        </div>
       </div>
     </>
   )

@@ -79,16 +79,16 @@ export function Extension() {
             Bring Hirely’s AI job matching, skill-gap detector, interview prep, and resume tailoring directly onto LinkedIn job pages.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 mt-7">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-3 mt-7">
             <a
               href="/hirely-linkedin-extension.zip"
               download="hirely-linkedin-extension.zip"
-              className="lp-btn lp-btn-primary lp-btn-lg inline-flex items-center gap-2"
+              className="lp-btn lp-btn-primary lp-btn-lg inline-flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <DownloadIcon className="w-4 h-4" />
               <span>Download Extension (.zip)</span>
             </a>
-            <Link to="/jobs" className="lp-btn lp-btn-ghost lp-btn-lg">
+            <Link to="/jobs" className="lp-btn lp-btn-ghost lp-btn-lg w-full sm:w-auto justify-center">
               Browse Jobs Feed →
             </Link>
           </div>

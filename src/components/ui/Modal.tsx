@@ -43,7 +43,7 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }: P
     <div className="fixed inset-0 z-[1150] flex items-center justify-center p-3 sm:p-4" data-lenis-prevent>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div
-        className={`relative glass-strong rounded-2xl shadow-2xl w-full ${sizes[size]} max-h-[92vh] flex flex-col animate-fade-in`}
+        className={`relative glass-strong rounded-2xl shadow-2xl w-full ${sizes[size]} max-h-[92dvh] flex flex-col animate-fade-in overflow-hidden`}
         role="dialog"
         aria-modal="true"
         aria-label={title}
@@ -63,7 +63,7 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }: P
             </button>
           </div>
         )}
-        <div className="overflow-y-auto px-4 sm:px-6 py-3.5 sm:py-4 flex-1">{children}</div>
+        <div className="overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-3.5 sm:py-4 flex-1 min-w-0">{children}</div>
         {footer && (
           <div className="flex flex-wrap items-center justify-end gap-2.5 px-4 sm:px-6 py-3 sm:py-4 border-t border-line">
             {footer}

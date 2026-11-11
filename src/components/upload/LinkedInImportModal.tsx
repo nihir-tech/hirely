@@ -89,7 +89,7 @@ export function LinkedInImportModal({ open, onClose, initialText, sourceLabel }:
       size="lg"
     >
       <div className="space-y-5">
-        <div className="flex border-b border-line gap-4 text-sm font-medium">
+        <div className="flex border-b border-line gap-4 text-sm font-medium overflow-x-auto whitespace-nowrap scrollbar-none">
           <button
             type="button"
             className={`pb-2.5 transition-colors ${

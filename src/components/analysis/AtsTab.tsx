@@ -14,8 +14,8 @@ export function AtsTab({ analysis }: { analysis: AnalysisResult }) {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex items-center gap-6">
-        <ScoreRing value={ats.score} size={100} strokeWidth={7} label="ATS Score" />
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+        <ScoreRing value={ats.score} size={96} strokeWidth={7} label="ATS Score" />
         <div className="text-sm max-w-md">
           <p className="font-medium text-fg-strong mb-1">What this means</p>
           <p className="leading-relaxed text-fg-muted">

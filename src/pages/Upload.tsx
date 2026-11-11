@@ -136,8 +136,8 @@ export function Upload() {
   }, [file, navigate, user])
 
   return (
-    <div className="min-h-[80vh] relative">
-      <div className="relative mx-auto max-w-2xl px-4 sm:px-6 py-10 sm:py-14">
+    <div className="min-h-[80vh] relative pt-20">
+      <div className="relative mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-14">
         <PageHead
           eyebrow="Upload"
           title={<>Analyze Your <span className="lp-grad-text">Resume</span></>}

@@ -180,7 +180,7 @@ export function Analysis() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-9">
           <div className="lp-head-left min-w-0">
             <span className="lp-page-eyebrow">Analysis</span>
-            <h1 className="lp-page-title truncate" title={analysis.fileName}>
+            <h1 className="lp-page-title break-words" title={analysis.fileName}>
               {analysis.fileName}
             </h1>
             <p className="text-sm text-fg-muted mt-1">
@@ -227,25 +227,25 @@ export function Analysis() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
           <Card className="p-4 sm:p-6 flex flex-col items-center">
-            <ScoreRing value={analysis.scores.overall} size={100} strokeWidth={7} label="Overall Score" />
+            <ScoreRing value={analysis.scores.overall} size={88} strokeWidth={7} label="Overall Score" />
           </Card>
           <Card className="p-4 sm:p-6 flex flex-col items-center">
-            <ScoreRing value={analysis.ats.score} size={100} strokeWidth={7} label="ATS Score" sublabel="AI estimate" />
+            <ScoreRing value={analysis.ats.score} size={88} strokeWidth={7} label="ATS Score" sublabel="AI estimate" />
           </Card>
           {analysis.jobMatch ? (
-            <Card className="p-4 sm:p-6 flex flex-col items-center">
+            <Card className="col-span-2 sm:col-span-1 p-4 sm:p-6 flex flex-col items-center">
               <ScoreRing
                 value={analysis.jobMatch.score}
-                size={100}
+                size={88}
                 strokeWidth={7}
                 label="Job Match"
                 sublabel={analysis.jobTarget?.title || ''}
               />
             </Card>
           ) : (
-            <Card className="p-4 sm:p-6 flex flex-col items-center justify-center">
+            <Card className="col-span-2 sm:col-span-1 p-4 sm:p-6 flex flex-col items-center justify-center">
               <p className="text-sm text-fg-muted text-center">No job target yet</p>
               <Link
                 to={`/optimize/${analysis.id}`}

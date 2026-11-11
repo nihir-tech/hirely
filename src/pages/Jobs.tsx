@@ -324,7 +324,7 @@ export function Jobs() {
             )}
 
             {/* Live Feed Controls */}
-            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-surface border border-line">
+            <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-surface border border-line w-full sm:w-auto">
               <button
                 type="button"
                 onClick={handleManualRefresh}
@@ -540,13 +540,13 @@ export function Jobs() {
             </div>
           </div>
 
-          <div className="flex gap-2 pt-1 border-t border-line/60">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-line/60">
             <input
               type="text"
               value={customLinkedInSearch}
               onChange={(e) => setCustomLinkedInSearch(e.target.value)}
               placeholder="Or search any custom role on LinkedIn (e.g. Staff Full Stack Engineer, AI Agent Developer)..."
-              className="flex-1 px-3.5 py-1.5 text-xs bg-surface-subtle border border-line rounded-xl text-fg-strong focus:outline-none focus:border-[#0A66C2]"
+              className="flex-1 min-w-0 px-3.5 py-2 sm:py-1.5 text-xs bg-surface-subtle border border-line rounded-xl text-fg-strong focus:outline-none focus:border-[#0A66C2]"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && customLinkedInSearch.trim()) {
                   handleTriggerLinkedInSearch(customLinkedInSearch.trim())
@@ -557,7 +557,7 @@ export function Jobs() {
               type="button"
               disabled={!customLinkedInSearch.trim()}
               onClick={() => handleTriggerLinkedInSearch(customLinkedInSearch.trim())}
-              className="px-3 py-1.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] disabled:opacity-40 text-white text-xs font-semibold transition-colors"
+              className="px-4 py-2 sm:py-1.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] disabled:opacity-40 text-white text-xs font-semibold transition-colors shrink-0"
             >
               Search LinkedIn ↗
             </button>
@@ -679,9 +679,9 @@ export function Jobs() {
 
         {/* Near-Miss Specific Banner */}
         {categoryFilter === 'near-miss' && (
-          <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs text-fg-muted animate-fade-in">
-            <div className="flex items-center gap-2.5">
-              <TargetIcon className="w-4 h-4 text-amber-400 shrink-0" />
+          <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs text-fg-muted animate-fade-in">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <TargetIcon className="w-4 h-4 text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
               <span>
                 Showing <strong>{filteredAlerts.length} Near-Miss Opportunities (60–84% match)</strong>. You meet the primary core requirements! Click <strong>"Skill Gap & Roadmap"</strong> on any opening to see your exact 1–2 week action plan to close the gap.
               </span>
@@ -689,7 +689,7 @@ export function Jobs() {
             <button
               type="button"
               onClick={() => setCategoryFilter('all')}
-              className="text-amber-300 hover:underline shrink-0 font-medium ml-4"
+              className="text-amber-300 hover:underline shrink-0 font-medium sm:ml-4"
             >
               Show all
             </button>
@@ -698,9 +698,9 @@ export function Jobs() {
 
         {/* Startups Specific Banner */}
         {categoryFilter === 'startups' && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs text-fg-muted animate-fade-in">
-            <div className="flex items-center gap-2.5">
-              <RocketIcon className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs text-fg-muted animate-fade-in">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <RocketIcon className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5 sm:mt-0" />
               <span>
                 Showing <strong>{filteredAlerts.length} openings at early-stage startups & boutique small teams</strong>.
                 These roles feature direct founder contact, high ownership, fast interview loops, and lower competition on LinkedIn.
@@ -709,7 +709,7 @@ export function Jobs() {
             <button
               type="button"
               onClick={() => setCategoryFilter('all')}
-              className="text-emerald-400 hover:underline shrink-0 font-medium ml-4"
+              className="text-emerald-400 hover:underline shrink-0 font-medium sm:ml-4"
             >
               Show all sources
             </button>
@@ -718,9 +718,9 @@ export function Jobs() {
 
         {/* LinkedIn Specific Banner */}
         {categoryFilter === 'linkedin' && (
-          <div className="mb-6 p-4 rounded-2xl bg-[#0A66C2]/10 border border-[#0A66C2]/30 flex items-center justify-between text-xs text-fg-muted animate-fade-in">
-            <div className="flex items-center gap-2.5">
-              <BriefcaseIcon className="w-4 h-4 text-[#70b5f9] shrink-0" />
+          <div className="mb-6 p-4 rounded-2xl bg-[#0A66C2]/10 border border-[#0A66C2]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs text-fg-muted animate-fade-in">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <BriefcaseIcon className="w-4 h-4 text-[#70b5f9] shrink-0 mt-0.5 sm:mt-0" />
               <span>
                 Showing <strong>{filteredAlerts.length} active openings available on LinkedIn</strong> with direct apply links, Easy Apply indicators, and applicant insights.
               </span>
@@ -728,7 +728,7 @@ export function Jobs() {
             <button
               type="button"
               onClick={() => setCategoryFilter('all')}
-              className="text-[#70b5f9] hover:underline shrink-0 font-medium ml-4"
+              className="text-[#70b5f9] hover:underline shrink-0 font-medium sm:ml-4"
             >
               Show all sources
             </button>
@@ -892,9 +892,9 @@ export function Jobs() {
                     </div>
 
                     {/* Right Match Ring & Comprehensive Actions */}
-                    <div className="flex sm:flex-row lg:flex-col items-center lg:items-end justify-between gap-3 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-line">
-                      <div className="flex items-center gap-3">
-                        <div className="text-right hidden sm:block lg:block">
+                    <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end justify-between gap-3 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-line">
+                      <div className="flex items-center justify-between sm:justify-start gap-3">
+                        <div className="text-left sm:text-right lg:text-right">
                           <p className="text-xs font-semibold text-fg-strong">{isNearMiss ? 'Near-Miss' : alert.fitBadge}</p>
                           <p className="text-[10px] text-fg-muted">Fit Rating</p>
                         </div>
@@ -1085,7 +1085,7 @@ export function Jobs() {
           }
         >
           <div className="space-y-5">
-            <div className="p-4 rounded-2xl bg-surface-subtle border border-line flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-surface-subtle border border-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
                 <span className="text-xs text-fg-muted uppercase tracking-wider font-semibold">Match Score</span>
                 <h3 className="text-xl font-bold text-fg-strong mt-0.5">{selectedJobAlert.score}% Match</h3>

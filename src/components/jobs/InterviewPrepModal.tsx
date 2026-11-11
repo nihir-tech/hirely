@@ -155,7 +155,7 @@ export function InterviewPrepModal({
             </p>
           </div>
 
-          <div className="flex flex-col items-end gap-1 shrink-0">
+          <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
             <span className="text-xs font-semibold text-fg-strong">{alert.fitBadge}</span>
             <span className="text-[11px] text-brand-400 font-medium">{alert.score}% Profile Alignment</span>
           </div>

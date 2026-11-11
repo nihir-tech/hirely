@@ -359,7 +359,9 @@ function CompareSlider() {
         aria-label="Compare resume before and after"
         aria-valuenow={50}
         tabIndex={0}
+        onClick={(e) => setPos(e.clientX)}
         onPointerDown={(e) => {
+          if (e.pointerType !== 'mouse') return
           dragging.current = true
           e.currentTarget.setPointerCapture(e.pointerId)
           setPos(e.clientX)
@@ -372,10 +374,28 @@ function CompareSlider() {
       >
         {renderPane(cs.before, 'before')}
         {renderPane(cs.after, 'after')}
-        <div ref={handleRef} className="lp-compare-handle" />
+        <div
+          ref={handleRef}
+          className="lp-compare-handle"
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            dragging.current = true
+            e.currentTarget.setPointerCapture(e.pointerId)
+            setPos(e.clientX)
+          }}
+          onPointerMove={(e) => {
+            if (!dragging.current) return
+            e.stopPropagation()
+            setPos(e.clientX)
+          }}
+          onPointerUp={(e) => {
+            dragging.current = false
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId)
+          }}
+        />
       </div>
 
-      <p className="lp-compare-hint">Drag the handle</p>
+      <p className="lp-compare-hint">Drag handle or tap to compare</p>
 
       <div className="lp-compare-stats">
         <div><b>{cs.before.score} → {cs.after.score}</b><span>ATS score</span></div>
@@ -422,7 +442,7 @@ function HeroMock() {
   }, [])
 
   return (
-    <div className="lp-anchor-wrap" style={{ maxWidth: 920, margin: '70px auto 0' }}>
+    <div className="lp-anchor-wrap">
       <div className="lp-glow-card" />
       <div
         ref={mockRef}
@@ -447,7 +467,7 @@ function HeroMock() {
           <div>
             <div className="lp-score-block">
               <div className="lp-ring">
-                <svg width="110" height="110" viewBox="0 0 110 110">
+                <svg className="w-full h-full" viewBox="0 0 110 110">
                   <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.07)" strokeWidth="9" />
                   <circle
                     ref={ringRef}
@@ -489,7 +509,7 @@ function HeroMock() {
         </div>
       </div>
 
-      <div className="lp-chip green lp-chip-c1" style={{ right: '-2%' }}>{I.check} 12 Suggestions Applied</div>
+      <div className="lp-chip green lp-chip-c1">{I.check} 12 Suggestions Applied</div>
       <div className="lp-chip violet lp-chip-c2">{I.spark} AI Analysis Live</div>
       <div className="lp-chip violet lp-chip-c3">{I.shield} Interview-Ready</div>
     </div>
@@ -608,7 +628,9 @@ function HowItWorksSection({
                 data-hiw-step={i}
                 onClick={(e) => {
                   onSelectStep(i)
-                  smoothScrollTo(e.currentTarget, { offset: -140 })
+                  if (window.matchMedia('(min-width: 960px)').matches) {
+                    smoothScrollTo(e.currentTarget, { offset: -140 })
+                  }
                 }}
                 className={`lp-hiw-step lp-spotlight-card ${activeStep === i ? 'is-active' : ''}`}
               >
@@ -864,16 +886,18 @@ export function Landing() {
         )
       })
 
-      // Sticky "How It Works" step activation on scroll
-      gsap.utils.toArray<HTMLElement>('[data-hiw-step]').forEach((stepEl, idx) => {
-        ScrollTrigger.create({
-          trigger: stepEl,
-          start: 'top 58%',
-          end: 'bottom 42%',
-          onEnter: () => setActiveStep(idx),
-          onEnterBack: () => setActiveStep(idx),
+      // Sticky "How It Works" step activation on desktop scroll only
+      if (window.matchMedia('(min-width: 960px)').matches) {
+        gsap.utils.toArray<HTMLElement>('[data-hiw-step]').forEach((stepEl, idx) => {
+          ScrollTrigger.create({
+            trigger: stepEl,
+            start: 'top 58%',
+            end: 'bottom 42%',
+            onEnter: () => setActiveStep(idx),
+            onEnterBack: () => setActiveStep(idx),
+          })
         })
-      })
+      }
 
       const staggerSection = (triggerSel: string, itemSel: string, stagger = 0.08, y = 36, scale = 0.95) => {
         const items = root.querySelectorAll<HTMLElement>(itemSel)

@@ -38,7 +38,7 @@ const RESOURCE_LINKS = [
 export function Footer() {
   return (
     <footer className="lp-footer">
-      <div className="lp-container lp-footer-inner" style={{ paddingInline: 24 }}>
+      <div className="lp-container lp-footer-inner">
         <div className="lp-footer-grid">
           <div className="lp-footer-brand">
             <a href="/" className="lp-logo">{logo}{APP_NAME}</a>

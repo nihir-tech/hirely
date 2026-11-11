@@ -236,7 +236,7 @@ export function SkillGapRoadmapModal({
 
                 {/* Copy-Ready ATS Resume Bullet */}
                 <div className="p-3.5 rounded-xl bg-gradient-to-r from-emerald-950/20 to-surface border border-emerald-500/30 space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider inline-flex items-center gap-1.5">
                         <FileTextIcon className="w-3.5 h-3.5" />

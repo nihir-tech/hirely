@@ -17,11 +17,11 @@ export function ImprovementsTab({ analysis }: { analysis: AnalysisResult }) {
           <div className="space-y-3">
             {analysis.problems.map((p, i) => (
               <Card key={i} className="p-5">
-                <div className="flex items-start gap-3">
+                <div className="flex flex-col sm:flex-row items-start gap-2.5 sm:gap-3">
                   <Badge variant={severityMap[p.severity].variant}>
                     {severityMap[p.severity].label}
                   </Badge>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-semibold text-fg-strong mb-1">{p.title}</h4>
                     <p className="text-sm text-fg-muted leading-relaxed">{p.description}</p>
                   </div>

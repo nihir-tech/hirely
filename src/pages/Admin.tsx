@@ -225,7 +225,7 @@ export function Admin() {
               ) : (
                 <ul className="space-y-2">
                   {visits.map((v) => (
-                    <li key={v.key} className="flex items-center justify-between gap-3 bg-fill border border-line rounded-lg px-3 py-2">
+                    <li key={v.key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 bg-fill border border-line rounded-lg px-3 py-2.5">
                       <div className="flex items-center gap-3 min-w-0">
                         <span className={`shrink-0 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${VISIT_BADGE[v.kind]}`}>
                           {VISIT_LABEL[v.kind]}

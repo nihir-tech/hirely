@@ -69,10 +69,10 @@ export function ChangesTab({ analysis, onUpdate, onEdit }: Props) {
                 : 'border-line'
 
           return (
-            <Card key={change.id} className={`p-5 !rounded-2xl ${borderClass}`}>
-              <div className="flex items-center justify-between mb-3">
+            <Card key={change.id} className={`p-4 sm:p-5 !rounded-2xl ${borderClass}`}>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <Badge>{change.section}</Badge>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {change.accepted == null ? (
                     <>
                       <Button
